@@ -1,0 +1,1293 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>Vulpine Homes Cabinet Supply Website</title>
+<link rel="preconnect" href="https://fonts.googleapis.com" />
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+<link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@300;400;500;600;700&family=DM+Serif+Display&display=swap" rel="stylesheet" />
+<script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.5/gsap.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.5/ScrollTrigger.min.js"></script>
+<style>
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+:root {
+  --orange: #ee7200;
+  --black: #111111;
+  --white: #f5f0eb;
+  --gray: #c8c4be;
+  --mid: #888480;
+  --dark: #1a1816;
+}
+
+html { scroll-behavior: smooth; }
+
+body {
+  font-family: 'DM Sans', sans-serif;
+  background: var(--white);
+  color: var(--black);
+  overflow-x: hidden;
+}
+
+/* ─── NAV ─── */
+nav {
+  position: fixed;
+  top: 0; left: 0; right: 0;
+  z-index: 100;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 0 48px;
+  height: 64px;
+  background: rgba(245,240,235,0.92);
+  backdrop-filter: blur(12px);
+  border-bottom: 1px solid rgba(200,196,190,0.4);
+}
+
+.nav-logo {
+  font-size: 18px;
+  font-weight: 700;
+  letter-spacing: -0.02em;
+  color: var(--black);
+  text-decoration: none;
+}
+.nav-logo span { color: var(--orange); }
+
+.nav-links {
+  display: flex;
+  gap: 36px;
+  list-style: none;
+}
+.nav-links a {
+  font-size: 14px;
+  font-weight: 500;
+  color: var(--black);
+  text-decoration: none;
+  opacity: 0.65;
+  transition: opacity 0.2s;
+}
+.nav-links a:hover { opacity: 1; }
+
+.nav-cta {
+  background: var(--orange);
+  color: #fff;
+  border: none;
+  padding: 10px 22px;
+  border-radius: 100px;
+  font-family: 'DM Sans', sans-serif;
+  font-size: 14px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: background 0.2s, transform 0.15s;
+  text-decoration: none;
+}
+.nav-cta:hover { background: #d46400; transform: translateY(-1px); }
+
+/* ─── HERO ─── */
+#hero {
+  position: relative;
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  padding: 120px 48px 80px;
+  overflow: hidden;
+  background: var(--white);
+}
+
+.hero-eyebrow {
+  font-size: 12px;
+  font-weight: 600;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  color: var(--orange);
+  margin-bottom: 24px;
+  opacity: 0;
+}
+
+.hero-headline {
+  font-size: clamp(42px, 6vw, 88px);
+  font-weight: 700;
+  letter-spacing: -0.03em;
+  line-height: 1.0;
+  color: var(--black);
+  max-width: 900px;
+  position: relative;
+  z-index: 2;
+}
+
+.hero-headline .line { overflow: hidden; display: block; }
+.hero-headline .line-inner { display: block; transform: translateY(110%); }
+
+.hero-sub {
+  margin-top: 32px;
+  font-size: clamp(16px, 1.6vw, 19px);
+  font-weight: 400;
+  color: var(--mid);
+  max-width: 580px;
+  line-height: 1.65;
+  opacity: 0;
+}
+
+.hero-ctas {
+  margin-top: 44px;
+  display: flex;
+  gap: 16px;
+  opacity: 0;
+}
+
+.btn-primary {
+  background: var(--orange);
+  color: #fff;
+  padding: 14px 32px;
+  border-radius: 100px;
+  font-size: 15px;
+  font-weight: 600;
+  text-decoration: none;
+  transition: background 0.2s, transform 0.15s;
+  display: inline-block;
+}
+.btn-primary:hover { background: #d46400; transform: translateY(-2px); }
+
+.btn-secondary {
+  background: transparent;
+  color: var(--black);
+  padding: 14px 32px;
+  border-radius: 100px;
+  font-size: 15px;
+  font-weight: 600;
+  text-decoration: none;
+  border: 1.5px solid var(--gray);
+  transition: border-color 0.2s, transform 0.15s;
+  display: inline-block;
+}
+.btn-secondary:hover { border-color: var(--black); transform: translateY(-2px); }
+
+/* ─── BUILDING ANIMATION CANVAS ─── */
+#building-stage {
+  position: absolute;
+  right: 0;
+  top: 0;
+  bottom: 0;
+  width: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  pointer-events: none;
+  overflow: hidden;
+}
+
+.bld-scene {
+  position: relative;
+  width: 340px;
+  height: 480px;
+}
+
+/* Ground / slab */
+.bld-slab {
+  position: absolute;
+  bottom: 0; left: 20px; right: 20px;
+  height: 12px;
+  background: #c8c4be;
+  border-radius: 2px;
+  transform-origin: center bottom;
+  transform: scaleX(0);
+}
+
+/* Building floors */
+.bld-floor {
+  position: absolute;
+  left: 40px; right: 40px;
+  border-radius: 3px;
+  transform-origin: center bottom;
+  transform: scaleY(0);
+  opacity: 0;
+}
+.bld-floor-1 { bottom: 12px; height: 70px; background: #e8e3dc; }
+.bld-floor-2 { bottom: 82px; height: 70px; background: #ddd8d0; }
+.bld-floor-3 { bottom: 152px; height: 70px; background: #e2ddd6; }
+
+/* Windows per floor */
+.bld-window {
+  position: absolute;
+  background: rgba(180,210,240,0.6);
+  border-radius: 2px;
+  opacity: 0;
+}
+
+/* Roofline */
+.bld-roof {
+  position: absolute;
+  left: 28px; right: 28px;
+  bottom: 222px;
+  height: 30px;
+  background: var(--black);
+  border-radius: 3px 3px 0 0;
+  transform: scaleX(0);
+  opacity: 0;
+}
+
+/* Balconies */
+.bld-balcony {
+  position: absolute;
+  height: 8px;
+  border-radius: 2px;
+  background: #b8b4ae;
+  opacity: 0;
+  transform: scaleX(0);
+}
+
+/* Material objects flying in */
+.mat-obj {
+  position: absolute;
+  border-radius: 4px;
+  opacity: 0;
+  font-size: 10px;
+  font-weight: 600;
+  color: var(--black);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  text-align: center;
+  line-height: 1.2;
+}
+
+/* Finished interior overlay */
+.bld-interior {
+  position: absolute;
+  inset: 0;
+  opacity: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+/* Hero ambient text — large ghost copy like Samara reference */
+.hero-ghost {
+  position: absolute;
+  top: 50%;
+  right: -40px;
+  transform: translateY(-50%);
+  font-size: clamp(120px, 14vw, 200px);
+  font-weight: 800;
+  letter-spacing: -0.05em;
+  color: rgba(200,196,190,0.18);
+  pointer-events: none;
+  white-space: nowrap;
+  z-index: 0;
+  line-height: 1;
+}
+
+/* ─── SECTION SHARED ─── */
+section {
+  padding: 120px 48px;
+  position: relative;
+}
+
+.section-label {
+  font-size: 11px;
+  font-weight: 700;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  color: var(--orange);
+  margin-bottom: 20px;
+  display: block;
+}
+
+.section-heading {
+  font-size: clamp(32px, 4vw, 54px);
+  font-weight: 700;
+  letter-spacing: -0.03em;
+  line-height: 1.05;
+  color: var(--black);
+  max-width: 700px;
+}
+
+.section-body {
+  font-size: 17px;
+  font-weight: 400;
+  color: var(--mid);
+  line-height: 1.7;
+  max-width: 560px;
+  margin-top: 20px;
+}
+
+/* ─── TICKER / MARQUEE ─── */
+.ticker-wrap {
+  overflow: hidden;
+  border-top: 1px solid var(--gray);
+  border-bottom: 1px solid var(--gray);
+  padding: 18px 0;
+  background: var(--black);
+}
+.ticker-track {
+  display: flex;
+  white-space: nowrap;
+  animation: ticker 22s linear infinite;
+}
+.ticker-item {
+  font-size: 13px;
+  font-weight: 600;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: var(--white);
+  padding: 0 40px;
+  opacity: 0.8;
+  flex-shrink: 0;
+}
+.ticker-item .dot { color: var(--orange); margin: 0 12px; }
+
+@keyframes ticker {
+  from { transform: translateX(0); }
+  to { transform: translateX(-50%); }
+}
+
+/* ─── PRODUCTS GRID ─── */
+#supply {
+  background: var(--white);
+}
+
+.product-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(260px, 1fr));
+  gap: 16px;
+  margin-top: 60px;
+}
+
+.product-card {
+  border-radius: 12px;
+  overflow: hidden;
+  position: relative;
+  min-height: 220px;
+  display: flex;
+  flex-direction: column;
+  justify-content: flex-end;
+  padding: 24px;
+  cursor: default;
+  transition: transform 0.3s ease, box-shadow 0.3s ease;
+}
+.product-card:hover { transform: translateY(-4px); box-shadow: 0 20px 60px rgba(0,0,0,0.12); }
+
+.product-card-bg {
+  position: absolute;
+  inset: 0;
+  z-index: 0;
+}
+
+.product-card-content {
+  position: relative;
+  z-index: 1;
+}
+
+.product-card-name {
+  font-size: 16px;
+  font-weight: 700;
+  color: var(--black);
+  margin-bottom: 6px;
+}
+.product-card-desc {
+  font-size: 13px;
+  font-weight: 400;
+  color: rgba(17,17,17,0.6);
+  line-height: 1.5;
+}
+
+/* Material CSS textures */
+.tex-cabinet-box {
+  background: linear-gradient(135deg, #d4c9b8 0%, #b8ad9c 40%, #c9bfb0 70%, #a8a090 100%);
+}
+.tex-cabinet-door {
+  background: repeating-linear-gradient(90deg, #c4b89a 0px, #c4b89a 1px, #d6c9ac 1px, #d6c9ac 20px),
+    linear-gradient(180deg, #cfc2a0 0%, #b8a882 100%);
+}
+.tex-drawer {
+  background: linear-gradient(160deg, #e8ddd0 0%, #cec0ac 50%, #d8cbb8 100%);
+}
+.tex-countertop {
+  background: linear-gradient(135deg, #e0dcd8 0%, #c4c0bc 30%, #d8d4d0 60%, #b8b4b0 100%);
+  background-image: radial-gradient(ellipse at 20% 30%, rgba(255,255,255,0.3) 0%, transparent 50%),
+    radial-gradient(ellipse at 80% 70%, rgba(0,0,0,0.05) 0%, transparent 50%),
+    linear-gradient(135deg, #e0dcd8 0%, #c4c0bc 30%, #d8d4d0 60%, #b8b4b0 100%);
+}
+.tex-flooring {
+  background: repeating-linear-gradient(0deg, transparent, transparent 59px, rgba(100,80,60,0.12) 59px, rgba(100,80,60,0.12) 60px),
+    repeating-linear-gradient(90deg, transparent, transparent 89px, rgba(100,80,60,0.08) 89px, rgba(100,80,60,0.08) 90px),
+    linear-gradient(160deg, #c8a878 0%, #a88858 40%, #b89868 100%);
+}
+.tex-vanity {
+  background: linear-gradient(135deg, #f0ece8 0%, #d8d4d0 40%, #e8e4e0 70%, #c8c4c0 100%);
+}
+.tex-sink {
+  background: radial-gradient(ellipse at 40% 35%, #e8e8e8 0%, #c0c0c0 50%, #a8a8a8 100%);
+}
+.tex-hardware {
+  background: linear-gradient(135deg, #888480 0%, #b0aca8 30%, #707070 60%, #9c9894 100%);
+}
+.tex-trim {
+  background: linear-gradient(160deg, #ece8e2 0%, #d4cfc8 50%, #e4dfd8 100%);
+}
+.tex-doors {
+  background: repeating-linear-gradient(90deg, #d4c8b4 0px, #d4c8b4 1px, transparent 1px, transparent 80px),
+    linear-gradient(180deg, #ddd0bc 0%, #c4b89e 100%);
+}
+.tex-refacing {
+  background: linear-gradient(135deg, #c8b898 0%, #b0a080 40%, #c0b090 100%);
+}
+.tex-packages {
+  background: linear-gradient(135deg, var(--orange) 0%, #c45e00 60%, #a04c00 100%);
+}
+.tex-packages .product-card-name,
+.tex-packages .product-card-desc { color: rgba(255,255,255,0.95); }
+.tex-packages .product-card-desc { color: rgba(255,255,255,0.75); }
+
+/* ─── THREE COLUMN FEATURES ─── */
+#turns { background: var(--black); color: var(--white); }
+#turns .section-heading { color: var(--white); }
+#turns .section-body { color: rgba(245,240,235,0.6); }
+
+.features-cols {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 2px;
+  margin-top: 72px;
+  border: 1px solid rgba(255,255,255,0.08);
+  border-radius: 16px;
+  overflow: hidden;
+}
+
+.feature-col {
+  padding: 48px 36px;
+  border-right: 1px solid rgba(255,255,255,0.08);
+  transition: background 0.3s;
+}
+.feature-col:last-child { border-right: none; }
+.feature-col:hover { background: rgba(255,255,255,0.04); }
+
+.feature-icon {
+  width: 44px;
+  height: 44px;
+  border-radius: 10px;
+  background: rgba(238,114,0,0.15);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin-bottom: 28px;
+}
+
+.feature-icon svg { width: 22px; height: 22px; stroke: var(--orange); fill: none; stroke-width: 1.8; }
+
+.feature-title {
+  font-size: 20px;
+  font-weight: 700;
+  color: var(--white);
+  letter-spacing: -0.02em;
+  margin-bottom: 14px;
+  line-height: 1.2;
+}
+
+.feature-text {
+  font-size: 15px;
+  color: rgba(245,240,235,0.55);
+  line-height: 1.7;
+}
+
+/* ─── MULTIFAMILY / INVESTOR SPLIT ─── */
+#mf-split {
+  background: var(--white);
+  padding: 0;
+}
+
+.split-row {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  min-height: 520px;
+}
+
+.split-cell {
+  padding: 100px 72px;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+}
+
+.split-cell:first-child {
+  background: #1a1816;
+}
+.split-cell:last-child {
+  background: #f0ebe4;
+}
+
+.split-cell .section-heading { color: var(--white); max-width: 420px; }
+.split-cell:last-child .section-heading { color: var(--black); }
+.split-cell .section-body { color: rgba(245,240,235,0.55); max-width: 400px; }
+.split-cell:last-child .section-body { color: var(--mid); }
+
+.split-tag {
+  display: inline-block;
+  background: rgba(238,114,0,0.15);
+  color: var(--orange);
+  font-size: 11px;
+  font-weight: 700;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  padding: 6px 14px;
+  border-radius: 100px;
+  margin-bottom: 24px;
+}
+
+.split-visual {
+  margin-top: 44px;
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 12px;
+}
+
+.split-stat {
+  background: rgba(255,255,255,0.06);
+  border-radius: 10px;
+  padding: 20px;
+}
+.split-cell:last-child .split-stat { background: rgba(0,0,0,0.06); }
+
+.split-stat-num {
+  font-size: 28px;
+  font-weight: 700;
+  color: var(--orange);
+  letter-spacing: -0.03em;
+}
+.split-stat-label {
+  font-size: 12px;
+  color: rgba(245,240,235,0.5);
+  margin-top: 4px;
+  font-weight: 500;
+}
+.split-cell:last-child .split-stat-label { color: var(--mid); }
+
+/* ─── CONTRACTOR SECTION ─── */
+#contractors {
+  background: var(--white);
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 80px;
+  align-items: center;
+  padding: 120px 48px;
+}
+
+.contractor-visual {
+  position: relative;
+  height: 420px;
+  border-radius: 16px;
+  overflow: hidden;
+  background: var(--black);
+}
+
+/* CSS-rendered blueprint-free architectural sketch */
+.arch-sketch {
+  position: absolute;
+  inset: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.cabinet-render {
+  position: relative;
+  width: 280px;
+  height: 300px;
+}
+
+.cab-upper {
+  position: absolute;
+  top: 20px; left: 20px; right: 20px;
+  height: 100px;
+  border: 1.5px solid rgba(255,255,255,0.25);
+  border-radius: 4px;
+  background: rgba(255,255,255,0.04);
+  display: grid;
+  grid-template-columns: 1fr 1fr 1fr;
+  gap: 4px;
+  padding: 6px;
+}
+
+.cab-door-sm {
+  background: rgba(238,114,0,0.12);
+  border: 1px solid rgba(238,114,0,0.3);
+  border-radius: 2px;
+  position: relative;
+}
+.cab-door-sm::after {
+  content: '';
+  position: absolute;
+  top: 50%; left: 50%;
+  transform: translate(-50%,-50%);
+  width: 6px; height: 6px;
+  border-radius: 50%;
+  background: rgba(238,114,0,0.5);
+}
+
+.cab-lower {
+  position: absolute;
+  bottom: 30px; left: 20px; right: 20px;
+  height: 130px;
+  border: 1.5px solid rgba(255,255,255,0.2);
+  border-radius: 4px;
+  background: rgba(255,255,255,0.03);
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 4px;
+  padding: 6px;
+}
+
+.cab-base-door {
+  background: rgba(200,160,100,0.08);
+  border: 1px solid rgba(200,160,100,0.2);
+  border-radius: 2px;
+  position: relative;
+}
+.cab-base-door::after {
+  content: '';
+  position: absolute;
+  top: 50%; left: 50%;
+  transform: translate(-50%, -50%);
+  width: 20px; height: 3px;
+  background: rgba(200,160,100,0.4);
+  border-radius: 2px;
+}
+
+.cab-counter {
+  position: absolute;
+  bottom: 158px; left: 16px; right: 16px;
+  height: 10px;
+  background: rgba(220,216,212,0.3);
+  border-radius: 2px;
+  border: 1px solid rgba(220,216,212,0.4);
+}
+
+.cab-label {
+  position: absolute;
+  bottom: 6px;
+  width: 100%;
+  text-align: center;
+  font-size: 10px;
+  font-weight: 600;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  color: rgba(255,255,255,0.25);
+}
+
+.contractor-list {
+  margin-top: 36px;
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}
+
+.contractor-item {
+  display: flex;
+  align-items: flex-start;
+  gap: 16px;
+  padding: 20px;
+  border: 1px solid var(--gray);
+  border-radius: 10px;
+  transition: border-color 0.2s, background 0.2s;
+}
+.contractor-item:hover { border-color: var(--orange); background: rgba(238,114,0,0.03); }
+
+.contractor-dot {
+  width: 8px; height: 8px;
+  border-radius: 50%;
+  background: var(--orange);
+  flex-shrink: 0;
+  margin-top: 6px;
+}
+
+.contractor-item-title {
+  font-size: 15px;
+  font-weight: 700;
+  color: var(--black);
+  margin-bottom: 4px;
+}
+.contractor-item-text {
+  font-size: 14px;
+  color: var(--mid);
+  line-height: 1.55;
+}
+
+/* ─── CONTACT / BID ─── */
+#contact {
+  background: var(--black);
+  padding: 120px 48px;
+}
+
+.contact-inner {
+  max-width: 680px;
+}
+#contact .section-heading { color: var(--white); }
+#contact .section-body { color: rgba(245,240,235,0.5); margin-bottom: 52px; }
+
+.bid-form {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 16px;
+}
+
+.form-group {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+.form-group.full { grid-column: 1 / -1; }
+
+.form-label {
+  font-size: 12px;
+  font-weight: 600;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  color: rgba(245,240,235,0.4);
+}
+
+.form-input,
+.form-select,
+.form-textarea {
+  background: rgba(255,255,255,0.06);
+  border: 1px solid rgba(255,255,255,0.1);
+  border-radius: 8px;
+  padding: 14px 18px;
+  font-family: 'DM Sans', sans-serif;
+  font-size: 15px;
+  color: var(--white);
+  outline: none;
+  transition: border-color 0.2s, background 0.2s;
+  appearance: none;
+}
+
+.form-input::placeholder { color: rgba(245,240,235,0.25); }
+.form-input:focus,
+.form-select:focus,
+.form-textarea:focus {
+  border-color: var(--orange);
+  background: rgba(255,255,255,0.09);
+}
+
+.form-select {
+  cursor: pointer;
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='8' viewBox='0 0 12 8'%3E%3Cpath d='M1 1l5 5 5-5' stroke='rgba(245,240,235,0.4)' stroke-width='1.5' fill='none' stroke-linecap='round'/%3E%3C/svg%3E");
+  background-repeat: no-repeat;
+  background-position: right 18px center;
+  padding-right: 44px;
+}
+.form-select option { background: #1a1816; color: var(--white); }
+
+.form-textarea {
+  resize: vertical;
+  min-height: 120px;
+  line-height: 1.6;
+}
+
+.form-submit {
+  grid-column: 1 / -1;
+  background: var(--orange);
+  color: #fff;
+  border: none;
+  padding: 16px 36px;
+  border-radius: 100px;
+  font-family: 'DM Sans', sans-serif;
+  font-size: 16px;
+  font-weight: 700;
+  cursor: pointer;
+  transition: background 0.2s, transform 0.15s;
+  align-self: start;
+  justify-self: start;
+  margin-top: 8px;
+}
+.form-submit:hover { background: #d46400; transform: translateY(-2px); }
+
+/* ─── FOOTER ─── */
+footer {
+  background: var(--black);
+  border-top: 1px solid rgba(255,255,255,0.08);
+  padding: 48px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+
+.footer-logo {
+  font-size: 18px;
+  font-weight: 700;
+  color: var(--white);
+  letter-spacing: -0.02em;
+}
+.footer-logo span { color: var(--orange); }
+
+.footer-links {
+  display: flex;
+  gap: 32px;
+  list-style: none;
+}
+.footer-links a {
+  font-size: 13px;
+  color: rgba(245,240,235,0.4);
+  text-decoration: none;
+  transition: color 0.2s;
+}
+.footer-links a:hover { color: var(--white); }
+
+.footer-copy {
+  font-size: 12px;
+  color: rgba(245,240,235,0.25);
+}
+
+/* ─── SCROLL REVEAL UTILITY ─── */
+.reveal { opacity: 0; transform: translateY(40px); }
+
+/* ─── RESPONSIVE ─── */
+@media (max-width: 900px) {
+  nav { padding: 0 24px; }
+  .nav-links { display: none; }
+  #hero { padding: 100px 24px 60px; }
+  #building-stage { display: none; }
+  section { padding: 80px 24px; }
+  .features-cols { grid-template-columns: 1fr; }
+  .feature-col { border-right: none; border-bottom: 1px solid rgba(255,255,255,0.08); }
+  .split-row { grid-template-columns: 1fr; }
+  .split-cell { padding: 72px 36px; }
+  #contractors { grid-template-columns: 1fr; padding: 80px 24px; gap: 40px; }
+  .contractor-visual { height: 300px; }
+  footer { flex-direction: column; gap: 24px; text-align: center; }
+  .footer-links { flex-wrap: wrap; justify-content: center; }
+  .bid-form { grid-template-columns: 1fr; }
+  #contact { padding: 80px 24px; }
+}
+</style>
+</head>
+<body>
+
+<!-- ─── NAV ─── -->
+<nav>
+  <a href="#" class="nav-logo">Vulpine<span>.</span></a>
+  <ul class="nav-links">
+    <li><a href="#supply">What We Supply</a></li>
+    <li><a href="#turns">Property Turns</a></li>
+    <li><a href="#mf-split">Multifamily</a></li>
+    <li><a href="#contractors">Contractors</a></li>
+  </ul>
+  <a href="#contact" class="nav-cta">Request a Bid</a>
+</nav>
+
+<!-- ─── HERO ─── -->
+<section id="hero">
+  <div class="hero-ghost">Materials.</div>
+  <span class="hero-eyebrow">Cabinet &amp; Interior Finish Supply</span>
+  <h1 class="hero-headline">
+    <span class="line"><span class="line-inner">Faster Turns.</span></span>
+    <span class="line"><span class="line-inner">Cleaner Finishes.</span></span>
+    <span class="line"><span class="line-inner" style="color: var(--orange)">Smarter Supply.</span></span>
+  </h1>
+  <p class="hero-sub">Vulpine Homes helps property owners, builders, investors, and multifamily operators source cabinet packages, countertops, vanities, flooring, hardware, and interior finish materials — without chasing scattered vendors.</p>
+  <div class="hero-ctas">
+    <a href="#contact" class="btn-primary">Request a Bid</a>
+    <a href="#supply" class="btn-secondary">View Supply Capabilities</a>
+  </div>
+
+  <!-- Building animation stage -->
+  <div id="building-stage">
+    <div class="bld-scene" id="bldScene">
+      <!-- Slab -->
+      <div class="bld-slab" id="bldSlab"></div>
+
+      <!-- Floors -->
+      <div class="bld-floor bld-floor-1" id="bldF1">
+        <div class="bld-window" style="top:18px;left:16px;width:30px;height:22px;"></div>
+        <div class="bld-window" style="top:18px;left:60px;width:30px;height:22px;"></div>
+        <div class="bld-window" style="top:18px;right:16px;width:30px;height:22px;"></div>
+      </div>
+      <div class="bld-floor bld-floor-2" id="bldF2">
+        <div class="bld-window" style="top:18px;left:16px;width:30px;height:22px;"></div>
+        <div class="bld-window" style="top:18px;left:60px;width:30px;height:22px;"></div>
+        <div class="bld-window" style="top:18px;right:16px;width:30px;height:22px;"></div>
+      </div>
+      <div class="bld-floor bld-floor-3" id="bldF3">
+        <div class="bld-window" style="top:18px;left:16px;width:30px;height:22px;"></div>
+        <div class="bld-window" style="top:18px;right:16px;width:30px;height:22px;"></div>
+      </div>
+
+      <!-- Balconies -->
+      <div class="bld-balcony" style="left:28px;right:28px;bottom:152px;" id="bldBal1"></div>
+      <div class="bld-balcony" style="left:28px;right:28px;bottom:82px;" id="bldBal2"></div>
+
+      <!-- Roofline -->
+      <div class="bld-roof" id="bldRoof"></div>
+
+      <!-- Material objects -->
+      <div class="mat-obj" id="matCab" style="width:64px;height:48px;background:linear-gradient(135deg,#d4c9b8,#b8ad9c);border:1px solid #a8a090;right:-80px;top:160px;font-size:9px;">Cabinet<br>Box</div>
+      <div class="mat-obj" id="matCtr" style="width:80px;height:12px;background:linear-gradient(90deg,#e0dcd8,#c4c0bc);border:1px solid #b0acaa;right:-80px;top:130px;font-size:9px;">Countertop</div>
+      <div class="mat-obj" id="matFlr" style="width:56px;height:40px;background:repeating-linear-gradient(0deg,transparent,transparent 7px,rgba(100,80,60,0.15) 7px,rgba(100,80,60,0.15) 8px),linear-gradient(160deg,#c8a878,#a88858);border:1px solid #9a7848;right:-80px;top:220px;font-size:9px;">Flooring</div>
+      <div class="mat-obj" id="matHw" style="width:32px;height:32px;background:linear-gradient(135deg,#888480,#9c9894);border-radius:50%;border:1px solid #707070;right:-80px;top:80px;font-size:8px;">HW</div>
+
+      <!-- Interior label -->
+      <div class="bld-interior" id="bldInterior">
+        <div style="text-align:center;color:var(--orange);font-size:12px;font-weight:700;letter-spacing:0.1em;text-transform:uppercase;opacity:0.9;">Finished &amp;<br>Ready to Rent</div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ─── TICKER ─── -->
+<div class="ticker-wrap">
+  <div class="ticker-track">
+    <span class="ticker-item">Cabinet Boxes <span class="dot">◆</span></span>
+    <span class="ticker-item">Cabinet Doors <span class="dot">◆</span></span>
+    <span class="ticker-item">Drawer Fronts <span class="dot">◆</span></span>
+    <span class="ticker-item">Refacing Fronts <span class="dot">◆</span></span>
+    <span class="ticker-item">Countertops <span class="dot">◆</span></span>
+    <span class="ticker-item">Sinks &amp; Vanities <span class="dot">◆</span></span>
+    <span class="ticker-item">Flooring <span class="dot">◆</span></span>
+    <span class="ticker-item">Interior Doors <span class="dot">◆</span></span>
+    <span class="ticker-item">Hardware <span class="dot">◆</span></span>
+    <span class="ticker-item">Trim &amp; Finish <span class="dot">◆</span></span>
+    <span class="ticker-item">Cabinet Boxes <span class="dot">◆</span></span>
+    <span class="ticker-item">Cabinet Doors <span class="dot">◆</span></span>
+    <span class="ticker-item">Drawer Fronts <span class="dot">◆</span></span>
+    <span class="ticker-item">Refacing Fronts <span class="dot">◆</span></span>
+    <span class="ticker-item">Countertops <span class="dot">◆</span></span>
+    <span class="ticker-item">Sinks &amp; Vanities <span class="dot">◆</span></span>
+    <span class="ticker-item">Flooring <span class="dot">◆</span></span>
+    <span class="ticker-item">Interior Doors <span class="dot">◆</span></span>
+    <span class="ticker-item">Hardware <span class="dot">◆</span></span>
+    <span class="ticker-item">Trim &amp; Finish <span class="dot">◆</span></span>
+  </div>
+</div>
+
+<!-- ─── WHAT WE SUPPLY ─── -->
+<section id="supply">
+  <span class="section-label reveal">What We Supply</span>
+  <h2 class="section-heading reveal">Every material category. One supply partner.</h2>
+  <p class="section-body reveal">Cabinet boxes, doors, drawer fronts, refacing fronts, countertops, sinks, vanities, flooring, hardware, trim, and interior finish materials for residential and multifamily projects.</p>
+
+  <div class="product-grid">
+    <div class="product-card reveal">
+      <div class="product-card-bg tex-cabinet-box"></div>
+      <div class="product-card-content">
+        <div class="product-card-name">Cabinet Boxes</div>
+        <div class="product-card-desc">Frameless and face-frame box construction for kitchens, baths, and utility spaces.</div>
+      </div>
+    </div>
+    <div class="product-card reveal">
+      <div class="product-card-bg tex-cabinet-door"></div>
+      <div class="product-card-content">
+        <div class="product-card-name">Cabinet Doors</div>
+        <div class="product-card-desc">Shaker, slab, and profile door styles in painted, stained, and thermofoil finishes.</div>
+      </div>
+    </div>
+    <div class="product-card reveal">
+      <div class="product-card-bg tex-drawer"></div>
+      <div class="product-card-content">
+        <div class="product-card-name">Drawer Fronts</div>
+        <div class="product-card-desc">Matched drawer fronts to coordinate with door selections across all unit types.</div>
+      </div>
+    </div>
+    <div class="product-card reveal">
+      <div class="product-card-bg tex-refacing"></div>
+      <div class="product-card-content">
+        <div class="product-card-name">Refacing Fronts</div>
+        <div class="product-card-desc">Update existing cabinet boxes with new door and drawer fronts — no full replacement required.</div>
+      </div>
+    </div>
+    <div class="product-card reveal">
+      <div class="product-card-bg tex-countertop"></div>
+      <div class="product-card-content">
+        <div class="product-card-name">Countertops</div>
+        <div class="product-card-desc">Laminate, quartz, and solid surface options spec'd for durability and rental longevity.</div>
+      </div>
+    </div>
+    <div class="product-card reveal">
+      <div class="product-card-bg tex-sink"></div>
+      <div class="product-card-content">
+        <div class="product-card-name">Sinks</div>
+        <div class="product-card-desc">Kitchen and bath sink options to coordinate with countertop and cabinet packages.</div>
+      </div>
+    </div>
+    <div class="product-card reveal">
+      <div class="product-card-bg tex-vanity"></div>
+      <div class="product-card-content">
+        <div class="product-card-name">Vanities</div>
+        <div class="product-card-desc">Bathroom vanity units in standard and custom widths for single and multifamily renovations.</div>
+      </div>
+    </div>
+    <div class="product-card reveal">
+      <div class="product-card-bg tex-flooring"></div>
+      <div class="product-card-content">
+        <div class="product-card-name">Flooring</div>
+        <div class="product-card-desc">LVP, hardwood, laminate, and tile options for kitchens, baths, and living areas.</div>
+      </div>
+    </div>
+    <div class="product-card reveal">
+      <div class="product-card-bg tex-hardware"></div>
+      <div class="product-card-content">
+        <div class="product-card-name">Hardware</div>
+        <div class="product-card-desc">Pulls, knobs, hinges, and drawer slides in matte black, brushed nickel, and more.</div>
+      </div>
+    </div>
+    <div class="product-card reveal">
+      <div class="product-card-bg tex-doors"></div>
+      <div class="product-card-content">
+        <div class="product-card-name">Interior Doors</div>
+        <div class="product-card-desc">Hollow-core and solid-core interior door slabs and prehung units for complete unit packages.</div>
+      </div>
+    </div>
+    <div class="product-card reveal">
+      <div class="product-card-bg tex-trim"></div>
+      <div class="product-card-content">
+        <div class="product-card-name">Trim &amp; Finish</div>
+        <div class="product-card-desc">Baseboards, casings, crown, and finish millwork to complete the interior package.</div>
+      </div>
+    </div>
+    <div class="product-card reveal">
+      <div class="product-card-bg tex-packages"></div>
+      <div class="product-card-content">
+        <div class="product-card-name" style="color:#fff;">Complete Packages</div>
+        <div class="product-card-desc" style="color:rgba(255,255,255,0.75);">Kitchen-to-bath bundles spec'd for investor refreshes, multifamily turns, and new builds.</div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ─── BUILT FOR TURNS ─── -->
+<section id="turns">
+  <span class="section-label reveal">Built for Property Turns</span>
+  <h2 class="section-heading reveal">One kitchen or twenty units — same supply clarity.</h2>
+  <p class="section-body reveal">Whether it's one kitchen, one rental, or a multi-unit turnover, Vulpine simplifies the material side so owners and operators move faster with fewer loose ends.</p>
+
+  <div class="features-cols">
+    <div class="feature-col reveal">
+      <div class="feature-icon">
+        <svg viewBox="0 0 24 24"><rect x="2" y="7" width="20" height="14" rx="2"/><path d="M16 7V5a2 2 0 00-2-2h-4a2 2 0 00-2 2v2"/><line x1="12" y1="12" x2="12" y2="17"/><line x1="9" y1="14" x2="15" y2="14"/></svg>
+      </div>
+      <div class="feature-title">Single-Source for All Finish Categories</div>
+      <div class="feature-text">Stop coordinating with five vendors. Vulpine carries cabinet boxes, doors, countertops, flooring, vanities, and hardware under one supply relationship. Less friction. Fewer calls. Faster moves.</div>
+    </div>
+    <div class="feature-col reveal">
+      <div class="feature-icon">
+        <svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg>
+      </div>
+      <div class="feature-title">Turn-Ready Timelines</div>
+      <div class="feature-text">We understand that vacant units cost money. Vulpine coordinates material sequencing so your cabinets, countertops, and finishes arrive in the right order for your install schedule.</div>
+    </div>
+    <div class="feature-col reveal">
+      <div class="feature-icon">
+        <svg viewBox="0 0 24 24"><path d="M21 10H3"/><path d="M21 6H3"/><path d="M21 14H3"/><path d="M21 18H3"/></svg>
+      </div>
+      <div class="feature-title">Repeatable Material Specs</div>
+      <div class="feature-text">Define your standard once. Vulpine maintains your spec sheet so every unit turn pulls from the same approved selections — consistent quality, no re-speccing from scratch.</div>
+    </div>
+  </div>
+</section>
+
+<!-- ─── MULTIFAMILY / INVESTOR SPLIT ─── -->
+<section id="mf-split" style="padding:0;">
+  <div class="split-row">
+    <div class="split-cell">
+      <span class="split-tag reveal">Multifamily Supply Support</span>
+      <h2 class="section-heading reveal" style="color:#f5f0eb;">Repeatable packages across every unit.</h2>
+      <p class="section-body reveal">For apartment owners and property managers — standardize cabinet and finish packages across multiple units. Reduce sourcing friction, lock in consistent specs, and move through turns without starting material decisions from scratch on every vacancy.</p>
+      <div class="split-visual reveal">
+        <div class="split-stat">
+          <div class="split-stat-num">12+</div>
+          <div class="split-stat-label">Finish categories in one package</div>
+        </div>
+        <div class="split-stat">
+          <div class="split-stat-num">1</div>
+          <div class="split-stat-label">Supply contact for the entire project</div>
+        </div>
+      </div>
+    </div>
+    <div class="split-cell">
+      <span class="split-tag reveal">Investor Refreshes</span>
+      <h2 class="section-heading reveal" style="color:#111111;">Practical upgrades. Clean results.</h2>
+      <p class="section-body reveal" style="color:#888480;">For rental owners and real estate investors — practical upgrade packages for kitchens, baths, flooring, and interior finishes without overcomplicating the process. We spec for durability, tenant appeal, and realistic budgets.</p>
+      <div class="split-visual reveal">
+        <div class="split-stat" style="background:rgba(0,0,0,0.06);">
+          <div class="split-stat-num">↑</div>
+          <div class="split-stat-label" style="color:#888480;">Rental value after finish refresh</div>
+        </div>
+        <div class="split-stat" style="background:rgba(0,0,0,0.06);">
+          <div class="split-stat-num">Fast</div>
+          <div class="split-stat-label" style="color:#888480;">Bid-to-materials turnaround</div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ─── CONTRACTORS ─── -->
+<section id="contractors">
+  <div class="contractor-visual reveal">
+    <div class="arch-sketch">
+      <div class="cabinet-render">
+        <div class="cab-upper">
+          <div class="cab-door-sm"></div>
+          <div class="cab-door-sm"></div>
+          <div class="cab-door-sm"></div>
+        </div>
+        <div class="cab-counter"></div>
+        <div class="cab-lower">
+          <div class="cab-base-door"></div>
+          <div class="cab-base-door"></div>
+        </div>
+        <div class="cab-label">Cabinet Package</div>
+      </div>
+    </div>
+  </div>
+  <div>
+    <span class="section-label reveal">Builder &amp; Contractor Relationships</span>
+    <h2 class="section-heading reveal">Your finish supply partner — not another vendor to manage.</h2>
+    <p class="section-body reveal">Vulpine works alongside builders and contractors as a cabinet and finish material supply partner. We support product options, bid documentation, and delivery coordination so your crew can focus on install.</p>
+    <div class="contractor-list">
+      <div class="contractor-item reveal">
+        <div class="contractor-dot"></div>
+        <div>
+          <div class="contractor-item-title">Bid Support</div>
+          <div class="contractor-item-text">We prepare material cut sheets and pricing summaries formatted for your bid packages. No guesswork on material allowances.</div>
+        </div>
+      </div>
+      <div class="contractor-item reveal">
+        <div class="contractor-dot"></div>
+        <div>
+          <div class="contractor-item-title">Product Selection Guidance</div>
+          <div class="contractor-item-text">Not sure which cabinet line fits the project spec? We match product to budget, timeline, and install conditions without overengineering the choice.</div>
+        </div>
+      </div>
+      <div class="contractor-item reveal">
+        <div class="contractor-dot"></div>
+        <div>
+          <div class="contractor-item-title">Delivery Coordination</div>
+          <div class="contractor-item-text">We coordinate material delivery to align with your install schedule. Right materials. Right sequence. No site cluttered with boxes three weeks early.</div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ─── CONTACT ─── -->
+<section id="contact">
+  <div class="contact-inner">
+    <span class="section-label reveal">Request a Bid</span>
+    <h2 class="section-heading reveal">Tell us about your project.</h2>
+    <p class="section-body reveal">Share the basics and we'll come back with supply options, material recommendations, and a clear path forward. No obligation. No pitch call required.</p>
+
+    <!-- ACTION ATTRIBUTE: Leave empty below — wire to your form endpoint (Formspree, Netlify Forms, custom API, etc.) -->
+    <form class="bid-form reveal" action="" method="POST" novalidate>
+      <div class="form-group">
+        <label class="form-label" for="fname">First &amp; Last Name</label>
+        <input class="form-input" type="text" id="fname" name="name" placeholder="Jordan Mercer" required />
+      </div>
+      <div class="form-group">
+        <label class="form-label" for="femail">Email</label>
+        <input class="form-input" type="email" id="femail" name="email" placeholder="jordan@company.com" required />
+      </div>
+      <div class="form-group">
+        <label class="form-label" for="fphone">Phone</label>
+        <input class="form-input" type="tel" id="fphone" name="phone" placeholder="(555) 000-0000" />
+      </div>
+      <div class="form-group">
+        <label class="form-label" for="ftype">Project Type</label>
+        <select class="form-select" id="ftype" name="project_type">
+          <option value="">Select a project type</option>
+          <option value="multifamily">Multifamily / Apartment</option>
+          <option value="single-family">Single-Family Renovation</option>
+          <option value="investor-flip">Investor Flip / Rental Refresh</option>
+          <option value="new-build">New Build</option>
+          <option value="contractor">Contractor Supply Relationship</option>
+        </select>
+      </div>
+      <div class="form-group full">
+        <label class="form-label" for="fmessage">Project Details</label>
+        <textarea class="form-textarea" id="fmessage" name="message" placeholder="Tell us about the scope — unit count, material categories you need, timeline, location..."></textarea>
+      </div>
+      <button type="submit" class="form-submit">Send Request</button>
+    </form>
+  </div>
+</section>
+
+<!-- ─── FOOTER ─── -->
+<footer>
+  <div class="footer-logo">Vulpine<span>.</span></div>
+  <ul class="footer-links">
+    <li><a href="#supply">Supply</a></li>
+    <li><a href="#turns">Property Turns</a></li>
+    <li><a href="#mf-split">Multifamily</a></li>
+    <li><a href="#contractors">Contractors</a></li>
+    <li><a href="#contact">Request a Bid</a></li>
+  </ul>
+  <div class="footer-copy">© 2025 Vulpine Homes. All rights reserved.</div>
+</footer>
+
+<script>
+gsap.registerPlugin(ScrollTrigger);
+
+/* ─── HERO ENTRY ─── */
+const tl = gsap.timeline({ defaults: { ease: 'power3.out' } });
+
+tl.to('.hero-eyebrow', { opacity: 1, y: 0, duration: 0.6, delay: 0.3 })
+  .to('.line-inner', { y: '0%', duration: 0.8, stagger: 0.1 }, '-=0.2')
+  .to('.hero-sub', { opacity: 1, y: 0, duration: 0.7 }, '-=0.3')
+  .to('.hero-ctas', { opacity: 1, y: 0, duration: 0.6 }, '-=0.4');
+
+/* ─── BUILDING ANIMATION ─── */
+const bldTl = gsap.timeline({ delay: 0.8, defaults: { ease: 'power2.out' } });
+
+// 1. Slab
+bldTl
+  .to('#bldSlab', { scaleX: 1, duration: 0.5 })
+  // 2. Floor 1
+  .to('#bldF1', { scaleY: 1, opacity: 1, duration: 0.5 })
+  .to('#bldF1 .bld-window', { opacity: 1, stagger: 0.08, duration: 0.3 }, '-=0.1')
+  // 3. Floor 2
+  .to('#bldF2', { scaleY: 1, opacity: 1, duration: 0.5 }, '-=0.1')
+  .to('#bldF2 .bld-window', { opacity: 1, stagger: 0.08, duration: 0.3 }, '-=0.1')
+  // 4. Floor 3
+  .to('#bldF3', { scaleY: 1, opacity: 1, duration: 0.5 }, '-=0.1')
+  .to('#bldF3 .bld-window', { opacity: 1, stagger: 0.08, duration: 0.3 }, '-=0.1')
+  // 5. Balconies
+  .to(['#bldBal1', '#bldBal2'], { scaleX: 1, opacity: 1, stagger: 0.15, duration: 0.35 }, '-=0.1')
+  // 6. Roof
+  .to('#bldRoof', { scaleX: 1, opacity: 1, duration: 0.45 }, '-=0.1')
+  // 7. Hold beat
+  .to({}, { duration: 0.5 })
+  // 8. Materials fly in
+  .to('#matHw',  { opacity: 1, right: 180, duration: 0.55, ease: 'power2.inOut' })
+  .to('#matCab', { opacity: 1, right: 100, duration: 0.55, ease: 'power2.inOut' }, '-=0.2')
+  .to('#matCtr', { opacity: 1, right: 90,  duration: 0.55, ease: 'power2.inOut' }, '-=0.2')
+  .to('#matFlr', { opacity: 1, right: 120, duration: 0.55, ease: 'power2.inOut' }, '-=0.2')
+  // 9. Hold
+  .to({}, { duration: 0.4 })
+  // 10. Resolve to interior
+  .to(['#matHw','#matCab','#matCtr','#matFlr'], { opacity: 0, scale: 0.8, duration: 0.4 })
+  .to('#bldInterior', { opacity: 1, duration: 0.6 });
+
+/* ─── SCROLL REVEALS ─── */
+gsap.utils.toArray('.reveal').forEach(el => {
+  gsap.to(el, {
+    opacity: 1,
+    y: 0,
+    duration: 0.75,
+    ease: 'power2.out',
+    scrollTrigger: {
+      trigger: el,
+      start: 'top 88%',
+      toggleActions: 'play none none none'
+    }
+  });
+});
+
+/* ─── NAV scroll tint ─── */
+ScrollTrigger.create({
+  start: 100,
+  onEnter: () => document.querySelector('nav').style.boxShadow = '0 2px 24px rgba(0,0,0,0.07)',
+  onLeaveBack: () => document.querySelector('nav').style.boxShadow = 'none'
+});
+</script>
+</body>
+</html>
