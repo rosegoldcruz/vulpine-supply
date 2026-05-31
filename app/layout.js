@@ -26,7 +26,7 @@ export const metadata = {
     locale: 'en_US',
     url: 'https://vulpinehomes.com',
     siteName: 'Vulpine Homes',
-    title: 'Vulpine Homes | Cabinet & Interior Finish Supply',
+    title: 'Vulpine Homes | Cabinet & Interior Finish Supply - AZ',
     description:
       'Vulpine Homes supplies cabinet and interior finish materials for residential and multifamily projects in Arizona.',
     images: [
@@ -34,13 +34,13 @@ export const metadata = {
         url: '/og-image.jpg',
         width: 1200,
         height: 630,
-        alt: 'Vulpine Homes Cabinet Supply',
+        alt: 'Vulpine Homes cabinet and interior finish supply box image',
       },
     ],
   },
   twitter: {
     card: 'summary_large_image',
-    title: 'Vulpine Homes | Cabinet & Interior Finish Supply',
+    title: 'Vulpine Homes | Cabinet & Interior Finish Supply - AZ',
     description:
       'Vulpine Homes supplies cabinet and interior finish materials for residential and multifamily projects in Arizona.',
     images: ['/og-image.jpg'],
