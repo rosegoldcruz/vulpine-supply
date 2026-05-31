@@ -96,7 +96,7 @@ export default function SupplyPage() {
             <a href="/request-bid">Request a Bid</a>
           </li>
         </ul>
-        <div className="footer-copy">© 2025 Vulpine Homes. All rights reserved.</div>
+        <div className="footer-copy">© 2026 Vulpine Homes. All rights reserved.</div>
       </footer>
     </>
   );
