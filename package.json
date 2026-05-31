@@ -2,13 +2,23 @@
   "name": "vulpine-homes-cabinet-supply-w",
   "private": true,
   "version": "1.0.0",
-  "type": "module",
   "scripts": {
-    "dev": "vite",
-    "build": "vite build",
-    "preview": "vite preview"
+    "dev": "next dev",
+    "build": "next build",
+    "start": "next start",
+    "postbuild": "next-sitemap"
+  },
+  "dependencies": {
+    "gsap": "^3.12.5",
+    "next": "^15.3.3",
+    "next-sitemap": "^4.2.3",
+    "react": "^19.1.0",
+    "react-dom": "^19.1.0"
   },
   "devDependencies": {
-    "vite": "^6.0.0"
+    "@types/node": "^22.15.31",
+    "@types/react": "^19.1.6",
+    "@types/react-dom": "^19.1.6",
+    "typescript": "^5.8.3"
   }
 }

@@ -1,7 +1,5 @@
 # Vulpine Homes Cabinet Supply Website
 
-Created with [Omma](https://omma.build)
-
 ## Setup
 
 ```bash
@@ -13,4 +11,10 @@ npm run dev
 
 ```bash
 npm run build
+```
+
+## Run Production
+
+```bash
+npm run start
 ```
