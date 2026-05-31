@@ -200,7 +200,7 @@ const PAGE_HTML = `
     <li><a href="#contractors">Contractors</a></li>
     <li><a href="#contact">Request a Bid</a></li>
   </ul>
-  <div class="footer-copy">© 2025 Vulpine Homes. All rights reserved.</div>
+  <div class="footer-copy">© 2026 Vulpine Homes. All rights reserved.</div>
 </footer>
 `;
 

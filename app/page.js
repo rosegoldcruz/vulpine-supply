@@ -2,7 +2,7 @@ import HomePageClient from '../components/HomePageClient';
 import JsonLd from '../components/JsonLd';
 
 export const metadata = {
-  title: 'Cabinet & Interior Finish Supply - Arizona',
+  title: 'Vulpine Homes | Cabinet & Interior Finish Supply - Arizona',
   description:
     'Vulpine Homes supplies cabinet boxes, doors, refacing fronts, countertops, vanities, flooring, hardware, interior doors, and finish materials for residential and multifamily projects across Arizona.',
   alternates: {
