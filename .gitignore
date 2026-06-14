@@ -42,6 +42,10 @@ Thumbs.db
 tmp/
 temp/
 
+# Local intake storage
+.data/*
+!.data/.gitkeep
+
 # Secrets and keys
 *.pem
 *.key

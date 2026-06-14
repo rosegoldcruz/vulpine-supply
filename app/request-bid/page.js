@@ -1,4 +1,5 @@
 import JsonLd from '../../components/JsonLd';
+import RequestBidForm from '../../components/RequestBidForm';
 
 export const metadata = {
   title: 'Request a Bid - Cabinet and Interior Finish Supply',
@@ -47,48 +48,7 @@ export default function RequestBidPage() {
               Share your scope, material categories, and timeline. Vulpine Homes will reply with
               supply options and pricing guidance for your Arizona project.
             </p>
-            <form className="bid-form" action="" method="POST" noValidate>
-              <div className="form-group">
-                <label className="form-label" htmlFor="name">
-                  First &amp; Last Name
-                </label>
-                <input className="form-input" type="text" id="name" name="name" placeholder="Jordan Mercer" required />
-              </div>
-              <div className="form-group">
-                <label className="form-label" htmlFor="email">
-                  Email
-                </label>
-                <input className="form-input" type="email" id="email" name="email" placeholder="jordan@company.com" required />
-              </div>
-              <div className="form-group">
-                <label className="form-label" htmlFor="phone">
-                  Phone
-                </label>
-                <input className="form-input" type="tel" id="phone" name="phone" placeholder="(555) 000-0000" />
-              </div>
-              <div className="form-group">
-                <label className="form-label" htmlFor="type">
-                  Project Type
-                </label>
-                <select className="form-select" id="type" name="project_type">
-                  <option value="">Select a project type</option>
-                  <option value="multifamily">Multifamily / Apartment</option>
-                  <option value="single-family">Single-Family Renovation</option>
-                  <option value="investor-flip">Investor Flip / Rental Refresh</option>
-                  <option value="new-build">New Build</option>
-                  <option value="contractor">Contractor Supply Relationship</option>
-                </select>
-              </div>
-              <div className="form-group full">
-                <label className="form-label" htmlFor="message">
-                  Project Details
-                </label>
-                <textarea className="form-textarea" id="message" name="message" placeholder="Tell us about unit count, materials needed, location, and schedule."></textarea>
-              </div>
-              <button type="submit" className="form-submit">
-                Send Request
-              </button>
-            </form>
+            <RequestBidForm />
           </div>
         </section>
       </main>
