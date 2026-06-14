@@ -42,8 +42,8 @@ async function forwardToCrm(record) {
     'Content-Type': 'application/json',
   };
 
-  if (process.env.VULPINE_CRM_INTAKE_TOKEN) {
-    headers.Authorization = `Bearer ${process.env.VULPINE_CRM_INTAKE_TOKEN}`;
+  if (process.env.VULPINE_SUPPLY_INTAKE_TOKEN) {
+    headers.Authorization = `Bearer ${process.env.VULPINE_SUPPLY_INTAKE_TOKEN}`;
   }
 
   try {
