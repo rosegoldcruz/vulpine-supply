@@ -67,6 +67,23 @@ async function forwardToCrm(record) {
   }
 }
 
+async function persistSubmission(record) {
+  const payload = `${JSON.stringify(record)}\n`;
+  const candidateDirs = [path.join(process.cwd(), '.data'), path.join('/tmp', 'vulpine-supply-data')];
+
+  for (const dir of candidateDirs) {
+    try {
+      await mkdir(dir, { recursive: true });
+      await appendFile(path.join(dir, 'contact-submissions.jsonl'), payload, 'utf8');
+      return true;
+    } catch {
+      // Keep trying fallbacks. On serverless environments the project root may be read-only.
+    }
+  }
+
+  return false;
+}
+
 export async function POST(request) {
   try {
     const body = await request.json();
@@ -96,12 +113,9 @@ export async function POST(request) {
       syncStatus,
     };
 
-    const dataDir = path.join(process.cwd(), '.data');
-    const outputPath = path.join(dataDir, 'contact-submissions.jsonl');
-    await mkdir(dataDir, { recursive: true });
-    await appendFile(outputPath, `${JSON.stringify(record)}\n`, 'utf8');
+    const stored = await persistSubmission(record);
 
-    return Response.json({ success: true, syncStatus });
+    return Response.json({ success: true, syncStatus, stored });
   } catch {
     return Response.json(
       { success: false, error: 'Unable to process your request at this time.' },
