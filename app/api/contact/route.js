@@ -3,6 +3,10 @@ import path from 'node:path';
 
 export const runtime = 'nodejs';
 
+export async function GET() {
+  return Response.json({ success: true, message: 'Contact intake endpoint is available.' });
+}
+
 function cleanString(value) {
   if (typeof value !== 'string') return '';
   return value.trim();
