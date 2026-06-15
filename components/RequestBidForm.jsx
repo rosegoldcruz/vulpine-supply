@@ -9,6 +9,7 @@ export default function RequestBidForm() {
 
   async function handleSubmit(event) {
     event.preventDefault();
+    event.stopPropagation();
     setSuccessMessage('');
     setErrorMessage('');
     setIsSubmitting(true);
@@ -50,7 +51,7 @@ export default function RequestBidForm() {
   }
 
   return (
-    <form className="bid-form" action="" method="GET" noValidate onSubmit={handleSubmit}>
+    <form className="bid-form" noValidate onSubmit={handleSubmit}>
       <div className="form-group">
         <label className="form-label" htmlFor="name">
           First &amp; Last Name
