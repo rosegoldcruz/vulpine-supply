@@ -167,7 +167,7 @@ const PAGE_HTML = `
     <span class="section-label reveal">Request a Bid</span>
     <h2 class="section-heading reveal">Tell us about your project.</h2>
     <p class="section-body reveal">Share the basics and we'll come back with supply options, material recommendations, and a clear path forward. No obligation. No pitch call required.</p>
-    <form class="bid-form reveal" action="" method="POST" novalidate>
+    <form class="bid-form reveal" action="#contact" method="GET" novalidate>
       <div class="form-group"><label class="form-label" for="fname">First &amp; Last Name</label><input class="form-input" type="text" id="fname" name="name" placeholder="Jordan Mercer" required></div>
       <div class="form-group"><label class="form-label" for="femail">Email</label><input class="form-input" type="email" id="femail" name="email" placeholder="jordan@company.com" required></div>
       <div class="form-group"><label class="form-label" for="fphone">Phone</label><input class="form-input" type="tel" id="fphone" name="phone" placeholder="(555) 000-0000"></div>
