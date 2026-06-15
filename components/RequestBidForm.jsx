@@ -50,7 +50,7 @@ export default function RequestBidForm() {
   }
 
   return (
-    <form className="bid-form" action="" method="POST" noValidate onSubmit={handleSubmit}>
+    <form className="bid-form" action="" method="GET" noValidate onSubmit={handleSubmit}>
       <div className="form-group">
         <label className="form-label" htmlFor="name">
           First &amp; Last Name
