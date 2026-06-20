@@ -1,6 +1,10 @@
 import './globals.css';
 import Script from 'next/script';
 
+export const viewport = {
+  themeColor: '#f97316',
+};
+
 export const metadata = {
   title: {
     default: 'Vulpine Homes | Cabinet & Interior Finish Supply - Arizona',
@@ -56,6 +60,17 @@ export const metadata = {
   },
   verification: {
     google: process.env.NEXT_PUBLIC_GOOGLE_SITE_VERIFICATION ?? '',
+  },
+  manifest: '/site.webmanifest',
+  icons: {
+    icon: [
+      { url: '/favicon.svg', type: 'image/svg+xml' },
+      { url: '/favicon-32x32.png', sizes: '32x32', type: 'image/png' },
+      { url: '/favicon-16x16.png', sizes: '16x16', type: 'image/png' },
+    ],
+    apple: [
+      { url: '/apple-touch-icon.png', sizes: '180x180', type: 'image/png' },
+    ],
   },
 };
 

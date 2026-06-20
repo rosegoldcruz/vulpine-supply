@@ -3,8 +3,9 @@
 import { useEffect } from 'react';
 import { gsap } from 'gsap';
 import { ScrollTrigger } from 'gsap/ScrollTrigger';
+import MaterialSupplyGrid from './MaterialSupplyGrid';
 
-const PAGE_HTML = `
+const PAGE_HTML_BEFORE_SUPPLY = `
 <!-- ─── NAV ─── -->
 <nav>
   <a href="#" class="nav-logo">Vulpine<span>.</span></a>
@@ -65,26 +66,9 @@ const PAGE_HTML = `
   </div>
 </div>
 
-<!-- ─── WHAT WE SUPPLY ─── -->
-<section id="supply">
-  <span class="section-label reveal">What We Supply</span>
-  <h2 class="section-heading reveal">Every material category. One supply partner.</h2>
-  <p class="section-body reveal">Cabinet boxes, doors, drawer fronts, refacing fronts, countertops, sinks, vanities, flooring, hardware, trim, and interior finish materials for residential and multifamily projects.</p>
+  `;
 
-  <div class="product-grid">
-    <div class="product-card reveal"><div class="product-card-bg tex-cabinet-box"></div><div class="product-card-content"><div class="product-card-name">Cabinet Boxes</div><div class="product-card-desc">Frameless and face-frame box construction for kitchens, baths, and utility spaces.</div></div></div>
-    <div class="product-card reveal"><div class="product-card-bg tex-cabinet-door"></div><div class="product-card-content"><div class="product-card-name">Cabinet Doors</div><div class="product-card-desc">Shaker, slab, and profile door styles in painted, stained, and thermofoil finishes.</div></div></div>
-    <div class="product-card reveal"><div class="product-card-bg tex-refacing"></div><div class="product-card-content"><div class="product-card-name">Refacing Fronts</div><div class="product-card-desc">Update existing cabinet boxes with new door and drawer fronts — no full replacement required.</div></div></div>
-    <div class="product-card reveal"><div class="product-card-bg tex-countertop"></div><div class="product-card-content"><div class="product-card-name">Countertops</div><div class="product-card-desc">Laminate, quartz, and solid surface options spec'd for durability and rental longevity.</div></div></div>
-    <div class="product-card reveal"><div class="product-card-bg tex-sink"></div><div class="product-card-content"><div class="product-card-name">Sinks</div><div class="product-card-desc">Kitchen and bath sink options to coordinate with countertop and cabinet packages.</div></div></div>
-    <div class="product-card reveal"><div class="product-card-bg tex-vanity"></div><div class="product-card-content"><div class="product-card-name">Vanities</div><div class="product-card-desc">Bathroom vanity units in standard and custom widths for single and multifamily renovations.</div></div></div>
-    <div class="product-card reveal"><div class="product-card-bg tex-flooring"></div><div class="product-card-content"><div class="product-card-name">Flooring</div><div class="product-card-desc">LVP, hardwood, laminate, and tile options for kitchens, baths, and living areas.</div></div></div>
-    <div class="product-card reveal"><div class="product-card-bg tex-hardware"></div><div class="product-card-content"><div class="product-card-name">Hardware</div><div class="product-card-desc">Pulls, knobs, hinges, and drawer slides in matte black, brushed nickel, and more.</div></div></div>
-    <div class="product-card reveal"><div class="product-card-bg tex-doors"></div><div class="product-card-content"><div class="product-card-name">Interior Doors</div><div class="product-card-desc">Hollow-core and solid-core interior door slabs and prehung units for complete unit packages.</div></div></div>
-    <div class="product-card reveal"><div class="product-card-bg tex-trim"></div><div class="product-card-content"><div class="product-card-name">Trim &amp; Finish</div><div class="product-card-desc">Baseboards, casings, crown, and finish millwork to complete the interior package.</div></div></div>
-  </div>
-</section>
-
+  const PAGE_HTML_AFTER_SUPPLY = `
 <!-- ─── BUILT FOR TURNS ─── -->
 <section id="turns">
   <span class="section-label reveal">Built for Property Turns</span>
@@ -167,13 +151,14 @@ const PAGE_HTML = `
     <span class="section-label reveal">Request a Bid</span>
     <h2 class="section-heading reveal">Tell us about your project.</h2>
     <p class="section-body reveal">Share the basics and we'll come back with supply options, material recommendations, and a clear path forward. No obligation. No pitch call required.</p>
-    <form class="bid-form reveal" action="#contact" method="GET" novalidate>
+    <form class="bid-form reveal" action="/api/contact" method="post" data-contact-form novalidate>
       <div class="form-group"><label class="form-label" for="fname">First &amp; Last Name</label><input class="form-input" type="text" id="fname" name="name" placeholder="Jordan Mercer" required></div>
       <div class="form-group"><label class="form-label" for="femail">Email</label><input class="form-input" type="email" id="femail" name="email" placeholder="jordan@company.com" required></div>
       <div class="form-group"><label class="form-label" for="fphone">Phone</label><input class="form-input" type="tel" id="fphone" name="phone" placeholder="(555) 000-0000"></div>
+      <div class="form-group"><label class="form-label" for="fcompany">Company</label><input class="form-input" type="text" id="fcompany" name="company" placeholder="Vulpine Builders"></div>
       <div class="form-group">
         <label class="form-label" for="ftype">Project Type</label>
-        <select class="form-select" id="ftype" name="project_type">
+        <select class="form-select" id="ftype" name="project_type" required>
           <option value="">Select a project type</option>
           <option value="multifamily">Multifamily / Apartment</option>
           <option value="single-family">Single-Family Renovation</option>
@@ -182,8 +167,10 @@ const PAGE_HTML = `
           <option value="contractor">Contractor Supply Relationship</option>
         </select>
       </div>
-      <div class="form-group full"><label class="form-label" for="fmessage">Project Details</label><textarea class="form-textarea" id="fmessage" name="message" placeholder="Tell us about the scope — unit count, material categories you need, timeline, location..."></textarea></div>
+      <div class="form-group full"><label class="form-label" for="flocation">Project Location</label><input class="form-input" type="text" id="flocation" name="project_location" placeholder="City, community, or property address"></div>
+      <div class="form-group full"><label class="form-label" for="fmessage">Project Details</label><textarea class="form-textarea" id="fmessage" name="message" placeholder="Tell us about the scope — unit count, material categories you need, timeline, location..." required></textarea></div>
       <button type="submit" class="form-submit">Send Request</button>
+      <div aria-live="polite" role="status" data-contact-status></div>
     </form>
   </div>
 </section>
@@ -241,6 +228,79 @@ export default function HomePageClient() {
 
     let raf = null;
     let cleanupResize = () => {};
+    let cleanupContactForm = () => {};
+
+    const contactForm = document.querySelector('[data-contact-form]');
+    const contactStatus = document.querySelector('[data-contact-status]');
+
+    if (contactForm) {
+      const handleContactSubmit = async (event) => {
+        event.preventDefault();
+
+        const submitButton = contactForm.querySelector('button[type="submit"]');
+        const formData = new FormData(contactForm);
+        const params = new URLSearchParams(window.location.search);
+        const payload = {
+          name: String(formData.get('name') || '').trim(),
+          email: String(formData.get('email') || '').trim(),
+          phone: String(formData.get('phone') || '').trim(),
+          company: String(formData.get('company') || '').trim(),
+          project_type: String(formData.get('project_type') || '').trim(),
+          project_location: String(formData.get('project_location') || '').trim(),
+          message: String(formData.get('message') || '').trim(),
+          page_url: window.location.href,
+          utm_source: params.get('utm_source') || '',
+          utm_medium: params.get('utm_medium') || '',
+          utm_campaign: params.get('utm_campaign') || '',
+          utm_content: params.get('utm_content') || '',
+          utm_term: params.get('utm_term') || '',
+        };
+
+        if (contactStatus) contactStatus.innerHTML = '';
+        if (submitButton) {
+          submitButton.disabled = true;
+          submitButton.textContent = 'Sending...';
+        }
+
+        try {
+          const response = await fetch('/api/contact', {
+            method: 'POST',
+            headers: {
+              'Content-Type': 'application/json',
+            },
+            body: JSON.stringify(payload),
+          });
+          const data = await response.json().catch(() => ({}));
+
+          if (!response.ok) {
+            throw new Error(data?.error || 'Unable to submit your request right now. Please try again.');
+          }
+
+          contactForm.reset();
+          if (contactStatus) {
+            const message = document.createElement('p');
+            message.className = 'section-body';
+            message.textContent = 'Request received. Our team will follow up shortly.';
+            contactStatus.replaceChildren(message);
+          }
+        } catch (error) {
+          if (contactStatus) {
+            const message = document.createElement('p');
+            message.className = 'section-body';
+            message.textContent = error.message;
+            contactStatus.replaceChildren(message);
+          }
+        } finally {
+          if (submitButton) {
+            submitButton.disabled = false;
+            submitButton.textContent = 'Send Request';
+          }
+        }
+      };
+
+      contactForm.addEventListener('submit', handleContactSubmit);
+      cleanupContactForm = () => contactForm.removeEventListener('submit', handleContactSubmit);
+    }
 
     (function () {
       const canvas = document.getElementById('vhCanvas');
@@ -701,6 +761,7 @@ export default function HomePageClient() {
 
     return () => {
       if (raf) cancelAnimationFrame(raf);
+      cleanupContactForm();
       cleanupResize();
       navTrigger.kill();
       tl.kill();
@@ -708,5 +769,21 @@ export default function HomePageClient() {
     };
   }, []);
 
-  return <div dangerouslySetInnerHTML={{ __html: PAGE_HTML }} />;
+  return (
+    <>
+      <div dangerouslySetInnerHTML={{ __html: PAGE_HTML_BEFORE_SUPPLY }} />
+      <section id="supply">
+        <span className="section-label reveal">What We Supply</span>
+        <h2 className="section-heading reveal">Every material category. One supply partner.</h2>
+        <p className="section-body reveal">
+          Cabinet boxes, doors, drawer fronts, refacing fronts, countertops, sinks, vanities,
+          flooring, hardware, trim, and interior finish materials for residential and multifamily
+          projects.
+        </p>
+
+        <MaterialSupplyGrid />
+      </section>
+      <div dangerouslySetInnerHTML={{ __html: PAGE_HTML_AFTER_SUPPLY }} />
+    </>
+  );
 }
