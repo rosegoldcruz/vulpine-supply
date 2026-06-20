@@ -16,13 +16,22 @@ export default function RequestBidForm() {
 
     const form = event.currentTarget;
     const formData = new FormData(form);
+    const params = new URLSearchParams(window.location.search);
 
     const payload = {
-      fullName: String(formData.get('name') || '').trim(),
+      name: String(formData.get('name') || '').trim(),
       email: String(formData.get('email') || '').trim(),
       phone: String(formData.get('phone') || '').trim(),
-      projectType: String(formData.get('project_type') || '').trim(),
-      projectDetails: String(formData.get('message') || '').trim(),
+      company: String(formData.get('company') || '').trim(),
+      project_type: String(formData.get('project_type') || '').trim(),
+      project_location: String(formData.get('project_location') || '').trim(),
+      message: String(formData.get('message') || '').trim(),
+      page_url: window.location.href,
+      utm_source: params.get('utm_source') || '',
+      utm_medium: params.get('utm_medium') || '',
+      utm_campaign: params.get('utm_campaign') || '',
+      utm_content: params.get('utm_content') || '',
+      utm_term: params.get('utm_term') || '',
     };
 
     try {
@@ -51,7 +60,7 @@ export default function RequestBidForm() {
   }
 
   return (
-    <form className="bid-form" noValidate onSubmit={handleSubmit}>
+    <form className="bid-form" action="/api/contact" method="post" noValidate onSubmit={handleSubmit}>
       <div className="form-group">
         <label className="form-label" htmlFor="name">
           First &amp; Last Name
@@ -71,6 +80,12 @@ export default function RequestBidForm() {
         <input className="form-input" type="tel" id="phone" name="phone" placeholder="(555) 000-0000" />
       </div>
       <div className="form-group">
+        <label className="form-label" htmlFor="company">
+          Company
+        </label>
+        <input className="form-input" type="text" id="company" name="company" placeholder="Vulpine Builders" />
+      </div>
+      <div className="form-group">
         <label className="form-label" htmlFor="type">
           Project Type
         </label>
@@ -82,6 +97,18 @@ export default function RequestBidForm() {
           <option value="new-build">New Build</option>
           <option value="contractor">Contractor Supply Relationship</option>
         </select>
+      </div>
+      <div className="form-group full">
+        <label className="form-label" htmlFor="project_location">
+          Project Location
+        </label>
+        <input
+          className="form-input"
+          type="text"
+          id="project_location"
+          name="project_location"
+          placeholder="City, community, or property address"
+        />
       </div>
       <div className="form-group full">
         <label className="form-label" htmlFor="message">
