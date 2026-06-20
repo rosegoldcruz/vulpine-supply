@@ -2,13 +2,14 @@ export const materialCards = [
   {
     title: 'Cabinet Boxes',
     slug: 'cabinet-boxes',
-    frontImage: '/materials/front/cabinet-boxes.png',
+    frontImage: '/materials/front/optimized/cabinet-boxes.webp',
+    imageWidth: 4000,
+    imageHeight: 5000,
     backDescription:
-      'Cabinet box packages for kitchens, baths, laundry rooms, and utility spaces, built for repeatable unit turns and multifamily material planning.',
+      'Cabinet box packages for kitchens, baths, laundry rooms, and utility spaces.',
     bullets: [
       'Frameless and face-frame options',
-      'Kitchen, bath, and utility layouts',
-      'Built for scalable project ordering',
+      'Built for repeatable project ordering',
     ],
     ctaLabel: 'Request a Bid',
     ctaHref: '/request-bid',
@@ -16,13 +17,14 @@ export const materialCards = [
   {
     title: 'Cabinet Doors',
     slug: 'cabinet-doors',
-    frontImage: '/materials/front/cabinet-doors.png',
+    frontImage: '/materials/front/optimized/cabinet-doors.webp',
+    imageWidth: 4000,
+    imageHeight: 5000,
     backDescription:
-      'Door styles and finishes for cabinet upgrades, replacements, and finish packages across residential and multifamily projects.',
+      'Door styles and finishes for cabinet upgrades, replacements, and finish packages.',
     bullets: [
       'Shaker, slab, and profile options',
       'Painted, stained, and thermofoil finishes',
-      'Designed for consistent unit packages',
     ],
     ctaLabel: 'Request a Bid',
     ctaHref: '/request-bid',
@@ -30,13 +32,14 @@ export const materialCards = [
   {
     title: 'Refacing Fronts',
     slug: 'refacing-fronts',
-    frontImage: '/materials/front/refacing-fronts.png',
+    frontImage: '/materials/front/optimized/refacing-fronts.webp',
+    imageWidth: 4000,
+    imageHeight: 5000,
     backDescription:
       'Not resurfacing — refacing. Refresh existing cabinet layouts at a fraction of typical remodel costs.',
     bullets: [
       'Door and drawer front packages',
       'Cleaner unit-turn upgrades',
-      'Lower-cost alternative to full replacement',
     ],
     ctaLabel: 'Request a Bid',
     ctaHref: '/request-bid',
@@ -44,13 +47,14 @@ export const materialCards = [
   {
     title: 'Countertops',
     slug: 'countertops',
-    frontImage: '/materials/front/countertops.png',
+    frontImage: '/materials/front/optimized/countertops.webp',
+    imageWidth: 4000,
+    imageHeight: 5000,
     backDescription:
-      'Countertop options selected for durability, clean design, and rental longevity across kitchens, baths, and unit-turn projects.',
+      'Countertop options selected for durability, clean design, and rental longevity.',
     bullets: [
       'Laminate, quartz, and solid surface',
       'Kitchen and bath packages',
-      'Spec-friendly finish options',
     ],
     ctaLabel: 'Request a Bid',
     ctaHref: '/request-bid',
@@ -58,13 +62,14 @@ export const materialCards = [
   {
     title: 'Sinks',
     slug: 'sinks',
-    frontImage: '/materials/front/sinks.png',
+    frontImage: '/materials/front/optimized/sinks.webp',
+    imageWidth: 4000,
+    imageHeight: 5000,
     backDescription:
       'Kitchen and bath sink options that coordinate with cabinet, vanity, and countertop packages.',
     bullets: [
       'Kitchen sink options',
       'Bath sink options',
-      'Finish package coordination',
     ],
     ctaLabel: 'Request a Bid',
     ctaHref: '/request-bid',
@@ -72,12 +77,13 @@ export const materialCards = [
   {
     title: 'Vanities',
     slug: 'vanities',
-    frontImage: '/materials/front/vanities.png',
+    frontImage: '/materials/front/optimized/vanities.webp',
+    imageWidth: 4000,
+    imageHeight: 5000,
     backDescription:
-      'Bathroom vanity packages for standard and custom widths across single units, renovations, and multifamily turns.',
+      'Bathroom vanity packages for standard and custom widths.',
     bullets: [
       'Standard vanity sizes',
-      'Custom width options',
       'Coordinated sink and top packages',
     ],
     ctaLabel: 'Request a Bid',
@@ -86,13 +92,14 @@ export const materialCards = [
   {
     title: 'Flooring',
     slug: 'flooring',
-    frontImage: '/materials/front/flooring.png',
+    frontImage: '/materials/front/optimized/flooring.webp',
+    imageWidth: 4000,
+    imageHeight: 5000,
     backDescription:
-      'Flooring options for kitchens, baths, living areas, and high-turnover spaces where durability and consistency matter.',
+      'Flooring options for kitchens, baths, living areas, and high-turnover spaces.',
     bullets: [
       'LVP, hardwood, laminate, and tile',
       'Unit-turn friendly selections',
-      'Finish coordination available',
     ],
     ctaLabel: 'Request a Bid',
     ctaHref: '/request-bid',
@@ -100,13 +107,14 @@ export const materialCards = [
   {
     title: 'Hardware',
     slug: 'hardware',
-    frontImage: '/materials/front/hardware.png',
+    frontImage: '/materials/front/optimized/hardware.webp',
+    imageWidth: 4000,
+    imageHeight: 5000,
     backDescription:
-      'Cabinet hardware options to complete the finish package, from modern matte black to brushed nickel and other common project finishes.',
+      'Cabinet hardware options to complete the finish package.',
     bullets: [
       'Pulls, knobs, and hinges',
       'Drawer slides and cabinet hardware',
-      'Common multifamily finish options',
     ],
     ctaLabel: 'Request a Bid',
     ctaHref: '/request-bid',
@@ -114,13 +122,14 @@ export const materialCards = [
   {
     title: 'Interior Doors',
     slug: 'interior-doors',
-    frontImage: '/materials/front/interior-doors.png',
+    frontImage: '/materials/front/optimized/interior-doors.webp',
+    imageWidth: 4000,
+    imageHeight: 5000,
     backDescription:
-      'Interior door slabs and prehung units for complete unit packages, renovations, and property-turn projects.',
+      'Interior door slabs and prehung units for complete unit packages.',
     bullets: [
       'Hollow-core and solid-core options',
       'Slabs and prehung units',
-      'Finish package coordination',
     ],
     ctaLabel: 'Request a Bid',
     ctaHref: '/request-bid',
@@ -128,13 +137,14 @@ export const materialCards = [
   {
     title: 'Trim & Finish',
     slug: 'trim-finish',
-    frontImage: '/materials/front/trim-finish.png',
+    frontImage: '/materials/front/optimized/trim-finish.webp',
+    imageWidth: 2000,
+    imageHeight: 2500,
     backDescription:
-      'Millwork and finish materials for completing interior packages across remodels, unit turns, and multifamily projects.',
+      'Millwork and finish materials for completing interior packages.',
     bullets: [
       'Baseboards and casing',
       'Crown and finish millwork',
-      'Interior package completion',
     ],
     ctaLabel: 'Request a Bid',
     ctaHref: '/request-bid',

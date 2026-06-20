@@ -55,6 +55,9 @@ nav {
   opacity: 0.65;
   transition: opacity 0.2s;
 }
+    .material-flip-card {
+      min-height: clamp(350px, 95vw, 380px);
+    }
 .nav-links a:hover { opacity: 1; }
 
 .nav-cta {
@@ -276,7 +279,7 @@ section {
 
 .material-flip-card {
   position: relative;
-  aspect-ratio: 7 / 8;
+  min-height: clamp(340px, 44vw, 420px);
   perspective: 1800px;
   border-radius: 24px;
 }
@@ -325,20 +328,58 @@ section {
   background: #f6f0e8;
 }
 
+.material-flip-image-shell {
+  position: relative;
+  width: 100%;
+  height: 100%;
+  background: linear-gradient(140deg, #f8f2ea 0%, #f2ebe1 45%, #ece4d9 100%);
+}
+
+.material-flip-image-shell::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(
+    90deg,
+    rgba(255, 255, 255, 0) 0%,
+    rgba(255, 255, 255, 0.45) 50%,
+    rgba(255, 255, 255, 0) 100%
+  );
+  transform: translateX(-100%);
+  animation: material-card-skeleton 1.1s ease-in-out infinite;
+}
+
+.material-flip-image-shell.is-loaded::before {
+  display: none;
+}
+
+@keyframes material-card-skeleton {
+  to {
+    transform: translateX(100%);
+  }
+}
+
 .material-flip-image {
   width: 100%;
   height: 100%;
   object-fit: contain;
+  object-position: center top;
   display: block;
   border-radius: 24px;
+  opacity: 0;
+  transition: opacity 0.25s ease;
+}
+
+.material-flip-image-shell.is-loaded .material-flip-image {
+  opacity: 1;
 }
 
 .material-flip-back {
   display: flex;
   flex-direction: column;
-  justify-content: space-between;
-  gap: 20px;
-  padding: 28px;
+  justify-content: flex-start;
+  gap: 18px;
+  padding: 24px;
   background: linear-gradient(180deg, #faf5ef 0%, #f2ebe1 100%);
   color: var(--black);
   border: 1px solid rgba(17, 17, 17, 0.08);
@@ -348,7 +389,7 @@ section {
 .material-flip-copy {
   display: flex;
   flex-direction: column;
-  gap: 14px;
+  gap: 12px;
 }
 
 .material-flip-topline {
@@ -367,28 +408,28 @@ section {
 }
 
 .material-flip-title {
-  font-size: clamp(24px, 2.6vw, 32px);
-  line-height: 1.05;
+  font-size: clamp(21px, 2.2vw, 28px);
+  line-height: 1.1;
   letter-spacing: -0.03em;
 }
 
 .material-flip-description {
-  font-size: 15px;
-  line-height: 1.65;
+  font-size: 14px;
+  line-height: 1.55;
   color: rgba(17, 17, 17, 0.72);
 }
 
 .material-flip-bullets {
   list-style: none;
   display: grid;
-  gap: 10px;
+  gap: 8px;
 }
 
 .material-flip-bullets li {
   position: relative;
   padding-left: 18px;
-  font-size: 14px;
-  line-height: 1.5;
+  font-size: 13px;
+  line-height: 1.45;
   color: rgba(17, 17, 17, 0.82);
 }
 
@@ -419,6 +460,7 @@ section {
   font-size: 14px;
   font-weight: 600;
   transition: background 0.2s ease, transform 0.2s ease;
+  margin-top: auto;
 }
 
 .material-flip-cta:hover {
@@ -427,34 +469,46 @@ section {
 }
 
 .material-flip-toggle {
-  border: none;
-  background: transparent;
+  border: 1px solid rgba(17, 17, 17, 0.14);
+  background: rgba(255, 255, 255, 0.85);
   cursor: pointer;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 34px;
+  height: 34px;
+  border-radius: 999px;
+  transition: background 0.2s ease, border-color 0.2s ease, transform 0.2s ease;
+}
+
+.material-flip-toggle svg {
+  width: 16px;
+  height: 16px;
+  stroke: rgba(17, 17, 17, 0.78);
+  fill: none;
+  stroke-width: 1.8;
+  stroke-linecap: round;
+  stroke-linejoin: round;
 }
 
 .material-flip-toggle-front {
   position: absolute;
-  inset: 0;
+  top: 14px;
+  right: 14px;
   z-index: 2;
-  border-radius: 24px;
 }
 
 .material-flip-toggle-back {
-  position: relative;
+  position: absolute;
+  top: 18px;
+  right: 18px;
   z-index: 3;
-  flex-shrink: 0;
-  min-height: 36px;
-  padding: 0 14px;
-  border-radius: 999px;
-  background: rgba(17, 17, 17, 0.06);
-  color: var(--black);
-  font-family: inherit;
-  font-size: 12px;
-  font-weight: 600;
 }
 
-.material-flip-toggle-back:hover {
-  background: rgba(17, 17, 17, 0.1);
+.material-flip-toggle:hover {
+  background: #ffffff;
+  border-color: rgba(17, 17, 17, 0.28);
+  transform: translateY(-1px);
 }
 
 .material-flip-toggle:focus-visible {
@@ -475,12 +529,22 @@ section {
 }
 
 @media (max-width: 699px) {
+  .material-flip-card {
+    min-height: clamp(350px, 95vw, 380px);
+  }
+
   .material-flip-back {
     padding: 24px;
   }
 
   .material-flip-title {
-    font-size: 26px;
+    font-size: 24px;
+  }
+}
+
+@media (min-width: 700px) and (max-width: 1199px) {
+  .material-flip-card {
+    min-height: 360px;
   }
 }
 
@@ -521,7 +585,6 @@ section {
 .product-card {
   border-radius: 12px;
   overflow: hidden;
-  position: relative;
   min-height: 220px;
   display: flex;
   flex-direction: column;
