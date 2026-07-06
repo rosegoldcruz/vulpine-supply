@@ -224,15 +224,6 @@ export async function POST(request) {
       return Response.json({ success: false, error: validationError }, { status: 400 });
     }
 
-    const missingConfig = validateConfig();
-    if (missingConfig.length > 0) {
-      console.error('Contact intake is missing required server env vars:', missingConfig.join(', '));
-      return Response.json(
-        { success: false, error: 'Contact intake is not configured.' },
-        { status: 503 }
-      );
-    }
-
     const record = Object.fromEntries(TEXT_FIELDS.map((field) => [field, payload[field]]));
     record.source = payload.source;
     record.status = payload.status;
@@ -240,7 +231,15 @@ export async function POST(request) {
     record.crm_synced_at = payload.crm_synced_at;
     record.raw_payload = payload.raw_payload;
 
-    const result = await createNocoDbRecord(record);
+    const missingConfig = validateConfig();
+    let result = null;
+
+    if (missingConfig.length > 0) {
+      console.error('Contact intake is missing required server env vars:', missingConfig.join(', '));
+    } else {
+      result = await createNocoDbRecord(record);
+    }
+
     const bidRequestPayload = buildBidRequestPayload(raw || {}, payload, request);
 
     await sendTelegramMessage(formatBidRequestTelegramMessage(bidRequestPayload));
@@ -260,7 +259,12 @@ export async function POST(request) {
       console.error('Bid analytics tracking failed:', error);
     }
 
-    return Response.json({ success: true, ok: true, result });
+    return Response.json({
+      success: true,
+      ok: true,
+      result,
+      intakeConfigured: missingConfig.length === 0,
+    });
   } catch (error) {
     console.error('Contact intake submission failed:', error);
     return Response.json(
