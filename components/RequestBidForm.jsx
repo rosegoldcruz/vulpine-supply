@@ -23,10 +23,11 @@ export default function RequestBidForm() {
       email: String(formData.get('email') || '').trim(),
       phone: String(formData.get('phone') || '').trim(),
       company: String(formData.get('company') || '').trim(),
-      project_type: String(formData.get('project_type') || '').trim(),
-      project_location: String(formData.get('project_location') || '').trim(),
-      message: String(formData.get('message') || '').trim(),
-      page_url: window.location.href,
+      source: '/request-bid',
+      pageUrl: window.location.href,
+      projectType: String(formData.get('project_type') || '').trim(),
+      projectLocation: String(formData.get('project_location') || '').trim(),
+      projectDetails: String(formData.get('message') || '').trim(),
       utm_source: params.get('utm_source') || '',
       utm_medium: params.get('utm_medium') || '',
       utm_campaign: params.get('utm_campaign') || '',
@@ -35,7 +36,7 @@ export default function RequestBidForm() {
     };
 
     try {
-      const response = await fetch('/api/contact', {
+      const response = await fetch('/api/request-bid', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
@@ -43,24 +44,23 @@ export default function RequestBidForm() {
         body: JSON.stringify(payload),
       });
 
-      const data = await response.json().catch(() => ({}));
+      const data = await response.json().catch(() => null);
 
-      if (!response.ok) {
-        setErrorMessage(data?.error || 'Unable to submit your request right now. Please try again.');
-        return;
+      if (!response.ok || !data?.ok) {
+        throw new Error(data?.error || 'Request failed');
       }
 
       setSuccessMessage('Request received. Our team will follow up shortly.');
       form.reset();
-    } catch {
-      setErrorMessage('Unable to submit your request right now. Please try again.');
+    } catch (error) {
+      setErrorMessage(error.message || 'Unable to submit your request right now. Please try again.');
     } finally {
       setIsSubmitting(false);
     }
   }
 
   return (
-    <form className="bid-form" action="/api/contact" method="post" noValidate onSubmit={handleSubmit}>
+    <form className="bid-form" action="/api/request-bid" method="post" noValidate onSubmit={handleSubmit}>
       <div className="form-group">
         <label className="form-label" htmlFor="name">
           First &amp; Last Name
@@ -91,6 +91,7 @@ export default function RequestBidForm() {
         </label>
         <select className="form-select" id="type" name="project_type" required>
           <option value="">Select a project type</option>
+          <option value="Multifamily / Unit Turn">Multifamily / Unit Turn</option>
           <option value="multifamily">Multifamily / Apartment</option>
           <option value="single-family">Single-Family Renovation</option>
           <option value="investor-flip">Investor Flip / Rental Refresh</option>

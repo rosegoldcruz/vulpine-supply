@@ -1,3 +1,6 @@
+import { trackAnalyticsEvent } from '../../../lib/analytics';
+import { formatBidRequestTelegramMessage, sendTelegramMessage } from '../../../lib/telegram';
+
 export const runtime = 'nodejs';
 
 const SOURCE = 'vulpinehomes.com';
@@ -136,6 +139,53 @@ function validateConfig() {
   return [];
 }
 
+function getRequestIp(request) {
+  return (
+    request.headers.get('x-forwarded-for')?.split(',')[0]?.trim() ||
+    request.headers.get('x-real-ip') ||
+    ''
+  );
+}
+
+function inferLeadSource(source, pageUrl) {
+  if (source) return source;
+
+  try {
+    const url = new URL(pageUrl);
+    if (url.pathname === '/request-bid') return '/request-bid';
+    if (url.hash === '#contact') return 'Homepage #contact';
+  } catch {
+    return 'Unknown';
+  }
+
+  return 'Unknown';
+}
+
+function buildBidRequestPayload(raw, payload, request) {
+  return {
+    source: inferLeadSource(cleanString(raw?.source), payload.page_url),
+    pageUrl: payload.page_url,
+    name: payload.name,
+    email: payload.email,
+    phone: payload.phone,
+    company: payload.company,
+    projectType: payload.project_type,
+    projectLocation: payload.project_location,
+    projectDetails: payload.message,
+    userAgent: request.headers.get('user-agent') || '',
+    ip: getRequestIp(request),
+  };
+}
+
+function getAnalyticsPath(pageUrl) {
+  try {
+    const url = new URL(pageUrl);
+    return url.pathname + url.hash;
+  } catch {
+    return '/';
+  }
+}
+
 function getNocoDbRecordsUrl() {
   const baseUrl = process.env.NOCODB_BASE_URL.trim().replace(/\/+$/, '');
   const tableId = encodeURIComponent(process.env.NOCODB_TABLE_ID.trim());
@@ -191,8 +241,26 @@ export async function POST(request) {
     record.raw_payload = payload.raw_payload;
 
     const result = await createNocoDbRecord(record);
+    const bidRequestPayload = buildBidRequestPayload(raw || {}, payload, request);
 
-    return Response.json({ success: true, result });
+    await sendTelegramMessage(formatBidRequestTelegramMessage(bidRequestPayload));
+
+    try {
+      await trackAnalyticsEvent({
+        eventType: 'request_bid_submission',
+        path: getAnalyticsPath(payload.page_url),
+        href: payload.page_url,
+        referrer: payload.raw_payload.referer,
+        utmSource: payload.utm_source,
+        utmMedium: payload.utm_medium,
+        utmCampaign: payload.utm_campaign,
+        deviceType: 'unknown',
+      });
+    } catch (error) {
+      console.error('Bid analytics tracking failed:', error);
+    }
+
+    return Response.json({ success: true, ok: true, result });
   } catch (error) {
     console.error('Contact intake submission failed:', error);
     return Response.json(
