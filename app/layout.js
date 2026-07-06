@@ -1,5 +1,6 @@
 import './globals.css';
 import Script from 'next/script';
+import AnalyticsTracker from '../components/AnalyticsTracker';
 
 export const viewport = {
   themeColor: '#f97316',
@@ -98,7 +99,10 @@ export default function RootLayout({ children }) {
           </>
         ) : null}
       </head>
-      <body>{children}</body>
+      <body>
+        <AnalyticsTracker />
+        {children}
+      </body>
     </html>
   );
 }

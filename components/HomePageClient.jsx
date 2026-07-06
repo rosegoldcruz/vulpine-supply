@@ -151,7 +151,7 @@ const PAGE_HTML_BEFORE_SUPPLY = `
     <span class="section-label reveal">Request a Bid</span>
     <h2 class="section-heading reveal">Tell us about your project.</h2>
     <p class="section-body reveal">Share the basics and we'll come back with supply options, material recommendations, and a clear path forward. No obligation. No pitch call required.</p>
-    <form class="bid-form reveal" action="/api/contact" method="post" data-contact-form novalidate>
+    <form class="bid-form reveal" action="/api/request-bid" method="post" data-contact-form novalidate>
       <div class="form-group"><label class="form-label" for="fname">First &amp; Last Name</label><input class="form-input" type="text" id="fname" name="name" placeholder="Jordan Mercer" required></div>
       <div class="form-group"><label class="form-label" for="femail">Email</label><input class="form-input" type="email" id="femail" name="email" placeholder="jordan@company.com" required></div>
       <div class="form-group"><label class="form-label" for="fphone">Phone</label><input class="form-input" type="tel" id="fphone" name="phone" placeholder="(555) 000-0000"></div>
@@ -160,6 +160,7 @@ const PAGE_HTML_BEFORE_SUPPLY = `
         <label class="form-label" for="ftype">Project Type</label>
         <select class="form-select" id="ftype" name="project_type" required>
           <option value="">Select a project type</option>
+          <option value="Multifamily / Unit Turn">Multifamily / Unit Turn</option>
           <option value="multifamily">Multifamily / Apartment</option>
           <option value="single-family">Single-Family Renovation</option>
           <option value="investor-flip">Investor Flip / Rental Refresh</option>
@@ -240,15 +241,17 @@ export default function HomePageClient() {
         const submitButton = contactForm.querySelector('button[type="submit"]');
         const formData = new FormData(contactForm);
         const params = new URLSearchParams(window.location.search);
+        const pageUrl = `${window.location.origin}${window.location.pathname}#contact`;
         const payload = {
+          source: 'Homepage #contact',
+          pageUrl,
           name: String(formData.get('name') || '').trim(),
           email: String(formData.get('email') || '').trim(),
           phone: String(formData.get('phone') || '').trim(),
           company: String(formData.get('company') || '').trim(),
-          project_type: String(formData.get('project_type') || '').trim(),
-          project_location: String(formData.get('project_location') || '').trim(),
-          message: String(formData.get('message') || '').trim(),
-          page_url: window.location.href,
+          projectType: String(formData.get('project_type') || '').trim(),
+          projectLocation: String(formData.get('project_location') || '').trim(),
+          projectDetails: String(formData.get('message') || '').trim(),
           utm_source: params.get('utm_source') || '',
           utm_medium: params.get('utm_medium') || '',
           utm_campaign: params.get('utm_campaign') || '',
@@ -263,17 +266,17 @@ export default function HomePageClient() {
         }
 
         try {
-          const response = await fetch('/api/contact', {
+          const response = await fetch('/api/request-bid', {
             method: 'POST',
             headers: {
               'Content-Type': 'application/json',
             },
             body: JSON.stringify(payload),
           });
-          const data = await response.json().catch(() => ({}));
+          const data = await response.json().catch(() => null);
 
-          if (!response.ok) {
-            throw new Error(data?.error || 'Unable to submit your request right now. Please try again.');
+          if (!response.ok || !data?.ok) {
+            throw new Error(data?.error || 'Request failed');
           }
 
           contactForm.reset();
