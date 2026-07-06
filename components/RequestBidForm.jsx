@@ -50,8 +50,8 @@ export default function RequestBidForm() {
         throw new Error(data?.error || 'Request failed');
       }
 
-      setSuccessMessage('Request received. Our team will follow up shortly.');
       form.reset();
+      window.location.assign('/thank-you?source=request-bid');
     } catch (error) {
       setErrorMessage(error.message || 'Unable to submit your request right now. Please try again.');
     } finally {

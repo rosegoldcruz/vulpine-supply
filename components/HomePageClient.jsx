@@ -280,12 +280,7 @@ export default function HomePageClient() {
           }
 
           contactForm.reset();
-          if (contactStatus) {
-            const message = document.createElement('p');
-            message.className = 'section-body';
-            message.textContent = 'Request received. Our team will follow up shortly.';
-            contactStatus.replaceChildren(message);
-          }
+          window.location.assign('/thank-you?source=homepage-contact');
         } catch (error) {
           if (contactStatus) {
             const message = document.createElement('p');
