@@ -110,9 +110,9 @@ function normalizePayload(raw, request) {
     utm_content: firstString(raw, ['utm_content', 'utmContent']),
     utm_term: firstString(raw, ['utm_term', 'utmTerm']),
     smsConsent: normalizeSmsConsent(raw),
-    smsConsentText: firstString(raw, ['smsConsentText', 'sms_consent_text']) || SMS_CONSENT_TEXT,
-    smsConsentTimestamp: firstString(raw, ['smsConsentTimestamp', 'sms_consent_timestamp']) || new Date().toISOString(),
-    smsConsentSource: normalizePageUrl(raw?.smsConsentSource || raw?.sms_consent_source, pageUrl) || pageUrl,
+    smsConsentText: SMS_CONSENT_TEXT,
+    smsConsentTimestamp: new Date().toISOString(),
+    smsConsentSource: pageUrl,
     crm_synced: false,
     crm_synced_at: null,
     raw_payload: {
