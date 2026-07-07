@@ -6,6 +6,8 @@ export const runtime = 'nodejs';
 const SOURCE = 'vulpinehomes.com';
 const DEFAULT_STATUS = 'new';
 const MAX_STRING_LENGTH = 2000;
+const SMS_CONSENT_TEXT =
+  'I agree to receive calls and text messages from Vulpine about my inquiry. Message and data rates may apply. Reply STOP to opt out. Reply HELP for help.';
 
 const TEXT_FIELDS = [
   'name',
@@ -43,6 +45,11 @@ function firstString(raw, keys) {
 
 function normalizeEmail(value) {
   return cleanString(value, 320).toLowerCase();
+}
+
+function normalizeSmsConsent(raw) {
+  const value = raw?.smsConsent ?? raw?.sms_consent;
+  return value === true || value === 'true' || value === 'on' || value === '1';
 }
 
 function normalizePageUrl(value, fallback) {
@@ -102,6 +109,10 @@ function normalizePayload(raw, request) {
     utm_campaign: firstString(raw, ['utm_campaign', 'utmCampaign']),
     utm_content: firstString(raw, ['utm_content', 'utmContent']),
     utm_term: firstString(raw, ['utm_term', 'utmTerm']),
+    smsConsent: normalizeSmsConsent(raw),
+    smsConsentText: SMS_CONSENT_TEXT,
+    smsConsentTimestamp: new Date().toISOString(),
+    smsConsentSource: pageUrl,
     crm_synced: false,
     crm_synced_at: null,
     raw_payload: {
@@ -121,6 +132,9 @@ function validatePayload(payload) {
   }
   if (!payload.project_type) return 'Project type is required.';
   if (!payload.message) return 'Project details are required.';
+  if (!payload.smsConsent) {
+    return 'Please confirm you agree to receive calls and text messages from Vulpine.';
+  }
   return '';
 }
 
@@ -172,6 +186,7 @@ function buildBidRequestPayload(raw, payload, request) {
     projectType: payload.project_type,
     projectLocation: payload.project_location,
     projectDetails: payload.message,
+    smsConsent: payload.smsConsent,
     userAgent: request.headers.get('user-agent') || '',
     ip: getRequestIp(request),
   };
@@ -229,6 +244,10 @@ export async function POST(request) {
     record.status = payload.status;
     record.crm_synced = payload.crm_synced;
     record.crm_synced_at = payload.crm_synced_at;
+    record.smsConsent = payload.smsConsent;
+    record.smsConsentText = payload.smsConsentText;
+    record.smsConsentTimestamp = payload.smsConsentTimestamp;
+    record.smsConsentSource = payload.smsConsentSource;
     record.raw_payload = payload.raw_payload;
 
     const missingConfig = validateConfig();
@@ -237,7 +256,11 @@ export async function POST(request) {
     if (missingConfig.length > 0) {
       console.error('Contact intake is missing required server env vars:', missingConfig.join(', '));
     } else {
-      result = await createNocoDbRecord(record);
+      try {
+        result = await createNocoDbRecord(record);
+      } catch (error) {
+        console.error('NocoDB intake sync failed:', error);
+      }
     }
 
     const bidRequestPayload = buildBidRequestPayload(raw || {}, payload, request);
