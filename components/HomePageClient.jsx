@@ -5,6 +5,9 @@ import { gsap } from 'gsap';
 import { ScrollTrigger } from 'gsap/ScrollTrigger';
 import MaterialSupplyGrid from './MaterialSupplyGrid';
 
+const SMS_CONSENT_TEXT =
+  'I agree to receive calls and text messages from Vulpine about my inquiry. Message and data rates may apply. Reply STOP to opt out. Reply HELP for help.';
+
 const PAGE_HTML_BEFORE_SUPPLY = `
 <!-- ─── NAV ─── -->
 <nav>
@@ -172,7 +175,7 @@ const PAGE_HTML_BEFORE_SUPPLY = `
       <div class="form-group full"><label class="form-label" for="fmessage">Project Details</label><textarea class="form-textarea" id="fmessage" name="message" placeholder="Tell us about the scope — unit count, material categories you need, timeline, location..." required></textarea></div>
       <div class="form-consent">
         <input type="checkbox" id="fsmsconsent" name="sms_consent" required>
-        <label class="form-consent-label" for="fsmsconsent">I agree to receive calls and text messages from Vulpine about my inquiry. Message and data rates may apply. Reply STOP to opt out. Reply HELP for help.</label>
+        <label class="form-consent-label" for="fsmsconsent">${SMS_CONSENT_TEXT}</label>
       </div>
       <button type="submit" class="form-submit">Send Request</button>
       <div aria-live="polite" role="status" data-contact-status></div>
@@ -275,8 +278,7 @@ export default function HomePageClient() {
           utm_content: params.get('utm_content') || '',
           utm_term: params.get('utm_term') || '',
           smsConsent: true,
-          smsConsentText:
-            'I agree to receive calls and text messages from Vulpine about my inquiry. Message and data rates may apply. Reply STOP to opt out. Reply HELP for help.',
+          smsConsentText: SMS_CONSENT_TEXT,
           smsConsentTimestamp: new Date().toISOString(),
           smsConsentSource: pageUrl,
         };
