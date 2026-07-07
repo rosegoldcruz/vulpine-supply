@@ -2,6 +2,9 @@
 
 import { useState } from 'react';
 
+export const SMS_CONSENT_TEXT =
+  'I agree to receive calls and text messages from Vulpine about my inquiry. Message and data rates may apply. Reply STOP to opt out. Reply HELP for help.';
+
 export default function RequestBidForm() {
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [successMessage, setSuccessMessage] = useState('');
@@ -12,10 +15,17 @@ export default function RequestBidForm() {
     event.stopPropagation();
     setSuccessMessage('');
     setErrorMessage('');
-    setIsSubmitting(true);
 
     const form = event.currentTarget;
     const formData = new FormData(form);
+
+    if (!formData.get('sms_consent')) {
+      setErrorMessage('Please check the box to confirm you agree to receive calls and text messages.');
+      return;
+    }
+
+    setIsSubmitting(true);
+
     const params = new URLSearchParams(window.location.search);
 
     const payload = {
@@ -33,6 +43,10 @@ export default function RequestBidForm() {
       utm_campaign: params.get('utm_campaign') || '',
       utm_content: params.get('utm_content') || '',
       utm_term: params.get('utm_term') || '',
+      smsConsent: true,
+      smsConsentText: SMS_CONSENT_TEXT,
+      smsConsentTimestamp: new Date().toISOString(),
+      smsConsentSource: window.location.href,
     };
 
     try {
@@ -123,12 +137,18 @@ export default function RequestBidForm() {
           required
         ></textarea>
       </div>
+      <div className="form-consent">
+        <input type="checkbox" id="sms_consent" name="sms_consent" required />
+        <label className="form-consent-label" htmlFor="sms_consent">
+          {SMS_CONSENT_TEXT}
+        </label>
+      </div>
       <button type="submit" className="form-submit" disabled={isSubmitting}>
         {isSubmitting ? 'Sending...' : 'Send Request'}
       </button>
       <div aria-live="polite" role="status">
         {successMessage ? <p className="section-body">{successMessage}</p> : null}
-        {errorMessage ? <p className="section-body">{errorMessage}</p> : null}
+        {errorMessage ? <p className="form-error">{errorMessage}</p> : null}
       </div>
     </form>
   );

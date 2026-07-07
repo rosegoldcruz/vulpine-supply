@@ -5,6 +5,9 @@ import { gsap } from 'gsap';
 import { ScrollTrigger } from 'gsap/ScrollTrigger';
 import MaterialSupplyGrid from './MaterialSupplyGrid';
 
+const SMS_CONSENT_TEXT =
+  'I agree to receive calls and text messages from Vulpine about my inquiry. Message and data rates may apply. Reply STOP to opt out. Reply HELP for help.';
+
 const PAGE_HTML_BEFORE_SUPPLY = `
 <!-- ─── NAV ─── -->
 <nav>
@@ -170,6 +173,10 @@ const PAGE_HTML_BEFORE_SUPPLY = `
       </div>
       <div class="form-group full"><label class="form-label" for="flocation">Project Location</label><input class="form-input" type="text" id="flocation" name="project_location" placeholder="City, community, or property address"></div>
       <div class="form-group full"><label class="form-label" for="fmessage">Project Details</label><textarea class="form-textarea" id="fmessage" name="message" placeholder="Tell us about the scope — unit count, material categories you need, timeline, location..." required></textarea></div>
+      <div class="form-consent">
+        <input type="checkbox" id="fsmsconsent" name="sms_consent" required>
+        <label class="form-consent-label" for="fsmsconsent">${SMS_CONSENT_TEXT}</label>
+      </div>
       <button type="submit" class="form-submit">Send Request</button>
       <div aria-live="polite" role="status" data-contact-status></div>
     </form>
@@ -240,6 +247,19 @@ export default function HomePageClient() {
 
         const submitButton = contactForm.querySelector('button[type="submit"]');
         const formData = new FormData(contactForm);
+
+        if (contactStatus) contactStatus.innerHTML = '';
+
+        if (!formData.get('sms_consent')) {
+          if (contactStatus) {
+            const message = document.createElement('p');
+            message.className = 'form-error';
+            message.textContent = 'Please check the box to confirm you agree to receive calls and text messages.';
+            contactStatus.replaceChildren(message);
+          }
+          return;
+        }
+
         const params = new URLSearchParams(window.location.search);
         const pageUrl = `${window.location.origin}${window.location.pathname}#contact`;
         const payload = {
@@ -257,9 +277,12 @@ export default function HomePageClient() {
           utm_campaign: params.get('utm_campaign') || '',
           utm_content: params.get('utm_content') || '',
           utm_term: params.get('utm_term') || '',
+          smsConsent: true,
+          smsConsentText: SMS_CONSENT_TEXT,
+          smsConsentTimestamp: new Date().toISOString(),
+          smsConsentSource: pageUrl,
         };
 
-        if (contactStatus) contactStatus.innerHTML = '';
         if (submitButton) {
           submitButton.disabled = true;
           submitButton.textContent = 'Sending...';

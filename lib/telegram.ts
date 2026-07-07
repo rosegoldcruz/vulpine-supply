@@ -55,6 +55,7 @@ export type BidRequestPayload = {
   location?: string;
   projectDetails?: string;
   details?: string;
+  smsConsent?: boolean;
   userAgent?: string;
   ip?: string;
 };
@@ -83,6 +84,7 @@ export function formatBidRequestTelegramMessage(payload: BidRequestPayload): str
     `<b>Project Details:</b>`,
     `${escapeTelegramHtml(projectDetails)}`,
     ``,
+    `<b>SMS Consent:</b> ${payload.smsConsent ? 'Yes' : 'No'}`,
     `<b>Time:</b> ${escapeTelegramHtml(new Date().toISOString())}`,
     payload.ip ? `<b>IP:</b> ${escapeTelegramHtml(payload.ip)}` : '',
     payload.userAgent
