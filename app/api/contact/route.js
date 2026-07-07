@@ -6,6 +6,8 @@ export const runtime = 'nodejs';
 const SOURCE = 'vulpinehomes.com';
 const DEFAULT_STATUS = 'new';
 const MAX_STRING_LENGTH = 2000;
+const SMS_CONSENT_TEXT =
+  'I agree to receive calls and text messages from Vulpine about my inquiry. Message and data rates may apply. Reply STOP to opt out. Reply HELP for help.';
 
 const TEXT_FIELDS = [
   'name',
@@ -108,7 +110,7 @@ function normalizePayload(raw, request) {
     utm_content: firstString(raw, ['utm_content', 'utmContent']),
     utm_term: firstString(raw, ['utm_term', 'utmTerm']),
     smsConsent: normalizeSmsConsent(raw),
-    smsConsentText: firstString(raw, ['smsConsentText', 'sms_consent_text']),
+    smsConsentText: firstString(raw, ['smsConsentText', 'sms_consent_text']) || SMS_CONSENT_TEXT,
     smsConsentTimestamp: firstString(raw, ['smsConsentTimestamp', 'sms_consent_timestamp']) || new Date().toISOString(),
     smsConsentSource: normalizePageUrl(raw?.smsConsentSource || raw?.sms_consent_source, pageUrl) || pageUrl,
     crm_synced: false,
