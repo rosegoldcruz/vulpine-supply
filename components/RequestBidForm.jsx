@@ -1,9 +1,7 @@
 'use client';
 
 import { useState } from 'react';
-
-export const SMS_CONSENT_TEXT =
-  'I agree to receive calls and text messages from Vulpine about my inquiry. Message and data rates may apply. Reply STOP to opt out. Reply HELP for help.';
+import { SMS_CONSENT_TEXT } from '../lib/sms-consent';
 
 export default function RequestBidForm() {
   const [isSubmitting, setIsSubmitting] = useState(false);
@@ -19,10 +17,7 @@ export default function RequestBidForm() {
     const form = event.currentTarget;
     const formData = new FormData(form);
 
-    if (!formData.get('sms_consent')) {
-      setErrorMessage('Please check the box to confirm you agree to receive calls and text messages.');
-      return;
-    }
+    const smsConsent = formData.get('sms_consent') === 'on';
 
     setIsSubmitting(true);
 
@@ -43,10 +38,10 @@ export default function RequestBidForm() {
       utm_campaign: params.get('utm_campaign') || '',
       utm_content: params.get('utm_content') || '',
       utm_term: params.get('utm_term') || '',
-      smsConsent: true,
-      smsConsentText: SMS_CONSENT_TEXT,
-      smsConsentTimestamp: new Date().toISOString(),
-      smsConsentSource: window.location.href,
+      smsConsent,
+      smsConsentText: smsConsent ? SMS_CONSENT_TEXT : null,
+      smsConsentTimestamp: smsConsent ? new Date().toISOString() : null,
+      smsConsentSource: smsConsent ? window.location.href : null,
     };
 
     try {
@@ -111,6 +106,7 @@ export default function RequestBidForm() {
           <option value="investor-flip">Investor Flip / Rental Refresh</option>
           <option value="new-build">New Build</option>
           <option value="contractor">Contractor Supply Relationship</option>
+          <option value="privacy-legal">Privacy / Legal Request</option>
         </select>
       </div>
       <div className="form-group full">
@@ -138,11 +134,15 @@ export default function RequestBidForm() {
         ></textarea>
       </div>
       <div className="form-consent">
-        <input type="checkbox" id="sms_consent" name="sms_consent" required />
+        <input type="checkbox" id="sms_consent" name="sms_consent" />
         <label className="form-consent-label" htmlFor="sms_consent">
           {SMS_CONSENT_TEXT}
         </label>
       </div>
+      <p className="form-legal">
+        Calls and texts are optional; consent is not a condition of purchase.
+        {' '}See our <a href="/terms#sms">Terms</a> and <a href="/privacy">Privacy Policy</a>.
+      </p>
       <button type="submit" className="form-submit" disabled={isSubmitting}>
         {isSubmitting ? 'Sending...' : 'Send Request'}
       </button>

@@ -72,6 +72,8 @@ export default function RequestBidPage() {
           <li>
             <a href="/request-bid">Request a Bid</a>
           </li>
+          <li><a href="/terms">Terms</a></li>
+          <li><a href="/privacy">Privacy</a></li>
         </ul>
         <div className="footer-copy">© 2026 Vulpine Homes. All rights reserved.</div>
       </footer>

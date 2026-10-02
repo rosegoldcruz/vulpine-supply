@@ -4,9 +4,7 @@ import { useEffect } from 'react';
 import { gsap } from 'gsap';
 import { ScrollTrigger } from 'gsap/ScrollTrigger';
 import MaterialSupplyGrid from './MaterialSupplyGrid';
-
-const SMS_CONSENT_TEXT =
-  'I agree to receive calls and text messages from Vulpine about my inquiry. Message and data rates may apply. Reply STOP to opt out. Reply HELP for help.';
+import { SMS_CONSENT_TEXT } from '../lib/sms-consent';
 
 const PAGE_HTML_BEFORE_SUPPLY = `
 <!-- ─── NAV ─── -->
@@ -169,14 +167,16 @@ const PAGE_HTML_BEFORE_SUPPLY = `
           <option value="investor-flip">Investor Flip / Rental Refresh</option>
           <option value="new-build">New Build</option>
           <option value="contractor">Contractor Supply Relationship</option>
+          <option value="privacy-legal">Privacy / Legal Request</option>
         </select>
       </div>
       <div class="form-group full"><label class="form-label" for="flocation">Project Location</label><input class="form-input" type="text" id="flocation" name="project_location" placeholder="City, community, or property address"></div>
       <div class="form-group full"><label class="form-label" for="fmessage">Project Details</label><textarea class="form-textarea" id="fmessage" name="message" placeholder="Tell us about the scope — unit count, material categories you need, timeline, location..." required></textarea></div>
       <div class="form-consent">
-        <input type="checkbox" id="fsmsconsent" name="sms_consent" required>
+        <input type="checkbox" id="fsmsconsent" name="sms_consent">
         <label class="form-consent-label" for="fsmsconsent">${SMS_CONSENT_TEXT}</label>
       </div>
+      <p class="form-legal">Calls and texts are optional; consent is not a condition of purchase. See our <a href="/terms#sms">Terms</a> and <a href="/privacy">Privacy Policy</a>.</p>
       <button type="submit" class="form-submit">Send Request</button>
       <div aria-live="polite" role="status" data-contact-status></div>
     </form>
@@ -252,15 +252,7 @@ export default function HomePageClient() {
 
         if (contactStatus) contactStatus.innerHTML = '';
 
-        if (!formData.get('sms_consent')) {
-          if (contactStatus) {
-            const message = document.createElement('p');
-            message.className = 'form-error';
-            message.textContent = 'Please check the box to confirm you agree to receive calls and text messages.';
-            contactStatus.replaceChildren(message);
-          }
-          return;
-        }
+        const smsConsent = formData.get('sms_consent') === 'on';
 
         const params = new URLSearchParams(window.location.search);
         const pageUrl = `${window.location.origin}${window.location.pathname}#contact`;
@@ -279,10 +271,10 @@ export default function HomePageClient() {
           utm_campaign: params.get('utm_campaign') || '',
           utm_content: params.get('utm_content') || '',
           utm_term: params.get('utm_term') || '',
-          smsConsent: true,
-          smsConsentText: SMS_CONSENT_TEXT,
-          smsConsentTimestamp: new Date().toISOString(),
-          smsConsentSource: pageUrl,
+          smsConsent,
+          smsConsentText: smsConsent ? SMS_CONSENT_TEXT : null,
+          smsConsentTimestamp: smsConsent ? new Date().toISOString() : null,
+          smsConsentSource: smsConsent ? pageUrl : null,
         };
 
         if (submitButton) {
