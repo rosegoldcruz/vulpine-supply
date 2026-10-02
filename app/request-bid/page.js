@@ -34,6 +34,12 @@ export default function RequestBidPage() {
           <li>
             <a href="/request-bid">Request a Bid</a>
           </li>
+          <li>
+            <a href="/terms">Terms</a>
+          </li>
+          <li>
+            <a href="/privacy">Privacy</a>
+          </li>
         </ul>
         <a href="/request-bid" className="nav-cta">
           Request a Bid

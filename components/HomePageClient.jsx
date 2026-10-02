@@ -194,6 +194,8 @@ const PAGE_HTML_BEFORE_SUPPLY = `
     <li><a href="#mf-split">Multifamily</a></li>
     <li><a href="#contractors">Contractors</a></li>
     <li><a href="#contact">Request a Bid</a></li>
+    <li><a href="/terms">Terms</a></li>
+    <li><a href="/privacy">Privacy</a></li>
   </ul>
   <div class="footer-copy">© 2026 Vulpine Homes. All rights reserved.</div>
 </footer>
