@@ -1,13 +1,12 @@
 import { trackAnalyticsEvent } from '../../../lib/analytics';
 import { formatBidRequestTelegramMessage, sendTelegramMessage } from '../../../lib/telegram';
+import { SMS_CONSENT_TEXT } from '../../../lib/sms-consent';
 
 export const runtime = 'nodejs';
 
 const SOURCE = 'vulpinehomes.com';
 const DEFAULT_STATUS = 'new';
 const MAX_STRING_LENGTH = 2000;
-const SMS_CONSENT_TEXT =
-  'I agree to receive calls and text messages from Vulpine about my inquiry. Message and data rates may apply. Reply STOP to opt out. Reply HELP for help.';
 
 const TEXT_FIELDS = [
   'name',
@@ -88,6 +87,7 @@ async function readRequestBody(request) {
 
 function normalizePayload(raw, request) {
   const pageUrl = normalizePageUrl(raw?.page_url || raw?.pageUrl, request.headers.get('referer'));
+  const smsConsent = normalizeSmsConsent(raw);
 
   return {
     source: SOURCE,
@@ -109,10 +109,10 @@ function normalizePayload(raw, request) {
     utm_campaign: firstString(raw, ['utm_campaign', 'utmCampaign']),
     utm_content: firstString(raw, ['utm_content', 'utmContent']),
     utm_term: firstString(raw, ['utm_term', 'utmTerm']),
-    smsConsent: normalizeSmsConsent(raw),
-    smsConsentText: SMS_CONSENT_TEXT,
-    smsConsentTimestamp: new Date().toISOString(),
-    smsConsentSource: pageUrl,
+    smsConsent,
+    smsConsentText: smsConsent ? SMS_CONSENT_TEXT : null,
+    smsConsentTimestamp: smsConsent ? new Date().toISOString() : null,
+    smsConsentSource: smsConsent ? pageUrl : null,
     crm_synced: false,
     crm_synced_at: null,
     raw_payload: {
@@ -132,9 +132,6 @@ function validatePayload(payload) {
   }
   if (!payload.project_type) return 'Project type is required.';
   if (!payload.message) return 'Project details are required.';
-  if (!payload.smsConsent) {
-    return 'Please confirm you agree to receive calls and text messages from Vulpine.';
-  }
   return '';
 }
 
