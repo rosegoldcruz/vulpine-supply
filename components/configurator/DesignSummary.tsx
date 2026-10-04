@@ -49,7 +49,7 @@ export function DesignSummary() {
     `Doors use: ${doorHardwareLabel(sel)}`,
     `Design summary: ${SITE}/configurator/summary?${q}`,
   ].join('\n');
-  const quoteHref = `/request-bid?${new URLSearchParams({ configuration: quoteText }).toString()}`;
+  const quoteHref = `/request-bid?${new URLSearchParams({ configuration: quoteText, config: q }).toString()}`;
   const hero = snapshot || (color.kitchen ? cabsUrl(color.kitchen) : null);
   const sizes = hwImgs.sizeImages.map((s) => s.size);
 

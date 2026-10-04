@@ -146,6 +146,8 @@ export function QuoteChat(p: Props) {
       projectType: 'Cabinet configurator',
       projectDetails: message,
       source: '/configurator (Vulpi)',
+      // canonical design query (style=...&color=...) for the server-side summary PDF / GoHighLevel
+      config: p.summaryHref.split('?')[1] || '',
       pageUrl: window.location.href,
       utm_source: q.get('utm_source') || '',
       utm_medium: q.get('utm_medium') || '',
