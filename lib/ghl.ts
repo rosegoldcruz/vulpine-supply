@@ -129,13 +129,37 @@ export interface SendResult {
   messageId?: string;
 }
 
+/**
+ * Sender for outgoing emails, from GHL_EMAIL_FROM (e.g. "Vulpine <team@vulpine.llc>"). Unset = the location's
+ * default sender. Only set it once that domain is a verified dedicated sending domain in GHL; GHL otherwise
+ * falls back to the default sender anyway.
+ */
+export function defaultEmailFrom(): string | undefined {
+  return process.env.GHL_EMAIL_FROM?.trim() || undefined;
+}
+
 export async function sendEmail(opts: { contactId: string; subject: string; html: string; attachments?: string[]; emailTo?: string; emailFrom?: string }): Promise<SendResult> {
-  const body: Record<string, unknown> = { type: 'Email', contactId: opts.contactId, subject: opts.subject, html: opts.html };
-  if (opts.attachments?.length) body.attachments = opts.attachments;
-  if (opts.emailTo) body.emailTo = opts.emailTo;
-  if (opts.emailFrom) body.emailFrom = opts.emailFrom;
-  const data = await ghlFetch<SendResult>('POST', '/conversations/messages', body);
-  return { conversationId: data.conversationId, messageId: data.messageId };
+  const base: Record<string, unknown> = { type: 'Email', contactId: opts.contactId, subject: opts.subject, html: opts.html };
+  if (opts.attachments?.length) base.attachments = opts.attachments;
+  if (opts.emailTo) base.emailTo = opts.emailTo;
+  const from = opts.emailFrom ?? defaultEmailFrom();
+  // try "Name <addr>", then the bare address, then the location default, so a rejected sender never blocks the email
+  const bare = from?.match(/<([^>]+)>/)?.[1]?.trim();
+  const candidates = [from, bare && bare !== from ? bare : undefined, from ? null : undefined].filter((c) => c !== undefined) as (string | null)[];
+  if (!candidates.length) candidates.push(null);
+  let lastError: unknown;
+  for (const candidate of candidates) {
+    try {
+      const data = await ghlFetch<SendResult>('POST', '/conversations/messages', candidate ? { ...base, emailFrom: candidate } : base);
+      return { conversationId: data.conversationId, messageId: data.messageId };
+    } catch (e) {
+      lastError = e;
+      // only a 4xx (bad request / sender rejected) is worth retrying with a different sender
+      if (!(e instanceof GhlError) || e.status < 400 || e.status >= 500 || e.status === 401) throw e;
+      console.error('[ghl] email send rejected with sender', candidate ?? '(default)', e.status, e.body);
+    }
+  }
+  throw lastError;
 }
 
 export async function sendSms(opts: { contactId: string; message: string }): Promise<SendResult> {
