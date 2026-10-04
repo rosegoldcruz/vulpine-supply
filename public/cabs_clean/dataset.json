@@ -318,84 +318,84 @@
     },
     "flour": {
       "name": "Flour",
-      "color": "#d3d1cf",
+      "color": "#d5d3d0",
       "texture": "/configurator/finishes/flour.jpg",
       "roughness": 0.55,
       "textured": false
     },
     "graphite": {
       "name": "Graphite",
-      "color": "#4c4c4b",
+      "color": "#4e4d4b",
       "texture": "/configurator/finishes/graphite.jpg",
       "roughness": 0.55,
       "textured": false
     },
     "latte_walnut": {
       "name": "Latte Walnut",
-      "color": "#6a5843",
+      "color": "#695844",
       "texture": "/configurator/finishes/latte_walnut.jpg",
       "roughness": 0.62,
       "textured": true
     },
     "mist": {
       "name": "Mist",
-      "color": "#9d9c99",
+      "color": "#9f9d9a",
       "texture": "/configurator/finishes/mist.jpg",
       "roughness": 0.55,
       "textured": false
     },
     "nimbus_oak": {
       "name": "Nimbus Oak",
-      "color": "#afaaa3",
+      "color": "#afaaa2",
       "texture": "/configurator/finishes/nimbus_oak.jpg",
       "roughness": 0.62,
       "textured": true
     },
     "platinum_teak": {
       "name": "Platinum Teak",
-      "color": "#b9b5b1",
+      "color": "#bab5b1",
       "texture": "/configurator/finishes/platinum_teak.jpg",
       "roughness": 0.62,
       "textured": true
     },
     "sable_oak": {
       "name": "Sable Oak",
-      "color": "#433c3a",
+      "color": "#433c39",
       "texture": "/configurator/finishes/sable_oak.jpg",
       "roughness": 0.62,
       "textured": true
     },
     "slate": {
       "name": "Slate",
-      "color": "#414345",
+      "color": "#424444",
       "texture": "/configurator/finishes/slate.jpg",
       "roughness": 0.55,
       "textured": false
     },
     "snow_gloss": {
       "name": "Snow Gloss",
-      "color": "#d0d0ce",
+      "color": "#d2d2cf",
       "texture": "/configurator/finishes/snow_gloss.jpg",
       "roughness": 0.18,
       "textured": false
     },
     "storm": {
       "name": "Storm",
-      "color": "#73746f",
+      "color": "#75756f",
       "texture": "/configurator/finishes/storm.jpg",
       "roughness": 0.55,
       "textured": false
     },
     "urban_teak": {
       "name": "Urban Teak",
-      "color": "#7e766f",
+      "color": "#7e766e",
       "texture": "/configurator/finishes/urban_teak.jpg",
       "roughness": 0.62,
       "textured": true
     },
     "wheat_oak": {
       "name": "Wheat Oak",
-      "color": "#bbab88",
+      "color": "#bcab89",
       "texture": "/configurator/finishes/wheat_oak.jpg",
       "roughness": 0.62,
       "textured": true
