@@ -41,6 +41,32 @@ export async function sendTelegramMessage(
   }
 }
 
+/** Best-effort photo forwarding (sendPhoto for one, sendMediaGroup for 2-10). */
+export async function sendTelegramPhotos(photos: Blob[], caption = ''): Promise<void> {
+  const token = process.env.TELEGRAM_BOT_TOKEN;
+  const chatId = process.env.TELEGRAM_CHAT_ID;
+  if (!token || !chatId || photos.length === 0) return;
+  const form = new FormData();
+  form.append('chat_id', chatId);
+  let method = 'sendPhoto';
+  if (photos.length === 1) {
+    form.append('photo', photos[0], 'photo-1.jpg');
+    if (caption) form.append('caption', caption);
+  } else {
+    method = 'sendMediaGroup';
+    const media = photos.slice(0, 10).map((p, i) => {
+      form.append(`photo${i}`, p, `photo-${i + 1}.jpg`);
+      return { type: 'photo', media: `attach://photo${i}`, ...(i === 0 && caption ? { caption } : {}) };
+    });
+    form.append('media', JSON.stringify(media));
+  }
+  const response = await fetch(`https://api.telegram.org/bot${token}/${method}`, { method: 'POST', body: form });
+  if (!response.ok) {
+    const body = await response.text().catch(() => '');
+    throw new Error(`Telegram photo send failed: ${response.status} ${body}`);
+  }
+}
+
 export type BidRequestPayload = {
   source?: string;
   pageUrl?: string;

@@ -500,3 +500,10 @@
 @media print {
   .sheet, .viewBar, .presets, .sceneHint { display: none !important; }
 }
+
+/* Vulpi restore link (shown after the guide was dismissed) */
+.foxRestore {
+  margin-top: 14px; border: 0; background: none; padding: 4px 0; font: 500 13px 'DM Sans', sans-serif;
+  color: #7a7168; text-decoration: underline; cursor: pointer;
+}
+.foxRestore:hover { color: #1c1a17; }

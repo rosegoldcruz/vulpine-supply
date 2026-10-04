@@ -1,6 +1,6 @@
 'use client';
 
-import { useCallback, useEffect, useMemo, useRef, useState, type KeyboardEvent } from 'react';
+import { useCallback, useEffect, useMemo, useRef, useState, type KeyboardEvent, type MouseEvent as ReactMouseEvent } from 'react';
 import dynamic from 'next/dynamic';
 import { motion, AnimatePresence } from 'framer-motion';
 import Image from 'next/image';
@@ -11,7 +11,8 @@ import styles from './CabinetConfigurator.module.css';
 import type { ConfiguratorEngine } from './scene/engine';
 import { ViewInYourSpace } from './ViewInYourSpace';
 import { CompareFinishes } from './CompareFinishes';
-import { SNAPSHOT_KEY, configQuery, type ConfigSelection } from './summary';
+import { SNAPSHOT_KEY, configQuery, designRef, type ConfigSelection } from './summary';
+import { FoxGuide, FOX_DISMISSED_KEY, FOX_EVENT, type FoxGuideHandle, type FoxSelection } from '@/components/fox/FoxGuide';
 
 const KitchenScene3D = dynamic(() => import('./KitchenScene3D'), {
   ssr: false,
@@ -58,6 +59,32 @@ export function CabinetConfigurator() {
   const [sheetTab, setSheetTab] = useState<SheetTab | null>(null);
   const [arrivedForAr, setArrivedForAr] = useState(false);
   const stageRef = useRef<HTMLDivElement>(null);
+  const sheetRef = useRef<HTMLDivElement>(null);
+  const foxRef = useRef<FoxGuideHandle>(null);
+  const [foxDismissed, setFoxDismissed] = useState(false);
+
+  // Vulpi: remember dismissal, and keep him above the mobile bottom sheet (publishes its height as a CSS var)
+  useEffect(() => {
+    setFoxDismissed(localStorage.getItem(FOX_DISMISSED_KEY) === '1');
+    const onFox = (e: Event) => setFoxDismissed(Boolean((e as CustomEvent).detail?.dismissed));
+    window.addEventListener(FOX_EVENT, onFox);
+    const root = document.documentElement;
+    const ro = new ResizeObserver(() => root.style.setProperty('--config-sheet-h', `${sheetRef.current?.offsetHeight ?? 0}px`));
+    if (sheetRef.current) ro.observe(sheetRef.current);
+    return () => {
+      window.removeEventListener(FOX_EVENT, onFox);
+      ro.disconnect();
+      root.style.removeProperty('--config-sheet-h');
+    };
+  }, []);
+  /** Quote links open Vulpi's short conversation when he's around; otherwise they go to /request-bid as usual. */
+  const onQuoteClick = (e: ReactMouseEvent<HTMLAnchorElement>) => {
+    if (e.metaKey || e.ctrlKey || e.shiftKey || e.button !== 0) return;
+    if (foxRef.current?.openQuote()) {
+      e.preventDefault();
+      setSheetTab(null);
+    }
+  };
 
   // Current selections
   const currentStyle = CONFIG_DATA.doorStyles[style];
@@ -177,8 +204,8 @@ export function CabinetConfigurator() {
   }, [currentHwFinish]);
   const hwMainImage = hwPreview && hwGallery.some((g) => g.image === hwPreview) ? hwPreview : currentHwFinish.pull;
 
-  const quoteHref = useMemo(() => {
-    const summary = [
+  const quoteSummary = useMemo(() => {
+    return [
       'Cabinet configurator selection:',
       `Door style: ${currentStyle.name}`,
       `Color: ${currentColor.color}`,
@@ -186,8 +213,12 @@ export function CabinetConfigurator() {
       `Doors use: ${doorHardware === 'knob' ? 'knobs' : 'pulls'}`,
       `Design summary: https://vulpinehomes.com/configurator/summary?${configKey}`,
     ].join('\n');
-    return `/request-bid?${new URLSearchParams({ configuration: summary }).toString()}`;
   }, [currentStyle.name, currentColor.color, currentHw.name, hwFinishKey, doorHardware, configKey]);
+  const quoteHref = `/request-bid?${new URLSearchParams({ configuration: quoteSummary }).toString()}`;
+  const foxSelection: FoxSelection = useMemo(
+    () => ({ style, color: currentColor.id, hw: hwType, finish: hwFinishKey, doors: doorHardware, view }),
+    [style, currentColor.id, hwType, hwFinishKey, doorHardware, view],
+  );
 
   const description = `${currentStyle.name} doors in ${currentColor.color}, ${currentHw.name} hardware in ${FINISH_NAMES[hwFinishKey] || hwFinishKey}, ${
     doorHardware === 'knob' ? 'knobs' : 'pulls'
@@ -604,15 +635,20 @@ export function CabinetConfigurator() {
             <a href={summaryHref} onClick={onOpenSummary} className={styles.finalSecondary}>
               Design summary (print / PDF)
             </a>
-            <a href={quoteHref} className="btn-primary">
+            <a href={quoteHref} onClick={onQuoteClick} className="btn-primary">
               Request a quote
             </a>
           </div>
+          {foxDismissed && (
+            <button type="button" className={styles.foxRestore} onClick={() => foxRef.current?.restore()}>
+              Bring back Vulpi, the design guide
+            </button>
+          )}
         </div>
       </div>
 
       {/* Mobile bottom sheet: quick picks while the preview stays on screen */}
-      <div className={cn(styles.sheet, sheetTab && styles.sheetOpen)} aria-label="Quick design controls">
+      <div ref={sheetRef} className={cn(styles.sheet, sheetTab && styles.sheetOpen)} aria-label="Quick design controls">
         {sheetTab && (
           <div className={styles.sheetBody}>
             {sheetTab === 'style' && (
@@ -683,11 +719,21 @@ export function CabinetConfigurator() {
               <span className={styles.sheetTabValue}>{value}</span>
             </button>
           ))}
-          <a href={quoteHref} className={styles.sheetCta}>
+          <a href={quoteHref} onClick={onQuoteClick} className={styles.sheetCta}>
             Quote
           </a>
         </div>
       </div>
+
+      <FoxGuide
+        ref={foxRef}
+        selection={foxSelection}
+        quoteMessage={quoteSummary}
+        designRef={designRef(selection)}
+        designLabel={`${currentStyle.name} · ${currentColor.color} · ${currentHw.name} ${FINISH_NAMES[hwFinishKey] || ''}`.trim()}
+        summaryHref={summaryHref}
+        fullFormHref={quoteHref}
+      />
     </div>
   );
 }

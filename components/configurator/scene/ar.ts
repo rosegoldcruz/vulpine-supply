@@ -12,10 +12,11 @@ import { GLTFLoader } from 'three/examples/jsm/loaders/GLTFLoader.js';
 import { DRACOLoader } from 'three/examples/jsm/loaders/DRACOLoader.js';
 import { RoomEnvironment } from 'three/examples/jsm/environments/RoomEnvironment.js';
 import { clone as cloneSkinned } from 'three/examples/jsm/utils/SkeletonUtils.js';
+import { buildFoxClips, loopFor, FOX_FACE_PLUS_Z, type FoxMove } from '../../fox/clips';
 
 export type ArSupport = 'webxr' | 'quicklook' | 'none';
 
-/** Vulpi the fox, stands next to the run in AR. Mesh is authored in meters (1.0 m tall). */
+/** Vulpi the fox (official model, == /workspace/fox/vulpine-fox.glb), stands next to the run in AR. 1.0 m tall, faces +X. */
 export const FOX_URL = '/GLB/vulpi_fox.glb';
 const FOX_GAP_M = 0.35;
 
@@ -38,22 +39,56 @@ export async function detectArSupport(): Promise<ArSupport> {
   return 'none';
 }
 
-let foxPromise: Promise<THREE.Object3D | null> | null = null;
-/** Loads (once) and returns a fresh clone of the fox, or null when the file is missing. */
-export async function loadFox(): Promise<THREE.Object3D | null> {
+let foxPromise: Promise<{ scene: THREE.Object3D; animations: THREE.AnimationClip[] } | null> | null = null;
+
+export interface FoxRig {
+  root: THREE.Object3D;
+  mixer: THREE.AnimationMixer;
+  play: (move: FoxMove) => void;
+}
+
+/** Loads (once) and returns a fresh, posed (idle) clone of the fox with its animation mixer, or null. */
+export async function loadFoxRig(): Promise<FoxRig | null> {
   if (!foxPromise) {
     const loader = new GLTFLoader();
     loader.setDRACOLoader(new DRACOLoader().setDecoderPath('/draco/'));
     foxPromise = loader
       .loadAsync(FOX_URL)
-      .then((g) => g.scene)
+      .then((g) => ({ scene: g.scene, animations: g.animations }))
       .catch((e) => {
         console.warn('[configurator] fox model unavailable for AR', e);
         return null;
       });
   }
   const src = await foxPromise;
-  return src ? cloneSkinned(src) : null;
+  if (!src) return null;
+  const root = cloneSkinned(src.scene);
+  const clips = buildFoxClips(src.animations, root);
+  const mixer = new THREE.AnimationMixer(root);
+  const actions = new Map<FoxMove, THREE.AnimationAction>();
+  for (const [move, clip] of Object.entries(clips) as [FoxMove, THREE.AnimationClip][]) {
+    const a = mixer.clipAction(clip);
+    a.setLoop(loopFor(move), Infinity);
+    a.clampWhenFinished = true;
+    actions.set(move, a);
+  }
+  let current: THREE.AnimationAction | null = null;
+  const play = (move: FoxMove) => {
+    const next = actions.get(move) ?? actions.get('idle');
+    if (!next) return;
+    next.reset().play();
+    if (current && current !== next) current.crossFadeTo(next, 0.35, false);
+    current = next;
+  };
+  mixer.addEventListener('finished', () => play('idle'));
+  play('idle');
+  mixer.update(0.8); // settle into the relaxed idle pose (not the bind T-pose)
+  return { root, mixer, play };
+}
+
+/** Static fox (idle pose) for exports. */
+export async function loadFox(): Promise<THREE.Object3D | null> {
+  return (await loadFoxRig())?.root ?? null;
 }
 
 /** Stand the fox on the floor just right of the run's front corner, turned slightly toward it. */
@@ -61,10 +96,17 @@ export function placeFox(fox: THREE.Object3D, run: THREE.Object3D) {
   run.updateMatrixWorld(true);
   const box = new THREE.Box3().setFromObject(run);
   fox.updateMatrixWorld(true);
+  fox.traverse((o) => {
+    const sk = o as THREE.SkinnedMesh;
+    if (sk.isSkinnedMesh) {
+      sk.skeleton.update();
+      sk.computeBoundingBox(); // posed (idle) bounds, not the bind pose
+    }
+  });
   const fb = new THREE.Box3().setFromObject(fox);
   const half = fb.getSize(new THREE.Vector3()).multiplyScalar(0.5);
   fox.position.set(box.max.x + FOX_GAP_M + half.x, -fb.min.y, box.max.z - Math.max(0.4, half.z));
-  fox.rotation.y = -0.45;
+  fox.rotation.y = FOX_FACE_PLUS_Z - 0.45; // face the viewer, turned a little toward the run
   fox.traverse((o) => {
     if ((o as THREE.Mesh).isMesh) o.castShadow = true;
   });
@@ -73,6 +115,7 @@ export function placeFox(fox: THREE.Object3D, run: THREE.Object3D) {
 /** Skinned meshes don't survive USDZ export reliably; bake the current pose into plain meshes. */
 function bakeSkinned(root: THREE.Object3D): THREE.Group {
   root.updateMatrixWorld(true);
+  root.traverse((o) => (o as THREE.SkinnedMesh).isSkinnedMesh && (o as THREE.SkinnedMesh).skeleton.update());
   const out = new THREE.Group();
   const v = new THREE.Vector3();
   root.traverse((o) => {
@@ -217,13 +260,18 @@ export async function startWebXR(opts: {
     catcher.receiveShadow = true;
     content.add(catcher);
   }
+  // animated Vulpi: idles beside the run, waves when it's placed
+  let fox: FoxRig | null = null;
   if (opts.withFox !== false && run) {
-    loadFox().then((fox) => {
-      if (!fox) return;
-      placeFox(fox, run);
-      content.add(fox);
+    loadFoxRig().then((rig) => {
+      if (!rig) return;
+      placeFox(rig.root, run);
+      content.add(rig.root);
+      fox = rig;
+      if (placed) rig.play('wave');
     });
   }
+  const clock = new THREE.Clock();
 
   const reticle = new THREE.Mesh(
     new THREE.RingGeometry(0.11, 0.14, 48).rotateX(-Math.PI / 2),
@@ -260,9 +308,11 @@ export async function startWebXR(opts: {
     camPos.setFromMatrixPosition(renderer.xr.getCamera().matrixWorld);
     // face the run's open side (+Z) toward the user
     anchor.rotation.set(0, Math.atan2(camPos.x - anchor.position.x, camPos.z - anchor.position.z) + userYaw, 0);
+    const first = !placed;
     anchor.visible = true;
     placed = true;
     setPhase('placed');
+    if (first) fox?.play('wave');
   });
 
   // one-finger drag on the overlay rotates the placed run
@@ -290,6 +340,8 @@ export async function startWebXR(opts: {
   opts.overlay.addEventListener('pointercancel', up);
 
   renderer.setAnimationLoop((_t: number, frame: any) => {
+    const dt = Math.min(0.1, clock.getDelta());
+    if (fox && anchor.visible) fox.mixer.update(dt);
     if (frame) {
       const ref = renderer.xr.getReferenceSpace();
       const hits = frame.getHitTestResults(hitSource);
@@ -328,6 +380,7 @@ export async function startWebXR(opts: {
         (m.material as THREE.Material).dispose();
       }
     });
+    fox?.mixer.stopAllAction();
     renderer.dispose();
     renderer.domElement.remove();
     opts.onPhase('ended');
