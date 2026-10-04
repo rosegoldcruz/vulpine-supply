@@ -104,7 +104,18 @@ export function normalizeMountSets(json: unknown, styleIds: string[] = []): Moun
     const list = normalizeMounts({ mounts: coll, fronts: v?.fronts ?? fronts });
     if (list.length) out.byDoorStyle[id] = list;
   };
-  if (isMountCollection(root.mounts)) out.shared = normalizeMounts(root);
+  if (isMountCollection(root.mounts)) {
+    out.shared = normalizeMounts(root);
+    // DevGod contract: flat mounts carrying mount.by_door_style[<door style>] (pull positions move with the door style:
+    // framed styles centre the pull on the latch stile, Slab sits 2-1/2" in). Resolve one mount list per door style.
+    const recs: any[] = Array.isArray(root.mounts) ? root.mounts : Object.values(root.mounts);
+    const doorStyles = new Set<string>();
+    for (const r of recs) if (r?.by_door_style && typeof r.by_door_style === 'object') Object.keys(r.by_door_style).forEach((k) => doorStyles.add(k));
+    for (const ds of doorStyles) {
+      const list = normalizeMounts(root, ds);
+      if (list.length) out.byDoorStyle[ds] = list;
+    }
+  }
   else if (root.mounts && typeof root.mounts === 'object') for (const [id, v] of Object.entries(root.mounts)) addStyle(id, v);
   if (root.styles && typeof root.styles === 'object') for (const [id, v] of Object.entries(root.styles)) addStyle(id, v);
   for (const id of styleIds) if (!out.byDoorStyle[id] && root[id] && typeof root[id] === 'object') addStyle(id, root[id]);
@@ -112,15 +123,18 @@ export function normalizeMountSets(json: unknown, styleIds: string[] = []): Moun
   return out;
 }
 
-export function normalizeMounts(json: unknown): Mount[] {
+/** @param doorStyle when set, each record's by_door_style[doorStyle] (anchor, position, knob_position, by_style) overrides its top-level values */
+export function normalizeMounts(json: unknown, doorStyle?: string): Mount[] {
   if (!json || typeof json !== 'object') return [];
   const root = json as Record<string, any>;
   const src = root.mounts ?? root;
   const fronts = (root.fronts && typeof root.fronts === 'object' && !isMountRecord(root.fronts) ? root.fronts : {}) as Record<string, any>;
   const list: [string, any][] = Array.isArray(src) ? src.map((m: any) => [String(m?.front ?? m?.name ?? ''), m]) : Object.entries(src);
   const out: Mount[] = [];
-  for (const [key, m] of list) {
-    if (!m || typeof m !== 'object') continue;
+  for (const [key, rec] of list) {
+    if (!rec || typeof rec !== 'object') continue;
+    const ds = doorStyle && rec.by_door_style && typeof rec.by_door_style === 'object' ? rec.by_door_style[doorStyle] : null;
+    const m = ds && typeof ds === 'object' ? { ...rec, ...ds, door_style: doorStyle } : rec;
     const front = String(m.front ?? key);
     const position = vec3(m.position);
     if (!front || !position) continue;

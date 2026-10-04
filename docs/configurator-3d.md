@@ -17,8 +17,12 @@ Without `kitchen.glb` the engine builds a procedural kitchen (`scene/procedural.
 
 ### Hardware resolution (GLB mode, `scene/hardware.ts`)
 `mounts.json` can be flat (`{ mounts: { <front>: {...} } }`) or keyed per door style
-(`mounts[<styleId>]`, `mounts.styles[<styleId>]`, or `<styleId>` at the root); the set for the current door style is
-used and hardware is re-placed on every style change. Per mount:
+(`mounts[<styleId>]`, `mounts.styles[<styleId>]`, or `<styleId>` at the root). DevGod's current contract (11:13 export) is
+flat mounts in which each record carries `by_door_style[<door style>]` (`anchor`, `position`, `knob_position`, `by_style`).
+Pull positions move with the door style: on the four framed styles the pull is centred on the latch stile and ends at the
+inside rail edge; on Slab it sits 2-1/2" in; drawers are centred. `normalizeMountSets` resolves one mount list per door
+style from those overrides. Hardware is re-placed from the current door style's list on every style swap, including in GLB
+mode, and the pulls baked into `kitchen.glb` (correct only for Shaker Classic) are hidden. Per mount:
 1. `by_style[<hardware style>]` exact node (`pull_arch_6in`, `knob_arch`, …) at its `position` / `knob_position`;
 2. `hardware_catalog[<style>].small|large` by the mount's `size_class`;
 3. nearest size of `pull_<style>_<size>` / `knob_<style>`;
