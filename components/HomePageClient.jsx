@@ -1,7 +1,6 @@
 'use client';
 
-import { useEffect, useState } from 'react';
-import { createPortal } from 'react-dom';
+import { useEffect } from 'react';
 import VulpineHomesHero from './scroll-hero/VulpineHomesHero';
 import { gsap } from 'gsap';
 import { ScrollTrigger } from 'gsap/ScrollTrigger';
@@ -186,8 +185,6 @@ const PAGE_HTML_BEFORE_SUPPLY = `
 `;
 
 export default function HomePageClient() {
-  const [heroHost, setHeroHost] = useState(null);
-  useEffect(() => { setHeroHost(document.getElementById("scroll-hero-root")); }, []);
   useEffect(() => {
     gsap.registerPlugin(ScrollTrigger);
 
@@ -312,8 +309,9 @@ export default function HomePageClient() {
 
   return (
     <>
-      <div dangerouslySetInnerHTML={{ __html: PAGE_HTML_BEFORE_SUPPLY }} />
-      {heroHost && createPortal(<VulpineHomesHero />, heroHost)}
+      <div dangerouslySetInnerHTML={{ __html: PAGE_HTML_BEFORE_SUPPLY.split('<div id="scroll-hero-root"></div>')[0].replace('<main>', '') }} />
+      <VulpineHomesHero />
+      <div dangerouslySetInnerHTML={{ __html: PAGE_HTML_BEFORE_SUPPLY.split('<div id="scroll-hero-root"></div>')[1] }} />
       <section id="supply">
         <span className="section-label reveal">What We Supply</span>
         <h2 className="section-heading reveal">Every material category. One supply partner.</h2>
