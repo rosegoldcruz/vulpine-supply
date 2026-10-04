@@ -14,30 +14,11 @@ import { RoomEnvironment } from 'three/examples/jsm/environments/RoomEnvironment
 import { clone as cloneSkinned } from 'three/examples/jsm/utils/SkeletonUtils.js';
 import { buildFoxClips, loopFor, FOX_FACE_PLUS_Z, type FoxMove } from '../../fox/clips';
 
-export type ArSupport = 'webxr' | 'quicklook' | 'none';
+// Device detection lives in ./ar-detect (three-free, synchronous at hydration).
 
 /** Vulpi the fox (official model, == /workspace/fox/vulpine-fox.glb), stands next to the run in AR. 1.0 m tall, faces +X. */
 export const FOX_URL = '/GLB/vulpi_fox.glb';
 const FOX_GAP_M = 0.35;
-
-export async function detectArSupport(): Promise<ArSupport> {
-  if (typeof window === 'undefined') return 'none';
-  try {
-    const a = document.createElement('a');
-    if (a.relList?.supports?.('ar')) return 'quicklook';
-  } catch {
-    /* relList.supports throws on some engines */
-  }
-  const xr = (navigator as any).xr;
-  if (xr?.isSessionSupported) {
-    try {
-      if (await xr.isSessionSupported('immersive-ar')) return 'webxr';
-    } catch {
-      /* blocked by permissions policy */
-    }
-  }
-  return 'none';
-}
 
 let foxPromise: Promise<{ scene: THREE.Object3D; animations: THREE.AnimationClip[] } | null> | null = null;
 

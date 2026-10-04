@@ -18,6 +18,10 @@
     "sync:configurator-assets": "node scripts/sync-configurator-assets.mjs"
   },
   "dependencies": {
+    "@gltf-transform/core": "^4.5.1",
+    "@gltf-transform/extensions": "^4.5.1",
+    "@gltf-transform/functions": "^4.5.1",
+    "draco3dgltf": "^1.5.7",
     "drizzle-orm": "^0.45.2",
     "framer-motion": "^12.43.0",
     "gsap": "^3.12.5",
