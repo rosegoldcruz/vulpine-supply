@@ -4,7 +4,7 @@
  * Every step is best-effort: failures are logged and reported, never thrown to the caller.
  */
 import { parseConfig, type ConfigSelection } from '@/components/configurator/summary';
-import { renderDesignSummaryPdf, SITE, type AssetSource, type DesignDetails } from './design-summary-pdf';
+import type { AssetSource, DesignDetails } from './design-summary-pdf';
 import {
   addContactNote,
   createOpportunity,
@@ -150,14 +150,16 @@ export async function processConfiguratorLead(input: ConfiguratorLeadInput, asse
   // 1) PDF first so the contact note can carry its details even if uploads fail
   let pdf: Buffer | null = null;
   let d: DesignDetails;
+  // loaded lazily so a PDF/runtime problem can never break the request route itself
+  const pdfLib = await import('./design-summary-pdf');
   try {
-    const out = await renderDesignSummaryPdf(sel, { preparedFor: input.name, assets });
+    const out = await pdfLib.renderDesignSummaryPdf(sel, { preparedFor: input.name, assets });
     pdf = out.pdf;
     d = out.details;
     r.pdfBytes = pdf.length;
   } catch (e) {
     fail('pdf', e);
-    d = (await import('./design-summary-pdf')).designDetails(sel);
+    d = pdfLib.designDetails(sel);
   }
   r.ref = d.ref;
 
@@ -304,4 +306,3 @@ export async function processConfiguratorLead(input: ConfiguratorLeadInput, asse
   return r;
 }
 
-export { SITE };
