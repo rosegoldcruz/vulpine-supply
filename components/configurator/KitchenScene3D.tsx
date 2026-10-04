@@ -13,11 +13,13 @@ interface Props extends EngineState {
   onEngine?: (engine: ConfiguratorEngine | null) => void;
 }
 
-const PRESETS: { id: CameraPreset; label: string }[] = [
+/** short = label on phones, so all five fit in one row */
+const PRESETS: { id: CameraPreset; label: string; short?: string }[] = [
   { id: 'overview', label: 'Overview' },
   { id: 'uppers', label: 'Uppers' },
   { id: 'island', label: 'Island' },
-  { id: 'door', label: 'Close-up door' },
+  { id: 'sink', label: 'Sink wall', short: 'Sink' },
+  { id: 'door', label: 'Close-up door', short: 'Close-up' },
 ];
 
 /** 3D kitchen: DevGod's GLBs when present in public/models/configurator, procedural otherwise. */
@@ -30,6 +32,7 @@ export default function KitchenScene3D(props: Props) {
   const [status, setStatus] = useState<{ mode: EngineMode; detail?: string }>({ mode: 'loading' });
   const [progress, setProgress] = useState<LoadProgress | null>(null);
   const [preset, setPreset] = useState<CameraPreset>('overview');
+  const [available, setAvailable] = useState<CameraPreset[]>(['overview', 'uppers', 'island', 'door']);
   const { onModeChange, onEngine } = props;
 
   useEffect(() => {
@@ -52,6 +55,7 @@ export default function KitchenScene3D(props: Props) {
         if (cancelled) return;
         readyRef.current = true;
         await engine.update(latest.current);
+        if (!cancelled) setAvailable(engine.availablePresets());
         if (!cancelled) onEngine?.(engine);
         if (!cancelled && debug) {
           (window as any).__vulpineConfigurator = { engine, ar: () => import('./scene/ar') };
@@ -74,12 +78,12 @@ export default function KitchenScene3D(props: Props) {
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
-  const { styleId, finishId, finish, hwStyle, hwFinishId, hwFinish, doorHardware, showIsland } = props;
+  const { styleId, finishId, finish, hwStyle, hwFinishId, hwFinish, doorHardware, knobShape, showIsland } = props;
   useEffect(() => {
     if (readyRef.current && engineRef.current) {
-      engineRef.current.update({ styleId, finishId, finish, hwStyle, hwFinishId, hwFinish, doorHardware, showIsland });
+      engineRef.current.update({ styleId, finishId, finish, hwStyle, hwFinishId, hwFinish, doorHardware, knobShape, showIsland });
     }
-  }, [styleId, finishId, finish, hwStyle, hwFinishId, hwFinish, doorHardware, showIsland]);
+  }, [styleId, finishId, finish, hwStyle, hwFinishId, hwFinish, doorHardware, knobShape, showIsland]);
 
   useEffect(() => {
     if (!showIsland && preset === 'island') {
@@ -125,7 +129,7 @@ export default function KitchenScene3D(props: Props) {
       )}
       {ready && (
         <div className={styles.presets} role="group" aria-label="Camera views">
-          {PRESETS.map((p) => (
+          {PRESETS.filter((p) => available.includes(p.id)).map((p) => (
             <button
               key={p.id}
               type="button"
@@ -133,8 +137,18 @@ export default function KitchenScene3D(props: Props) {
               aria-pressed={preset === p.id}
               disabled={p.id === 'island' && !showIsland}
               onClick={() => go(p.id)}
+              aria-label={p.short ? p.label : undefined}
             >
-              {p.label}
+              {p.short ? (
+                <>
+                  <span className={styles.presetLong}>{p.label}</span>
+                  <span className={styles.presetShort} aria-hidden="true">
+                    {p.short}
+                  </span>
+                </>
+              ) : (
+                p.label
+              )}
             </button>
           ))}
         </div>

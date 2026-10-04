@@ -27,6 +27,8 @@ same, so shared links, the Fox lines (by id) and the 3D assets keep working.
 - Hardware: Cottage now has Matte Black (pull cut out from the manufacturer's family photo, upscaled). The Bar T-knob
   photos were already in the set and are now labelled `Knob: 2" T-knob`. The round Bar knob is labelled 1-1/4", and the
   Cottage pulls are 4-1/2" and 5-7/8" (the old labels were copied from Artisan).
+- "On the doors" offers Pulls / Round knobs / T-knobs for Bar (the 3D view and AR show `knob_bar_t`), and Pulls / Knobs
+  for every other style. The choice is in the URL (`doors=knob&knob=t`), the summary and the quote text ("T-knobs").
 - Colors that DevGod's `finishes.json` doesn't calibrate yet fall back to the swatch-sampled color/texture in
   `dataset.json` (`doorFinishes`), in the 3D view and in the Scene Viewer GLB (`lib/ar-model.ts`).
 

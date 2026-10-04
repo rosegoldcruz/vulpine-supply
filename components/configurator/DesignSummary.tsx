@@ -2,7 +2,7 @@
 
 import { useEffect, useState } from 'react';
 import { CONFIG_DATA, FINISH_COLORS, FINISH_NAMES, cabsUrl } from './data';
-import { SNAPSHOT_KEY, configQuery, designRef, parseConfig, type ConfigSelection } from './summary';
+import { SNAPSHOT_KEY, configQuery, designRef, doorHardwareLabel, parseConfig, type ConfigSelection } from './summary';
 import styles from './DesignSummary.module.css';
 
 const SITE = 'https://vulpinehomes.com';
@@ -46,7 +46,7 @@ export function DesignSummary() {
     `Door style: ${style.name}`,
     `Color: ${color.color}`,
     `Hardware: ${hw.name} - ${finishName}`,
-    `Doors use: ${sel.doors === 'knob' ? 'knobs' : 'pulls'}`,
+    `Doors use: ${doorHardwareLabel(sel)}`,
     `Design summary: ${SITE}/configurator/summary?${q}`,
   ].join('\n');
   const quoteHref = `/request-bid?${new URLSearchParams({ configuration: quoteText }).toString()}`;
@@ -149,7 +149,7 @@ export function DesignSummary() {
             </tr>
             <tr>
               <th scope="row">Doors</th>
-              <td>{sel.doors === 'knob' ? 'Knobs' : 'Pulls'}</td>
+              <td>{doorHardwareLabel(sel).replace(/^./, (c) => c.toUpperCase())}</td>
             </tr>
             <tr>
               <th scope="row">Drawers</th>

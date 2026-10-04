@@ -4,8 +4,6 @@ const nextConfig = {
   outputFileTracingIncludes: {
     '/api/ar-model/[name]': [
       './public/models/configurator/**/*',
-      './public/cabs_clean/dataset.json',
-      './public/configurator/finishes/**/*',
       './node_modules/draco3dgltf/**/*',
     ],
   },

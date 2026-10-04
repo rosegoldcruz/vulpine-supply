@@ -1,0 +1,87 @@
+{
+ "overview iso": {
+  "blender_view": "overview",
+  "position": [
+   0.018,
+   11.893,
+   17.625
+  ],
+  "target": [
+   0.018,
+   1.27,
+   -0.054
+  ],
+  "fov_vertical_deg_16x9": 16.46,
+  "fov_horizontal_deg": 28.84,
+  "lens_mm_36mm_sensor": 70.0,
+  "distance_m": 20.625
+ },
+ "uppers": {
+  "blender_view": "range_wall",
+  "position": [
+   2.634,
+   3.45,
+   5.276
+  ],
+  "target": [
+   -1.796,
+   1.422,
+   -1.545
+  ],
+  "fov_vertical_deg_16x9": 35.12,
+  "fov_horizontal_deg": 58.72,
+  "lens_mm_36mm_sensor": 32.0,
+  "distance_m": 8.382
+ },
+ "island": {
+  "blender_view": "island",
+  "position": [
+   -0.943,
+   3.551,
+   6.506
+  ],
+  "target": [
+   -0.18,
+   0.762,
+   0.287
+  ],
+  "fov_vertical_deg_16x9": 28.41,
+  "fov_horizontal_deg": 48.46,
+  "lens_mm_36mm_sensor": 40.0,
+  "distance_m": 6.858
+ },
+ "(extra) sink wall": {
+  "blender_view": "sink_wall",
+  "position": [
+   -2.811,
+   3.079,
+   3.561
+  ],
+  "target": [
+   2.083,
+   1.422,
+   -1.688
+  ],
+  "fov_vertical_deg_16x9": 37.3,
+  "fov_horizontal_deg": 61.93,
+  "lens_mm_36mm_sensor": 30.0,
+  "distance_m": 7.366
+ },
+ "close-up door": {
+  "blender_view": "glass_closeup",
+  "position": [
+   1.317,
+   2.095,
+   0.88
+  ],
+  "target": [
+   -0.97,
+   1.829,
+   -2.155
+  ],
+  "fov_vertical_deg_16x9": 22.9,
+  "fov_horizontal_deg": 39.6,
+  "lens_mm_36mm_sensor": 50.0,
+  "distance_m": 3.81
+ }
+}

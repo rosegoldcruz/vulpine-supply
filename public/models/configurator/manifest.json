@@ -10,5 +10,6 @@
   "hardware": "/models/configurator/hardware.glb",
   "mounts": "/models/configurator/mounts.json",
   "finishesJson": "/models/configurator/finishes.json",
-  "finishesDir": "/models/configurator/finishes/"
+  "finishesDir": "/models/configurator/finishes/",
+  "cameraPresets": "/models/configurator/camera_presets.json"
 }

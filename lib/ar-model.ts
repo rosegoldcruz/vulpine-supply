@@ -10,12 +10,12 @@ import { Document, NodeIO, type Material, type Node, getBounds } from '@gltf-tra
 import { ALL_EXTENSIONS, KHRTextureTransform, KHRDracoMeshCompression } from '@gltf-transform/extensions';
 import { mergeDocuments, prune, unpartition } from '@gltf-transform/functions';
 
+// Keep this a literal path (and only join file names under it): a dynamic join under public/ makes the file tracer
+// bundle all of public/ (520 MB) into the function.
 const DIR = path.join(process.cwd(), 'public', 'models', 'configurator');
-// Keep these as literal paths: a dynamic join under public/ makes the file tracer bundle all of public/ (520 MB).
-const DATASET_JSON = path.join(process.cwd(), 'public', 'cabs_clean', 'dataset.json');
-const FINISHES_DIR = path.join(process.cwd(), 'public', 'configurator', 'finishes');
+/** same list as engine.ts AR_EXCLUDE_RE (room shell + decor; cabinetry, counters, sink, appliances stay) */
 const AR_EXCLUDE_RE =
-  /^(room_|walls?_|floor|baseboard|window|backsplash|sofa|pillow|rug|coffeetable|books|plant|armchair|floorlamp|art\d|fruitbowl|cuttingboard|coffeemaker|utensil|island_stool|island_fruitbowl)/i;
+  /^(room_|walls?_|floor|baseboard|window|backsplash|sofa|pillow|rug|coffeetable|books|plant|armchair|floorlamp|art\d|fruitbowl|cuttingboard|coffeemaker|utensil|canister|floatingshel|shelf_|island_stool|island_fruitbowl|island_bloom|island_stem|island_vase|island_pendant)/i;
 const FINISH_RE = /(^|_)(door|drawer|panel)(_|$)/i;
 const HARDWARE_RE = /(^|_)(pull|knob|handle)(_|$)/i;
 
@@ -25,6 +25,8 @@ export interface ArModelQuery {
   hw: string;
   finish: string;
   doors: 'pull' | 'knob';
+  /** 't' = the Bar 2" T-knob (knob_bar_t, mount by_style.bar.knob_t) */
+  knob: 'round' | 't';
   island: boolean;
 }
 
@@ -46,13 +48,6 @@ const fileExists = (abs: string) =>
     .then(() => true)
     .catch(() => false);
 const exists = (f: string) => fileExists(path.join(DIR, f));
-let datasetPromise: Promise<any> | null = null;
-/** public/cabs_clean/dataset.json (swatch-sampled door finishes), read once. */
-const readDataset = () =>
-  (datasetPromise ||= fs
-    .readFile(DATASET_JSON, 'utf8')
-    .then((t) => JSON.parse(t))
-    .catch(() => null));
 
 function srgbToLinear(hex: string): [number, number, number] {
   const n = parseInt(hex.replace('#', ''), 16);
@@ -111,15 +106,10 @@ export async function buildArGlb(q: ArModelQuery): Promise<Uint8Array> {
   }
 
   // 3. finish + hardware materials
-  // DevGod's calibrated finishes.json first; colors it doesn't have yet (Oat, Sage, Cafe Walnut, …) fall back to the
-  // swatch-sampled finish in cabs_clean/dataset.json, like the client engine does.
-  let fin = finishes?.finishes?.[q.color];
-  if (!fin) {
-    const df = (await readDataset())?.doorFinishes?.[q.color];
-    if (df) fin = { color: df.color, roughness: df.roughness, ...(df.textured && df.texture ? { publicMap: df.texture } : {}) };
-  }
+  // DevGod's calibrated finishes.json (all 18 catalog colors since kitchen v2)
+  const fin = finishes?.finishes?.[q.color];
   const finishMat = doc.createMaterial('finish').setMetallicFactor(0).setRoughnessFactor(fin?.roughness ?? 0.45);
-  const mapPath = fin?.map ? path.join(DIR, fin.map) : fin?.publicMap ? path.join(FINISHES_DIR, path.basename(fin.publicMap)) : null;
+  const mapPath = typeof fin?.map === 'string' ? path.join(DIR, 'finishes', path.basename(fin.map)) : null;
   if (mapPath && (await fileExists(mapPath))) {
     const tex = doc
       .createTexture(q.color)
@@ -163,7 +153,7 @@ export async function buildArGlb(q: ArModelQuery): Promise<Uint8Array> {
     const s = ds.by_style?.[q.hw] ?? rec.by_style?.[q.hw];
     if (!s) continue;
     const knob = q.doors === 'knob' && rec.mount_type === 'door_vertical';
-    const tpl = templates.get(knob ? s.knob : s.pull);
+    const tpl = templates.get(knob ? (q.knob === 't' && s.knob_t) || s.knob : s.pull);
     const pos = knob ? s.knob_position : s.position;
     if (!tpl?.getMesh() || !Array.isArray(pos)) continue;
     const n = doc.createNode(`${knob ? 'knob' : 'pull'}_${front}`).setMesh(tpl.getMesh()).setTranslation(pos as [number, number, number]).setRotation(rec.quaternion);
@@ -179,9 +169,23 @@ export async function buildArGlb(q: ArModelQuery): Promise<Uint8Array> {
   for (const n of hwScene.listChildren()) n.dispose();
   hwScene.dispose();
 
-  // 5. floor origin at the footprint centre (the open side of the run faces +Z)
-  const wrapper = doc.createNode('vulpine_cabinet_run');
-  for (const c of scene.listChildren()) wrapper.addChild(c);
+  // 5. turn the open side to +Z (same rule as the client: sum of the distinct wall normals; the v2 U sits at 45°),
+  //    then floor origin at the footprint centre
+  const normals: [number, number][] = [];
+  for (const [key, rec] of recs) {
+    const front = String(rec.front ?? key);
+    if (front.startsWith('island_') || !Array.isArray(rec.normal)) continue;
+    const len = Math.hypot(rec.normal[0], rec.normal[2]);
+    if (len < 1e-3) continue;
+    const n: [number, number] = [rec.normal[0] / len, rec.normal[2] / len];
+    if (!normals.some((s) => s[0] * n[0] + s[1] * n[1] > 0.95)) normals.push(n);
+  }
+  const sx = normals.reduce((a, n) => a + n[0], 0);
+  const sz = normals.reduce((a, n) => a + n[1], 0);
+  const yaw = Math.hypot(sx, sz) < 1e-3 ? 0 : Math.atan2(sx, sz);
+  const turn = doc.createNode('vulpine_cabinet_run_turn').setRotation([0, Math.sin(-yaw / 2), 0, Math.cos(-yaw / 2)]);
+  for (const c of scene.listChildren()) turn.addChild(c);
+  const wrapper = doc.createNode('vulpine_cabinet_run').addChild(turn);
   scene.addChild(wrapper);
   const b = getBounds(scene);
   wrapper.setTranslation([-(b.min[0] + b.max[0]) / 2, -b.min[1], -(b.min[2] + b.max[2]) / 2]);
@@ -203,5 +207,6 @@ export function parseArQuery(sp: URLSearchParams): ArModelQuery | null {
   const hw = id('hw', 'arch');
   const finish = id('finish', 'matte_black');
   if (!style || !color || !hw || !finish) return null;
-  return { style, color, hw, finish, doors: sp.get('doors') === 'knob' ? 'knob' : 'pull', island: sp.get('island') !== '0' };
+  const doors = sp.get('doors') === 'knob' ? 'knob' : 'pull';
+  return { style, color, hw, finish, doors, knob: doors === 'knob' && sp.get('knob') === 't' ? 't' : 'round', island: sp.get('island') !== '0' };
 }

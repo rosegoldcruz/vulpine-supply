@@ -2,10 +2,13 @@
  * Data-driven hardware for GLB mode.
  *
  * hardware.glb node names (any subset may exist; new files just drop in):
- *   pull_<style>_<size>   e.g. pull_arch_6in, pull_arch_7_125in, pull_cottage_96mm, pull_bar_8in
- *   pull_<style>          unsized pull (e.g. current pull_bar = 6" bar)
+ *   pull_<style>_<size>   e.g. pull_arch_6in, pull_arch_7_125in, pull_cottage_4_5in, pull_bar_6in
+ *   pull_<style>          unsized pull
  *   knob_<style>[_<size>] e.g. knob_square
- *   knob_round            generic knob (current file)
+ *   knob_bar_t            Bar 2" T-knob: outside the knob_<style> rule, requested by name (mount by_style.bar.knob_t)
+ *   pull_generic_*, knob_generic (legacy: pull_bar / knob_round)   generic fallbacks
+ * Cottage pulls are 4-1/2" and 5-7/8" (pull_cottage_4_5in / pull_cottage_5_875in since kitchen v2); the old
+ * 4_75in / 6_0625in names resolve to them through LEGACY_NAMES.
  * Local frame of every node: origin = mount point on the front face, +X along the bar, +Z out of the front.
  *
  * Lookup per mount: pull_<style> nearest size to the mount's nominal size -> generic bar/knob_round
@@ -39,14 +42,25 @@ export interface Mount {
   anchor?: THREE.Vector3;
   anchorDir?: THREE.Vector3;
   knobPosition?: THREE.Vector3;
-  byStyle: Record<string, { pull?: string; knob?: string; position?: THREE.Vector3; knobPosition?: THREE.Vector3; lengthM?: number }>;
+  byStyle: Record<string, { pull?: string; knob?: string; knobT?: string; position?: THREE.Vector3; knobPosition?: THREE.Vector3; lengthM?: number }>;
 }
 
 export interface HardwareCatalogEntry {
   small?: string;
   large?: string;
   knob?: string;
+  /** T-knob node (Bar only: knob_bar_t) */
+  knobT?: string;
 }
+
+/** Door knob shape. Only Bar offers both (1-1/4" round knob_bar, 2" T-knob knob_bar_t); other styles have one knob. */
+export type KnobShape = 'round' | 't';
+
+/** Node names renamed in hardware.glb (kitchen v2): old name -> new name. */
+const LEGACY_NAMES: Record<string, string> = {
+  pull_cottage_4_75in: 'pull_cottage_4_5in',
+  pull_cottage_6_0625in: 'pull_cottage_5_875in',
+};
 
 export function normalizeCatalog(json: unknown): Record<string, HardwareCatalogEntry> {
   const out: Record<string, HardwareCatalogEntry> = {};
@@ -55,7 +69,7 @@ export function normalizeCatalog(json: unknown): Record<string, HardwareCatalogE
   for (const [k, v] of Object.entries(cat)) {
     if (!v || typeof v !== 'object') continue;
     const str = (x: unknown) => (typeof x === 'string' && x ? x : undefined);
-    out[k.toLowerCase()] = { small: str(v.small), large: str(v.large), knob: str(v.knob) };
+    out[k.toLowerCase()] = { small: str(v.small), large: str(v.large), knob: str(v.knob), knobT: str(v.knobs?.t) ?? str(v.knobT?.node) };
   }
   return out;
 }
@@ -162,6 +176,7 @@ export function normalizeMounts(json: unknown, doorStyle?: string): Mount[] {
         byStyle[st.toLowerCase()] = {
           pull: typeof e.pull === 'string' ? e.pull : undefined,
           knob: typeof e.knob === 'string' ? e.knob : undefined,
+          knobT: typeof e.knob_t === 'string' ? e.knob_t : undefined,
           position: vec3(e.position) ?? undefined,
           knobPosition: vec3(e.knob_position) ?? undefined,
           lengthM: typeof e.length_m === 'number' ? e.length_m : undefined,
@@ -242,7 +257,13 @@ export class HardwareLibrary {
   }
 
   named(name: string | undefined): Candidate | null {
-    return (name && this.byName.get(name)) || null;
+    if (!name) return null;
+    return this.byName.get(name) || this.byName.get(LEGACY_NAMES[name] ?? '') || null;
+  }
+
+  /** The style's T-knob, requested by name (it is outside the knob_<style> rule). */
+  tKnob(style: string, mountName?: string): Candidate | null {
+    return this.named(mountName) || this.named(this.catalog[style]?.knobT) || this.named(`knob_${style}_t`);
   }
 
   /** The style's shorter ('small') or longer ('large') pull. */
@@ -285,16 +306,19 @@ export function placeMountedHardware(opts: {
   lib: HardwareLibrary;
   style: string;
   doorKind: 'pull' | 'knob';
+  /** 't' = the style's T-knob (Bar), when it has one */
+  knobShape?: KnobShape;
   material: THREE.Material;
   parentFor: (front: string) => THREE.Object3D;
 }): THREE.Object3D[] {
-  const { mounts, lib, style, doorKind, material, parentFor } = opts;
+  const { mounts, lib, style, doorKind, knobShape, material, parentFor } = opts;
   const placed: THREE.Object3D[] = [];
   for (const m of mounts) {
     const kind = m.kind === 'door' ? doorKind : 'pull';
     const target = kind === 'knob' ? 1.25 : m.nominalIn;
     const exact = m.byStyle[style];
-    const exactCand = exact ? lib.named(kind === 'knob' ? exact.knob : exact.pull) : null;
+    const tKnob = kind === 'knob' && knobShape === 't' ? lib.tKnob(style, exact?.knobT) : null;
+    const exactCand = tKnob || (exact ? lib.named(kind === 'knob' ? exact.knob : exact.pull) : null);
     const cand =
       exactCand ||
       (kind === 'pull' && m.sizeClass ? lib.bySizeClass(style, m.sizeClass) : null) ||
@@ -321,7 +345,9 @@ export function placeMountedHardware(opts: {
     }
     obj.name = `${m.front.startsWith('island_') ? 'island_' : ''}${kind}_${m.front.replace(/^island_/, '').replace(/^(door|drawer)_/, '')}`;
     obj.userData.mountedHardware = true;
+    obj.userData.hardwareNode = cand?.node.name ?? `procedural:${style}:${kind}`;
     let pos = m.position.clone();
+    // the T-knob shares the round knob's knob_position
     const exactPos = exactCand ? (kind === 'knob' ? exact?.knobPosition : exact?.position) : undefined;
     if (exactPos) pos = exactPos.clone();
     else if (kind === 'knob' && m.knobPosition) pos = m.knobPosition.clone();

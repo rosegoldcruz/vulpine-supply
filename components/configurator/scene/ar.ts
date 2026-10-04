@@ -72,10 +72,30 @@ export async function loadFox(): Promise<THREE.Object3D | null> {
   return (await loadFoxRig())?.root ?? null;
 }
 
-/** Stand the fox on the floor just right of the run's front corner, turned slightly toward it. */
+/** Front end (max z) of the run's right-most cabinetry (vertices within 0.8 m of its right edge), world space. */
+function rightFrontZ(run: THREE.Object3D, box: THREE.Box3): number {
+  const v = new THREE.Vector3();
+  let z = -Infinity;
+  run.traverse((o) => {
+    const m = o as THREE.Mesh;
+    const pos = m.isMesh ? (m.geometry?.getAttribute('position') as THREE.BufferAttribute | undefined) : undefined;
+    if (!pos) return;
+    for (let i = 0; i < pos.count; i++) {
+      v.fromBufferAttribute(pos, i).applyMatrix4(m.matrixWorld);
+      if (v.x > box.max.x - 0.8 && v.z > z) z = v.z;
+    }
+  });
+  return Number.isFinite(z) ? z : box.max.z;
+}
+
+/**
+ * Stand the fox on the floor just right of the run's right-hand front corner, turned slightly toward it. A straight run:
+ * beside its front corner; the U-kitchen: beside the front end of the right arm. If cabinetry is under his footprint
+ * there, he steps forward (+Z) until it is clear.
+ */
 export function placeFox(fox: THREE.Object3D, run: THREE.Object3D) {
   run.updateMatrixWorld(true);
-  const box = new THREE.Box3().setFromObject(run);
+  const box = new THREE.Box3().setFromObject(run, true); // precise (vertex) bounds
   fox.position.set(0, 0, 0);
   fox.rotation.set(0, FOX_FACE_PLUS_Z - 0.45, 0); // face the viewer, turned a little toward the run
   fox.updateMatrixWorld(true);
@@ -90,7 +110,25 @@ export function placeFox(fox: THREE.Object3D, run: THREE.Object3D) {
   const fb = new THREE.Box3().setFromObject(fox);
   const c = fb.getCenter(new THREE.Vector3());
   const half = fb.getSize(new THREE.Vector3()).multiplyScalar(0.5);
-  fox.position.set(box.max.x + FOX_GAP_M - fb.min.x, -fb.min.y, box.max.z - Math.max(0.4, half.z) - c.z);
+  const x = box.max.x + FOX_GAP_M - fb.min.x;
+  let z = rightFrontZ(run, box) - Math.max(0.4, half.z) - c.z;
+  // footprint check: rays straight down onto the run; anything above ankle height under him means cabinetry
+  const meshes: THREE.Object3D[] = [];
+  run.traverse((o) => (o as THREE.Mesh).isMesh && meshes.push(o));
+  const rc = new THREE.Raycaster();
+  const down = new THREE.Vector3(0, -1, 0);
+  const pad = 0.1;
+  const blocked = (zz: number) => {
+    for (const fx of [fb.min.x - pad, c.x, fb.max.x + pad])
+      for (const fz of [fb.min.z - pad, c.z, fb.max.z + pad]) {
+        rc.set(new THREE.Vector3(x + fx, box.max.y + 1, zz + fz), down);
+        if (rc.intersectObjects(meshes, false).some((h) => h.point.y > 0.08)) return true;
+      }
+    return false;
+  };
+  const zMax = box.max.z + FOX_GAP_M + half.z - c.z;
+  while (z < zMax && blocked(z)) z += 0.05;
+  fox.position.set(x, -fb.min.y, Math.min(z, zMax));
   fox.traverse((o) => {
     if ((o as THREE.Mesh).isMesh) o.castShadow = true;
   });
@@ -235,7 +273,7 @@ export async function startWebXR(opts: {
   anchor.add(content);
   if (run) {
     content.add(run);
-    const box = new THREE.Box3().setFromObject(run);
+    const box = new THREE.Box3().setFromObject(run, true); // precise (vertex) bounds
     content.position.z = -box.max.z;
     const catcher = new THREE.Mesh(new THREE.PlaneGeometry(1, 1).rotateX(-Math.PI / 2), new THREE.ShadowMaterial({ opacity: 0.28 }));
     const size = box.getSize(new THREE.Vector3());

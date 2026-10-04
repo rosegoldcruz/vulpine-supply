@@ -74,7 +74,9 @@
    "baseColor": "#b1b1aa",
    "styles": [
     "fusion_shaker",
+    "fusion_slide",
     "shaker_classic",
+    "shaker_slide",
     "slab"
    ],
    "sourcePhotoColor": "#a3a39d",
@@ -92,7 +94,9 @@
    "baseColor": "#383b3b",
    "styles": [
     "fusion_shaker",
+    "fusion_slide",
     "shaker_classic",
+    "shaker_slide",
     "slab"
    ],
    "sourcePhotoColor": "#404242",
@@ -145,7 +149,9 @@
    "baseColor": "#6f593b",
    "styles": [
     "fusion_shaker",
+    "fusion_slide",
     "shaker_classic",
+    "shaker_slide",
     "slab"
    ],
    "sourcePhotoColor": "#6a5842",
@@ -177,7 +183,11 @@
    "kind": "wood",
    "baseColor": "#b6b1a6",
    "styles": [
-    "shaker_classic"
+    "fusion_shaker",
+    "fusion_slide",
+    "shaker_classic",
+    "shaker_slide",
+    "slab"
    ],
    "sourcePhotoColor": "#a7a399",
    "color": "#ffffff",
@@ -208,7 +218,8 @@
    "kind": "wood",
    "baseColor": "#44382f",
    "styles": [
-    "shaker_classic"
+    "shaker_classic",
+    "shaker_slide"
    ],
    "sourcePhotoColor": "#48403a",
    "color": "#ffffff",
@@ -319,6 +330,10 @@
    "kind": "wood",
    "baseColor": "#cdbc93",
    "styles": [
+    "fusion_shaker",
+    "fusion_slide",
+    "shaker_classic",
+    "shaker_slide",
     "slab"
    ],
    "sourcePhotoColor": "#bbac89",
@@ -343,6 +358,121 @@
    ],
    "tileable": true,
    "grain": "vertical in the image (along V); the GLB UVs put V along the grain on every part (stiles + door panels vertical, rails + drawer fronts horizontal)"
+  },
+  "cafe_walnut": {
+   "id": "cafe_walnut",
+   "name": "Cafe Walnut",
+   "kind": "wood",
+   "baseColor": "#896a49",
+   "styles": [
+    "fusion_shaker",
+    "fusion_slide",
+    "shaker_classic",
+    "shaker_slide",
+    "slab"
+   ],
+   "sourcePhotoColor": "#80664c",
+   "color": "#ffffff",
+   "averageColor": "#876644",
+   "roughness": 0.5,
+   "metalness": 0.0,
+   "clearcoat": 0.0,
+   "map": "finishes/cafe_walnut.jpg",
+   "normalMap": "finishes/cafe_walnut_normal.jpg",
+   "repeat": [
+    3.8261,
+    3.3224
+   ],
+   "tileSizeM": [
+    0.2614,
+    0.301
+   ],
+   "textureSizePx": [
+    775,
+    893
+   ],
+   "tileable": true,
+   "grain": "vertical in the image (along V); the GLB UVs put V along the grain on every part (stiles + door panels vertical, rails + drawer fronts horizontal)"
+  },
+  "cloudstone": {
+   "id": "cloudstone",
+   "name": "Cloudstone",
+   "kind": "paint",
+   "baseColor": "#bab5aa",
+   "styles": [
+    "fusion_shaker",
+    "fusion_slide",
+    "shaker_classic",
+    "shaker_slide",
+    "slab"
+   ],
+   "sourcePhotoColor": "#aba69d",
+   "color": "#bab5aa",
+   "roughness": 0.42,
+   "metalness": 0.0,
+   "clearcoat": 0.0,
+   "map": null,
+   "grain": null
+  },
+  "oat": {
+   "id": "oat",
+   "name": "Oat",
+   "kind": "paint",
+   "baseColor": "#d9d6ca",
+   "styles": [
+    "fusion_shaker",
+    "fusion_slide",
+    "shaker_classic",
+    "shaker_slide",
+    "slab"
+   ],
+   "sourcePhotoColor": "#c6c3b9",
+   "color": "#d9d6ca",
+   "roughness": 0.42,
+   "metalness": 0.0,
+   "clearcoat": 0.0,
+   "map": null,
+   "grain": null
+  },
+  "paint_ready": {
+   "id": "paint_ready",
+   "name": "Paint Ready",
+   "kind": "paint",
+   "baseColor": "#e2e2e0",
+   "styles": [
+    "fusion_shaker",
+    "fusion_slide",
+    "shaker_classic",
+    "shaker_slide",
+    "slab"
+   ],
+   "sourcePhotoColor": "#cececc",
+   "color": "#e2e2e0",
+   "roughness": 0.42,
+   "metalness": 0.0,
+   "clearcoat": 0.0,
+   "map": null,
+   "grain": null
+  },
+  "sage": {
+   "id": "sage",
+   "name": "Sage",
+   "kind": "paint",
+   "baseColor": "#9fa191",
+   "styles": [
+    "fusion_shaker",
+    "fusion_slide",
+    "shaker_classic",
+    "shaker_slide",
+    "slab"
+   ],
+   "sourcePhotoColor": "#939587",
+   "color": "#9fa191",
+   "roughness": 0.42,
+   "metalness": 0.0,
+   "clearcoat": 0.0,
+   "map": null,
+   "grain": null
   }
  },
  "hardwareFinishes": {
@@ -385,7 +515,13 @@
     "espresso_walnut",
     "latte_walnut",
     "nimbus_oak",
-    "sable_oak"
+    "sable_oak",
+    "wheat_oak",
+    "cafe_walnut",
+    "cloudstone",
+    "oat",
+    "paint_ready",
+    "sage"
    ]
   },
   "shaker_slide": {
@@ -395,11 +531,22 @@
     "flour",
     "storm",
     "graphite",
-    "espresso_walnut"
+    "mist",
+    "slate",
+    "espresso_walnut",
+    "latte_walnut",
+    "nimbus_oak",
+    "sable_oak",
+    "wheat_oak",
+    "cafe_walnut",
+    "cloudstone",
+    "oat",
+    "paint_ready",
+    "sage"
    ]
   },
   "fusion_shaker": {
-   "name": "Fusion Shaker",
+   "name": "Fusion Classic",
    "file": "fronts_fusion_shaker.glb",
    "finishes": [
     "flour",
@@ -408,7 +555,14 @@
     "mist",
     "slate",
     "espresso_walnut",
-    "latte_walnut"
+    "latte_walnut",
+    "nimbus_oak",
+    "wheat_oak",
+    "cafe_walnut",
+    "cloudstone",
+    "oat",
+    "paint_ready",
+    "sage"
    ]
   },
   "fusion_slide": {
@@ -418,11 +572,21 @@
     "flour",
     "storm",
     "graphite",
-    "espresso_walnut"
+    "mist",
+    "slate",
+    "espresso_walnut",
+    "latte_walnut",
+    "nimbus_oak",
+    "wheat_oak",
+    "cafe_walnut",
+    "cloudstone",
+    "oat",
+    "paint_ready",
+    "sage"
    ]
   },
   "slab": {
-   "name": "Slab Modern",
+   "name": "Slab",
    "file": "fronts_slab.glb",
    "finishes": [
     "flour",
@@ -432,10 +596,16 @@
     "slate",
     "espresso_walnut",
     "latte_walnut",
+    "nimbus_oak",
     "snow_gloss",
     "urban_teak",
     "platinum_teak",
-    "wheat_oak"
+    "wheat_oak",
+    "cafe_walnut",
+    "cloudstone",
+    "oat",
+    "paint_ready",
+    "sage"
    ]
   }
  },
@@ -456,6 +626,7 @@
    "knob": "knob_arch",
    "small": "pull_arch_6in",
    "large": "pull_arch_7_125in",
+   "spec": "estimate (manufacturer publishes no Arch projection / base)",
    "sizes": {
     "6in": {
      "node": "pull_arch_6in",
@@ -492,24 +663,28 @@
    "knob": "knob_artisan",
    "small": "pull_artisan_4_75in",
    "large": "pull_artisan_6_0625in",
+   "spec": "Manufacturer published: projection, base width, c-c, lengths",
    "sizes": {
     "4_75in": {
      "node": "pull_artisan_4_75in",
      "length_m": 0.1206,
      "center_to_center_m": 0.096,
-     "projection_m": 0.03
+     "projection_m": 0.027,
+     "base_width_m": 0.0079
     },
     "6_0625in": {
      "node": "pull_artisan_6_0625in",
      "length_m": 0.154,
      "center_to_center_m": 0.128,
-     "projection_m": 0.03
+     "projection_m": 0.027,
+     "base_width_m": 0.0079
     }
    },
    "knobSize": {
     "node": "knob_artisan",
     "label": "1 7/32\" dia",
-    "projection_m": 0.026
+    "projection_m": 0.0302,
+    "base_width_m": 0.0191
    }
   },
   "cottage": {
@@ -518,33 +693,38 @@
    "finishes": [
     "rose_gold",
     "satin_nickel",
+    "matte_black",
     "chrome"
    ],
    "pulls": {
-    "4_75in": "pull_cottage_4_75in",
-    "6_0625in": "pull_cottage_6_0625in"
+    "4_5in": "pull_cottage_4_5in",
+    "5_875in": "pull_cottage_5_875in"
    },
    "knob": "knob_cottage",
-   "small": "pull_cottage_4_75in",
-   "large": "pull_cottage_6_0625in",
+   "small": "pull_cottage_4_5in",
+   "large": "pull_cottage_5_875in",
+   "spec": "Manufacturer published: projection, base width, c-c, lengths",
    "sizes": {
-    "4_75in": {
-     "node": "pull_cottage_4_75in",
-     "length_m": 0.1206,
+    "4_5in": {
+     "node": "pull_cottage_4_5in",
+     "length_m": 0.1143,
      "center_to_center_m": 0.096,
-     "projection_m": 0.028
+     "projection_m": 0.0318,
+     "base_width_m": 0.0191
     },
-    "6_0625in": {
-     "node": "pull_cottage_6_0625in",
-     "length_m": 0.154,
+    "5_875in": {
+     "node": "pull_cottage_5_875in",
+     "length_m": 0.1492,
      "center_to_center_m": 0.128,
-     "projection_m": 0.028
+     "projection_m": 0.0318,
+     "base_width_m": 0.0191
     }
    },
    "knobSize": {
     "node": "knob_cottage",
     "label": "1 7/32\" dia",
-    "projection_m": 0.0276
+    "projection_m": 0.0302,
+    "base_width_m": 0.0191
    }
   },
   "loft": {
@@ -563,24 +743,28 @@
    "knob": "knob_loft",
    "small": "pull_loft_4_625in",
    "large": "pull_loft_5_875in",
+   "spec": "Manufacturer published: projection, base width, c-c, lengths",
    "sizes": {
     "4_625in": {
      "node": "pull_loft_4_625in",
      "length_m": 0.1175,
-     "center_to_center_m": 0.1085,
-     "projection_m": 0.032
+     "center_to_center_m": 0.096,
+     "projection_m": 0.0318,
+     "base_width_m": 0.0159
     },
     "5_875in": {
      "node": "pull_loft_5_875in",
      "length_m": 0.1492,
-     "center_to_center_m": 0.1402,
-     "projection_m": 0.032
+     "center_to_center_m": 0.128,
+     "projection_m": 0.0318,
+     "base_width_m": 0.0159
     }
    },
    "knobSize": {
     "node": "knob_loft",
     "label": "15/16\" square",
-    "projection_m": 0.025
+    "projection_m": 0.0191,
+    "base_width_m": 0.0087
    }
   },
   "square": {
@@ -599,24 +783,28 @@
    "knob": "knob_square",
    "small": "pull_square_4_25in",
    "large": "pull_square_5_4375in",
+   "spec": "Manufacturer published: projection, base width, c-c, lengths",
    "sizes": {
     "4_25in": {
      "node": "pull_square_4_25in",
      "length_m": 0.1079,
      "center_to_center_m": 0.096,
-     "projection_m": 0.03
+     "projection_m": 0.0349,
+     "base_width_m": 0.0103
     },
     "5_4375in": {
      "node": "pull_square_5_4375in",
      "length_m": 0.1381,
      "center_to_center_m": 0.128,
-     "projection_m": 0.03
+     "projection_m": 0.0349,
+     "base_width_m": 0.0103
     }
    },
    "knobSize": {
     "node": "knob_square",
     "label": "15/16\" square",
-    "projection_m": 0.025
+    "projection_m": 0.0191,
+    "base_width_m": 0.0087
    }
   },
   "bar": {
@@ -633,24 +821,39 @@
    "knob": "knob_bar",
    "small": "pull_bar_4_5in",
    "large": "pull_bar_6in",
+   "spec": "Manufacturer published: projection, base width, c-c, lengths",
    "sizes": {
     "4_5in": {
      "node": "pull_bar_4_5in",
      "length_m": 0.1143,
      "center_to_center_m": 0.064,
-     "projection_m": 0.032
+     "projection_m": 0.0318,
+     "base_width_m": 0.0095
     },
     "6in": {
      "node": "pull_bar_6in",
      "length_m": 0.1524,
      "center_to_center_m": 0.096,
-     "projection_m": 0.032
+     "projection_m": 0.0318,
+     "base_width_m": 0.0095
     }
    },
    "knobSize": {
     "node": "knob_bar",
-    "label": "Round (1 1/8\" dia, measured from photo)",
-    "projection_m": 0.028
+    "label": "Round 1-1/4\" dia",
+    "projection_m": 0.0302,
+    "base_width_m": 0.0159
+   },
+   "knobs": {
+    "round": "knob_bar",
+    "t": "knob_bar_t"
+   },
+   "knobT": {
+    "node": "knob_bar_t",
+    "label": "T-knob 2\"",
+    "projection_m": 0.0318,
+    "base_width_m": 0.0095,
+    "note": "extra node (not knob_<style>): Bar T-knob, 2\" T-knob"
    }
   },
   "generic": {
@@ -669,5 +872,5 @@
    "knob": "knob_generic"
   }
  },
- "hardwareNote": "hardware.glb holds one mesh per style/size (pull_<style>_<size>, knob_<style>); finishes are materials: apply hardwareFinishes[id] (color/metalness/roughness) to the shared hardware material."
+ "hardwareNote": "hardware.glb holds one mesh per style/size (pull_<style>_<size>, knob_<style>, plus the extra knob_bar_t); finishes are materials: apply hardwareFinishes[id] (color/metalness/roughness) to the shared hardware material."
 }

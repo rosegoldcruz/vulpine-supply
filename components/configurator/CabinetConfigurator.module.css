@@ -440,6 +440,7 @@
 .presetBtn:hover:not(:disabled) { color: var(--black); }
 .presetBtn:disabled { opacity: 0.4; cursor: not-allowed; }
 .presetBtnActive, .presetBtnActive:hover:not(:disabled) { background: var(--black); color: var(--white); }
+.presetShort { display: none; }
 
 /* ---------- compare ---------- */
 .compareGrid { display: grid; grid-template-columns: 1fr 1fr; gap: 14px; }
@@ -485,7 +486,10 @@
   .viewBar { gap: 10px; }
   .viewActions { width: 100%; }
   .arBtn { flex: 1 1 auto; justify-content: center; }
-  .presets { top: auto; bottom: 10px; left: 10px; right: auto; max-width: calc(100% - 20px); }
+  .presets { top: auto; bottom: 10px; left: 10px; right: auto; max-width: calc(100% - 20px); gap: 2px; }
+  .presetBtn { padding: 7px 10px; }
+  .presetLong { display: none; }
+  .presetShort { display: inline; }
   .sceneHint { display: none; }
   .stage3d .insets { bottom: auto; top: 46px; }
   .progress { bottom: 60px; }

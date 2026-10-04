@@ -8,13 +8,25 @@ export interface ConfigSelection {
   hw: string;
   finish: string;
   doors: 'pull' | 'knob';
+  /** door knob shape when doors = knob: 't' = the 2" T-knob, only Bar offers it (see T_KNOB_STYLES) */
+  knob?: 'round' | 't';
   island: boolean;
+}
+
+/** Hardware styles with a T-knob option next to their round knob. */
+export const T_KNOB_STYLES = new Set(['bar']);
+
+/** "knobs" / "T-knobs" / "pulls" for summaries. */
+export function doorHardwareLabel(s: Pick<ConfigSelection, 'doors' | 'knob' | 'hw'>): string {
+  if (s.doors !== 'knob') return 'pulls';
+  return s.knob === 't' && T_KNOB_STYLES.has(s.hw) ? 'T-knobs' : 'knobs';
 }
 
 /** Canonical query string for a design (shared by the share link, the summary page and AR). */
 export function configQuery(s: ConfigSelection): URLSearchParams {
   const q = new URLSearchParams({ style: s.style, color: s.color, hw: s.hw, finish: s.finish });
   if (s.doors === 'knob') q.set('doors', 'knob');
+  if (s.doors === 'knob' && s.knob === 't' && T_KNOB_STYLES.has(s.hw)) q.set('knob', 't');
   if (!s.island) q.set('island', '0');
   return q;
 }
@@ -30,7 +42,9 @@ export function parseConfig(q: URLSearchParams): ConfigSelection {
   const finishes = Object.keys(CONFIG_DATA.hardware[hw].finishes);
   const f = q.get('finish') || '';
   const finish = finishes.includes(f) && FINISH_NAMES[f] ? f : finishes.includes('matte_black') ? 'matte_black' : finishes[0];
-  return { style, color, hw, finish, doors: q.get('doors') === 'knob' ? 'knob' : 'pull', island: q.get('island') !== '0' };
+  const doors = q.get('doors') === 'knob' ? 'knob' : 'pull';
+  const knob = doors === 'knob' && q.get('knob') === 't' && T_KNOB_STYLES.has(hw) ? 't' : 'round';
+  return { style, color, hw, finish, doors, knob, island: q.get('island') !== '0' };
 }
 
 /** Short, stable reference for a design (shown on the summary and in the quote request). */

@@ -6,6 +6,8 @@
  *   public/models/configurator/fronts_<style_id>.glb  same mesh names/positions -> style change swaps meshes by name
  *   public/models/configurator/finishes.json (+ finishes/)  PBR finishes; preferred over our sampled swatch colors
  *   public/models/configurator/hardware.glb + mounts.json   pull/knob models placed at each front's mount (see ./hardware)
+ *   public/models/configurator/camera_presets.json          DevGod's camera views (engine metres, vertical FOV at 16:9)
+ * glass_* nodes are the panes of glass-front doors: room meshes with their own material, never finished or style-swapped.
  * GLBs are Draco-compressed; the decoder is self-hosted in public/draco/.
  * When kitchen.glb is absent (or fails to load) the procedural kitchen in ./procedural is used.
  */
@@ -15,7 +17,7 @@ import { DRACOLoader } from 'three/examples/jsm/loaders/DRACOLoader.js';
 import { OrbitControls } from 'three/examples/jsm/controls/OrbitControls.js';
 import { RoomEnvironment } from 'three/examples/jsm/environments/RoomEnvironment.js';
 import { buildProceduralKitchen, placeHardware, type HardwareAnchor, type KitchenMaterials } from './procedural';
-import { HardwareLibrary, normalizeCatalog, normalizeMountSets, placeMountedHardware, type Mount, type MountSets } from './hardware';
+import { HardwareLibrary, normalizeCatalog, normalizeMountSets, placeMountedHardware, type KnobShape, type Mount, type MountSets } from './hardware';
 import type { DoorFinish, HardwareFinish } from '../data';
 
 const MODEL_BASE = '/models/configurator/';
@@ -23,12 +25,24 @@ const FINISH_RE = /(^|_)(door|drawer|panel)(_|$)/i;
 const HARDWARE_RE = /(^|_)(pull|knob|handle)(_|$)/i;
 const FRONT_RE = /(^|_)(door|drawer)(_|$)/i;
 const ISLAND_RE = /^island(_|$)/i;
+/** Decor that may hang between a preset camera and its subject (island pendants, flowers, stools). */
+const OCCLUDER_RE = /pendant|bloom|stem|vase|fruitbowl|stool/i;
+/** share of the sampled view rays a decor mesh must block before a preset hides it */
+const OCCLUDER_SHARE = 0.12;
+/** Glass panes of glass-front doors (glass_<door suffix>): keep their own material, skip finish + style swaps. */
+const GLASS_RE = /^glass_/i;
 /** Room shell + decor left out of "View in your space" (the cabinet run, counters, sinks and appliances stay). */
-const AR_EXCLUDE_RE =
-  /^(room_|walls?_|floor|baseboard|window|backsplash|sofa|pillow|rug|coffeetable|books|plant|armchair|floorlamp|art\d|fruitbowl|cuttingboard|coffeemaker|utensil|island_stool|island_fruitbowl)/i;
+export const AR_EXCLUDE_RE =
+  /^(room_|walls?_|floor|baseboard|window|backsplash|sofa|pillow|rug|coffeetable|books|plant|armchair|floorlamp|art\d|fruitbowl|cuttingboard|coffeemaker|utensil|canister|floatingshel|shelf_|island_stool|island_fruitbowl|island_bloom|island_stem|island_vase|island_pendant)/i;
 const DOOR_STYLE_IDS = ['shaker_classic', 'shaker_slide', 'slab', 'fusion_shaker', 'fusion_slide'];
 const HOME_POS = new THREE.Vector3(0.55, 2.55, 6.4);
 const HOME_TARGET = new THREE.Vector3(0, 1.05, 0.7);
+/** camera_presets.json FOVs are vertical at this aspect */
+const PRESET_ASPECT = 16 / 9;
+/** beyond this vertical FOV a preset dollies back instead of widening (no fisheye on tall phone screens) */
+const MAX_VFOV = 60;
+/** portrait screens keep this share of a preset's 16:9 width (a slight side crop reads better than a tiny kitchen) */
+const PORTRAIT_WIDTH = 0.9;
 
 interface Manifest {
   kitchen: string | null;
@@ -36,6 +50,14 @@ interface Manifest {
   finishesJson: string | null;
   hardware: string | null;
   mounts: string | null;
+  cameraPresets: string | null;
+}
+
+interface PresetDef {
+  pos: THREE.Vector3;
+  target: THREE.Vector3;
+  /** vertical FOV (deg) at 16:9 */
+  fov: number;
 }
 
 export interface FinishDef {
@@ -54,7 +76,29 @@ export interface FinishDef {
 }
 
 export type EngineMode = 'loading' | 'procedural' | 'glb' | 'error';
-export type CameraPreset = 'overview' | 'uppers' | 'island' | 'door';
+export type CameraPreset = 'overview' | 'uppers' | 'island' | 'sink' | 'door';
+const PRESET_KEYS: [RegExp, CameraPreset][] = [
+  [/overview/i, 'overview'],
+  [/upper/i, 'uppers'],
+  [/island/i, 'island'],
+  [/sink/i, 'sink'],
+  [/close|door/i, 'door'],
+];
+
+/** camera_presets.json: { "<name>": { position, target, fov_vertical_deg_16x9 } } -> presets by id (names matched loosely). */
+export function normalizeCameraPresets(json: unknown): Partial<Record<CameraPreset, PresetDef>> {
+  const out: Partial<Record<CameraPreset, PresetDef>> = {};
+  if (!json || typeof json !== 'object') return out;
+  const v3 = (a: unknown) => (Array.isArray(a) && a.length === 3 && a.every((n) => typeof n === 'number') ? new THREE.Vector3(a[0], a[1], a[2]) : null);
+  for (const [name, e] of Object.entries(json as Record<string, any>)) {
+    const id = PRESET_KEYS.find(([re]) => re.test(name))?.[1];
+    const pos = v3(e?.position);
+    const target = v3(e?.target);
+    const fov = Number(e?.fov_vertical_deg_16x9 ?? e?.fov);
+    if (id && !out[id] && pos && target && fov > 1 && fov < 120) out[id] = { pos, target, fov };
+  }
+  return out;
+}
 export interface LoadProgress {
   label: string;
   /** 0..1, or null when the server didn't send sizes */
@@ -152,6 +196,8 @@ export interface EngineState {
   hwFinish: HardwareFinish | undefined;
   doorHardware: 'pull' | 'knob';
   showIsland: boolean;
+  /** door knob shape; 't' = Bar 2" T-knob (knob_bar_t), other styles ignore it */
+  knobShape?: KnobShape;
 }
 
 export class ConfiguratorEngine {
@@ -170,7 +216,7 @@ export class ConfiguratorEngine {
   private content: THREE.Object3D | null = null;
   private anchors: HardwareAnchor[] = [];
   private hardwareObjs: THREE.Object3D[] = [];
-  private manifest: Manifest = { kitchen: null, fronts: {}, finishesJson: null, hardware: null, mounts: null };
+  private manifest: Manifest = { kitchen: null, fronts: {}, finishesJson: null, hardware: null, mounts: null, cameraPresets: null };
   private glbFinishes: Record<string, FinishDef> = {};
   private glbHwFinishes: Record<string, HardwareFinish> = {};
   private hwLib = new HardwareLibrary(null);
@@ -181,7 +227,22 @@ export class ConfiguratorEngine {
   private state: EngineState | null = null;
   private buildToken = 0;
   private loads = new Map<string, { loaded: number; total: number; done: boolean; label: string }>();
-  private tween: { fromPos: THREE.Vector3; toPos: THREE.Vector3; fromTarget: THREE.Vector3; toTarget: THREE.Vector3; t0: number; dur: number } | null = null;
+  private tween: {
+    fromPos: THREE.Vector3;
+    toPos: THREE.Vector3;
+    fromTarget: THREE.Vector3;
+    toTarget: THREE.Vector3;
+    fromFov: number;
+    toFov: number;
+    t0: number;
+    dur: number;
+  } | null = null;
+  private presetDefs: Partial<Record<CameraPreset, PresetDef>> = {};
+  /** decor hidden because it blocks the current preset's view, and that view (restored once the user orbits away) */
+  private occluders: THREE.Object3D[] = [];
+  private occluderView: { pos: THREE.Vector3; target: THREE.Vector3; fov: number } | null = null;
+  /** design FOV (vertical at 16:9) of the last preset; null = legacy aspect-based FOV (procedural kitchen) */
+  private fov16: number | null = null;
   private fadeEl: HTMLCanvasElement;
   private recentStyles: string[] = [];
   private recentFinishTex = new Map<string, string[]>();
@@ -216,7 +277,7 @@ export class ConfiguratorEngine {
     pmrem.dispose();
     this.scene.environmentIntensity = 0.35;
 
-    this.camera = new THREE.PerspectiveCamera(38, 16 / 10, 0.05, 60);
+    this.camera = new THREE.PerspectiveCamera(38, 16 / 10, 0.05, 90);
     this.camera.position.copy(HOME_POS);
     this.controls = new OrbitControls(this.camera, this.renderer.domElement);
     this.controls.target.copy(HOME_TARGET);
@@ -228,21 +289,27 @@ export class ConfiguratorEngine {
     this.controls.maxPolarAngle = Math.PI * 0.53;
     this.controls.minAzimuthAngle = -Math.PI * 0.42;
     this.controls.maxAzimuthAngle = Math.PI * 0.42;
-    this.controls.addEventListener('change', () => (this.dirty = true));
+    this.controls.addEventListener('change', () => {
+      this.dirty = true;
+      // decor hidden for a preset comes back once the user has moved well away from that view
+      if (this.occluderView && !this.tween && this.camera.position.distanceTo(this.occluderView.pos) > 0.75) this.clearOccluders(true);
+    });
     this.controls.addEventListener('start', () => (this.tween = null)); // user input cancels a fly-to
     this.controls.listenToKeyEvents(container); // arrows pan, shift/ctrl+arrows orbit (container is focusable)
 
     const hemi = new THREE.HemisphereLight('#fffaf3', '#8f877e', 0.5);
     this.scene.add(hemi);
     const sun = new THREE.DirectionalLight('#fff4e6', 1.9);
-    sun.position.set(3.2, 4.6, 3.6);
+    // far enough out (and a wide enough shadow frustum) for the ~7 m U-kitchen
+    sun.position.set(3.2, 4.6, 3.6).multiplyScalar(1.6);
     sun.castShadow = true;
     sun.shadow.mapSize.set(2048, 2048);
     sun.shadow.radius = 3;
-    sun.shadow.camera.left = -4;
-    sun.shadow.camera.right = 4;
-    sun.shadow.camera.top = 4;
-    sun.shadow.camera.bottom = -1;
+    sun.shadow.camera.left = -6;
+    sun.shadow.camera.right = 6;
+    sun.shadow.camera.top = 6;
+    sun.shadow.camera.bottom = -4;
+    sun.shadow.camera.far = 30;
     sun.shadow.bias = -0.0004;
     sun.shadow.normalBias = 0.02;
     this.scene.add(sun);
@@ -275,6 +342,10 @@ export class ConfiguratorEngine {
         const e = easeInOutCubic(t);
         this.camera.position.lerpVectors(tw.fromPos, tw.toPos, e);
         this.controls.target.lerpVectors(tw.fromTarget, tw.toTarget, e);
+        if (tw.fromFov !== tw.toFov) {
+          this.camera.fov = THREE.MathUtils.lerp(tw.fromFov, tw.toFov, e);
+          this.camera.updateProjectionMatrix();
+        }
         if (t >= 1) this.tween = null;
         this.dirty = true;
       }
@@ -297,8 +368,10 @@ export class ConfiguratorEngine {
     const h = Math.max(1, this.container.clientHeight);
     this.renderer.setSize(w, h, false);
     this.camera.aspect = w / h;
-    // pull the camera back on narrow (portrait) screens so the run still fits
-    this.camera.fov = w / h < 1 ? 55 : 38;
+    if (!this.tween) {
+      // presets: their 16:9 FOV fitted to this aspect; legacy: pull back on narrow (portrait) screens so the run still fits
+      this.camera.fov = this.fov16 != null ? this.fitFov(this.fov16).fov : w / h < 1 ? 55 : 38;
+    }
     this.camera.updateProjectionMatrix();
     this.dirty = true;
   }
@@ -383,6 +456,7 @@ export class ConfiguratorEngine {
         finishesJson: manifest.finishesJson ?? null,
         hardware: manifest.hardware ?? null,
         mounts: manifest.mounts ?? null,
+        cameraPresets: manifest.cameraPresets ?? null,
       };
     } else if (await exists(`${MODEL_BASE}kitchen.glb`)) {
       this.manifest.kitchen = `${MODEL_BASE}kitchen.glb`;
@@ -396,12 +470,15 @@ export class ConfiguratorEngine {
       this.glbHwFinishes = normalizeHardwareFinishes(fj);
     }
     if (!this.manifest.kitchen) return;
-    const [kitchen, hardware, mountsJson] = await Promise.all([
+    const [kitchen, hardware, mountsJson, presetsJson] = await Promise.all([
       this.loadGltf(this.manifest.kitchen, 'Loading kitchen'),
       this.manifest.hardware ? this.loadGltf(this.manifest.hardware, 'Loading kitchen') : Promise.resolve(null),
       this.manifest.mounts ? fetchJson<unknown>(this.manifest.mounts) : Promise.resolve(null),
+      fetchJson<unknown>(this.manifest.cameraPresets || `${MODEL_BASE}camera_presets.json`),
     ]);
     this.glbKitchen = kitchen?.scene ?? null;
+    // presets are in kitchen.glb's frame, so they only apply to the GLB kitchen
+    this.presetDefs = this.glbKitchen ? normalizeCameraPresets(presetsJson) : {};
     if (!this.glbKitchen) console.warn('[configurator] kitchen.glb unavailable, using procedural kitchen');
     this.hwLib = new HardwareLibrary(hardware?.scene ?? null);
     this.mountSets = normalizeMountSets(mountsJson, Object.keys(this.manifest.fronts).length ? Object.keys(this.manifest.fronts) : DOOR_STYLE_IDS);
@@ -478,12 +555,19 @@ export class ConfiguratorEngine {
       await this.buildGeometry(next.styleId, token);
       if (token !== this.buildToken) return;
     }
-    if (!prev || prev.hwStyle !== next.hwStyle || prev.doorHardware !== next.doorHardware || prev.styleId !== next.styleId) {
+    if (
+      !prev ||
+      prev.hwStyle !== next.hwStyle ||
+      prev.doorHardware !== next.doorHardware ||
+      prev.knobShape !== next.knobShape ||
+      prev.styleId !== next.styleId
+    ) {
       this.rebuildHardware(next);
     }
     await this.applyFinish(next.finishId, next.finish);
     this.applyHardwareFinish(next.hwFinishId, next.hwFinish);
     this.setIsland(next.showIsland);
+    if (this.occluderView) this.hideOccluders(this.occluderView); // new content (style change) / island toggled
     this.dirty = true;
     if (token === this.buildToken) this.releaseFrame();
   }
@@ -549,14 +633,55 @@ export class ConfiguratorEngine {
   }
 
   private framedGlb = false;
-  /** Frame the cabinetry (finish meshes), not the whole room shell, from the open +Z side. */
+  /** Frame the cabinetry from the open +Z side: DevGod's overview preset, else fitted to the finish meshes. */
   private frameObject(obj: THREE.Object3D) {
+    const def = this.presetDefs.overview;
+    if (def) {
+      const v = this.fitPreset(def);
+      this.controls.target.copy(v.target);
+      this.camera.position.copy(v.pos);
+      this.fov16 = def.fov;
+      this.camera.fov = v.fov;
+      this.camera.updateProjectionMatrix();
+      this.controls.maxDistance = Math.max(v.dist * 1.6, 6);
+      this.framedGlb = true;
+      return;
+    }
     const v = this.overviewView(obj);
     if (!v) return;
     this.controls.target.copy(v.target);
     this.camera.position.copy(v.pos);
     this.controls.maxDistance = Math.max(v.dist * 2, 6);
     this.framedGlb = true;
+  }
+
+  /** Vertical FOV for a 16:9 design FOV at the current aspect (+ how far to dolly back when it hits MAX_VFOV). */
+  private fitFov(fov16: number): { fov: number; dolly: number } {
+    const aspect = this.camera.aspect;
+    const t16 = Math.tan(THREE.MathUtils.degToRad(fov16) / 2);
+    // wider than 16:9: keep the vertical FOV; narrower: keep (most of) the horizontal coverage
+    let t = aspect >= PRESET_ASPECT ? t16 : Math.max(t16, (t16 * PRESET_ASPECT * (aspect < 1 ? PORTRAIT_WIDTH : 1)) / aspect);
+    const tMax = Math.tan(THREE.MathUtils.degToRad(MAX_VFOV) / 2);
+    let dolly = 1;
+    if (t > tMax) {
+      dolly = t / tMax;
+      t = tMax;
+    }
+    return { fov: THREE.MathUtils.radToDeg(2 * Math.atan(t)), dolly };
+  }
+
+  /** A camera_presets.json view fitted to the current aspect ratio. */
+  private fitPreset(def: PresetDef) {
+    const { fov, dolly } = this.fitFov(def.fov);
+    const dir = def.pos.clone().sub(def.target);
+    const dist = dir.length() * dolly;
+    return { pos: def.target.clone().addScaledVector(dir.normalize(), dist), target: def.target.clone(), fov, dist };
+  }
+
+  /** Presets this kitchen offers, in button order. */
+  availablePresets(): CameraPreset[] {
+    const order: CameraPreset[] = ['overview', 'uppers', 'island', 'sink', 'door'];
+    return Object.keys(this.presetDefs).length ? order.filter((p) => this.presetDefs[p]) : order.filter((p) => p !== 'sink');
   }
 
   private fitDistance(box: THREE.Box3, factor: number) {
@@ -602,8 +727,14 @@ export class ConfiguratorEngine {
   }
 
   /** Camera pose for a preset, or null when it doesn't apply (e.g. island hidden). */
-  presetView(preset: CameraPreset): { pos: THREE.Vector3; target: THREE.Vector3 } | null {
+  presetView(preset: CameraPreset): { pos: THREE.Vector3; target: THREE.Vector3; fov?: number; fov16?: number } | null {
     if (!this.content) return null;
+    const def = this.presetDefs[preset];
+    if (def) {
+      if (preset === 'island' && !worldVisible(this.content.getObjectByName('island') ?? null)) return null;
+      return { ...this.fitPreset(def), fov16: def.fov };
+    }
+    if (preset === 'sink') return null;
     if (preset === 'overview') {
       if (!this.glbKitchen) return { pos: HOME_POS.clone(), target: HOME_TARGET.clone() };
       return this.overviewView(this.content);
@@ -679,16 +810,63 @@ export class ConfiguratorEngine {
     return { pos, target };
   }
 
+  /** Show decor hidden by hideOccluders() again (forget = also drop the view it was hidden for). */
+  private clearOccluders(forget = false) {
+    for (const o of this.occluders) o.visible = !ISLAND_RE.test(o.name) || (this.state?.showIsland ?? true);
+    this.occluders = [];
+    if (forget) this.occluderView = null;
+    this.dirty = true;
+  }
+
+  /**
+   * Hide decor meshes (island pendants etc.) that cover a big share of a view, e.g. the pendant hanging in front of
+   * the close-up door preset. Samples a 9x9 grid of rays over the central 80% of the view.
+   */
+  private hideOccluders(view: { pos: THREE.Vector3; target: THREE.Vector3; fov: number }) {
+    this.clearOccluders();
+    this.occluderView = view;
+    if (!this.content) return;
+    const cands: THREE.Object3D[] = [];
+    this.content.traverse((o) => (o as THREE.Mesh).isMesh && OCCLUDER_RE.test(o.name) && worldVisible(o) && cands.push(o));
+    if (!cands.length) return;
+    const cam = new THREE.PerspectiveCamera(view.fov, this.camera.aspect, 0.05, 100);
+    cam.position.copy(view.pos);
+    cam.lookAt(view.target);
+    cam.updateMatrixWorld(true);
+    const dist = view.pos.distanceTo(view.target);
+    const rc = new THREE.Raycaster();
+    // a fixture is several meshes (island_pendant_shades / _glass / _bulbs / _cords): count blocked rays per fixture
+    const fixture = (o: THREE.Object3D) => o.name.replace(/_[^_]+$/, '');
+    const hits = new Map<string, number>();
+    const N = 9;
+    for (let i = 0; i < N; i++)
+      for (let j = 0; j < N; j++) {
+        rc.setFromCamera(new THREE.Vector2(-0.8 + (1.6 * i) / (N - 1), -0.8 + (1.6 * j) / (N - 1)), cam);
+        const h = rc.intersectObjects(cands, false)[0];
+        if (h && h.distance < dist * 0.9) hits.set(fixture(h.object), (hits.get(fixture(h.object)) ?? 0) + 1);
+      }
+    for (const o of cands) {
+      if ((hits.get(fixture(o)) ?? 0) / (N * N) < OCCLUDER_SHARE) continue;
+      o.visible = false;
+      this.occluders.push(o);
+    }
+    this.dirty = true;
+  }
+
   /** Smoothly fly the camera to a preset. Returns false when the preset doesn't apply. */
   setPreset(preset: CameraPreset, durationMs = 900): boolean {
     const v = this.presetView(preset);
     if (!v) return false;
+    this.hideOccluders({ pos: v.pos, target: v.target, fov: v.fov ?? this.camera.fov });
     const reduce = typeof window !== 'undefined' && window.matchMedia?.('(prefers-reduced-motion: reduce)').matches;
+    if (v.fov16 != null) this.fov16 = v.fov16;
     this.tween = {
       fromPos: this.camera.position.clone(),
       toPos: v.pos,
       fromTarget: this.controls.target.clone(),
       toTarget: v.target,
+      fromFov: this.camera.fov,
+      toFov: v.fov ?? this.camera.fov,
       t0: performance.now(),
       dur: reduce ? 1 : durationMs,
     };
@@ -697,9 +875,27 @@ export class ConfiguratorEngine {
   }
 
   /**
+   * Yaw (rad) of the cabinetry's open side: the sum of the distinct wall normals of the (non-island) mounted fronts.
+   * Straight run: its normal; L: the bisector; U: the back wall's normal (the arms face each other and cancel).
+   * The v2 U-kitchen sits at 45° in kitchen.glb (open side toward -X+Z), so this is -45° there.
+   */
+  private openSideYaw(): number {
+    const seen: THREE.Vector3[] = [];
+    for (const m of this.mounts) {
+      if (m.front.startsWith('island_')) continue;
+      const n = new THREE.Vector3(0, 0, 1).applyQuaternion(m.quaternion).setY(0);
+      if (n.lengthSq() < 1e-4) continue;
+      n.normalize();
+      if (!seen.some((s) => s.dot(n) > 0.95)) seen.push(n);
+    }
+    const sum = seen.reduce((a, b) => a.add(b), new THREE.Vector3());
+    return sum.lengthSq() < 1e-4 ? 0 : Math.atan2(sum.x, sum.z);
+  }
+
+  /**
    * A flat, self-contained copy of the configured cabinet run for AR: visible cabinetry, counters, sinks,
    * appliances and hardware with the live materials, room shell/decor left out. Meters, Y-up,
-   * origin at floor level under the run's footprint center; the open (viewing) side faces +Z.
+   * origin at floor level under the run's footprint center; turned so the open (viewing) side faces +Z.
    */
   buildArModel(): THREE.Group | null {
     if (!this.content) return null;
@@ -722,8 +918,13 @@ export class ConfiguratorEngine {
       group.add(c);
     });
     if (!group.children.length) return null;
+    const yaw = this.openSideYaw();
+    if (Math.abs(yaw) > 1e-3) {
+      const turn = new THREE.Matrix4().makeRotationY(-yaw);
+      for (const c of group.children) c.applyMatrix4(turn);
+    }
     group.updateMatrixWorld(true);
-    const box = new THREE.Box3().setFromObject(group);
+    const box = new THREE.Box3().setFromObject(group, true); // precise: turned AABBs of the merged boxes overshoot
     const shift = new THREE.Vector3(-(box.min.x + box.max.x) / 2, -box.min.y, -(box.min.z + box.max.z) / 2);
     for (const c of group.children) c.position.add(shift);
     group.updateMatrixWorld(true);
@@ -739,6 +940,7 @@ export class ConfiguratorEngine {
       });
     }
     this.hardwareObjs = [];
+    this.occluders = [];
     this.content = obj;
     this.scene.add(obj);
   }
@@ -749,7 +951,7 @@ export class ConfiguratorEngine {
     fronts.updateMatrixWorld(true);
     const replacements: [THREE.Object3D, THREE.Object3D][] = [];
     fronts.traverse((src) => {
-      if (!src.name || !FRONT_RE.test(src.name)) return;
+      if (!src.name || !FRONT_RE.test(src.name) || GLASS_RE.test(src.name)) return;
       // only the top-most matching node of each front
       if (src.parent && src.parent.name && FRONT_RE.test(src.parent.name)) return;
       const target = kitchen.getObjectByName(src.name);
@@ -769,8 +971,10 @@ export class ConfiguratorEngine {
   private assignGlbMaterials(root: THREE.Object3D) {
     const walk = (o: THREE.Object3D, role: 'finish' | 'hardware' | null) => {
       let r = role;
-      if (o.name && FINISH_RE.test(o.name)) r = 'finish';
-      if (o.name && HARDWARE_RE.test(o.name)) r = 'hardware';
+      // glass panes keep their own (transparent) material, even if one ever ends up under a door node
+      if (o.name && GLASS_RE.test(o.name)) r = null;
+      else if (o.name && FINISH_RE.test(o.name)) r = 'finish';
+      if (o.name && !GLASS_RE.test(o.name) && HARDWARE_RE.test(o.name)) r = 'hardware';
       const mesh = o as THREE.Mesh;
       if (mesh.isMesh) {
         mesh.castShadow = true;
@@ -814,6 +1018,7 @@ export class ConfiguratorEngine {
         lib: this.hwLib,
         style: s.hwStyle,
         doorKind: s.doorHardware,
+        knobShape: s.knobShape,
         material: this.mats.hardware,
         parentFor: (front) => (front.startsWith('island_') && island ? island : content),
       });

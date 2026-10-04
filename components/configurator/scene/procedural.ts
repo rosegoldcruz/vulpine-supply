@@ -34,6 +34,9 @@ export const FRONT_PROFILES: Record<string, FrontProfile | null> = {
   fusion_slide: { frame: 2.5, step: 0.5, stepDepth: 0.0625, recess: 0.125 },
 };
 
+/** Door styles whose drawer (and false) fronts are slab. */
+export const SLAB_DRAWER_STYLES = new Set(['fusion_shaker', 'fusion_slide']);
+
 export interface KitchenMaterials {
   finish: THREE.Material;
   /** same finish, slightly darker: recessed panels/steps (stands in for baked AO) */
@@ -266,7 +269,9 @@ function addFronts(
       const w = fx1 - fx0;
       const h = fy1 - fy0;
       const kindName = r.kind === 'door' ? 'door' : r.kind === 'drawer' ? 'drawer' : 'drawer_false';
-      const front = buildFront(nextName(ctx, `${pre}${kindName}`), w, h, ctx.styleId, ctx.mats.finish, ctx.mats.finishRecess);
+      // Fusion Classic / Fusion Slide = framed doors + slab drawer and false fronts (as in DevGod's fronts_fusion_*.glb)
+      const frontStyle = r.kind !== 'door' && SLAB_DRAWER_STYLES.has(ctx.styleId) ? 'slab' : ctx.styleId;
+      const front = buildFront(nextName(ctx, `${pre}${kindName}`), w, h, frontStyle, ctx.mats.finish, ctx.mats.finishRecess);
       front.position.set(((fx0 + fx1) / 2) * IN, ((fy0 + fy1) / 2) * IN, z * IN);
       parent.add(front);
       const hz = (z + FRONT_T) * IN;

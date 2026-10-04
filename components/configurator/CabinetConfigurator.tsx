@@ -12,7 +12,7 @@ import type { ConfiguratorEngine } from './scene/engine';
 import { ViewInYourSpace } from './ViewInYourSpace';
 import { CompareFinishes } from './CompareFinishes';
 import { ProductInfoDrawer, WhyDuraBuild, colorLine } from './ProductInfo';
-import { SNAPSHOT_KEY, configQuery, designRef, type ConfigSelection } from './summary';
+import { SNAPSHOT_KEY, T_KNOB_STYLES, configQuery, designRef, doorHardwareLabel, type ConfigSelection } from './summary';
 import { FoxGuide, FOX_DISMISSED_KEY, FOX_EVENT, type FoxGuideHandle, type FoxSelection } from '@/components/fox/FoxGuide';
 
 const KitchenScene3D = dynamic(() => import('./KitchenScene3D'), {
@@ -50,6 +50,7 @@ export function CabinetConfigurator() {
   const [hwFinish, setHwFinish] = useState('matte_black');
   const [hwPreview, setHwPreview] = useState<string | null>(null);
   const [doorHardware, setDoorHardware] = useState<'pull' | 'knob'>('pull');
+  const [knobShape, setKnobShape] = useState<'round' | 't'>('round');
   const [view, setView] = useState<View>('photo');
   const [showIsland, setShowIsland] = useState(true);
   const [isLoading, setIsLoading] = useState(false);
@@ -95,6 +96,24 @@ export function CabinetConfigurator() {
   const currentHw = CONFIG_DATA.hardware[hwType];
   const hwFinishKey = currentHw.finishes[hwFinish] ? hwFinish : Object.keys(currentHw.finishes)[0];
   const currentHwFinish = currentHw.finishes[hwFinishKey];
+  // Bar offers a 2" T-knob next to its round knob; other styles have a single knob
+  const hasTKnob = T_KNOB_STYLES.has(hwType);
+  const effectiveKnob: 'round' | 't' = hasTKnob && doorHardware === 'knob' && knobShape === 't' ? 't' : 'round';
+  const doorOptions: { id: 'pull' | 'knob' | 'tknob'; label: string }[] = hasTKnob
+    ? [
+        { id: 'pull', label: 'Pulls on doors' },
+        { id: 'knob', label: 'Round knobs' },
+        { id: 'tknob', label: 'T-knobs' },
+      ]
+    : [
+        { id: 'pull', label: 'Pulls on doors' },
+        { id: 'knob', label: 'Knobs on doors' },
+      ];
+  const doorOption = doorHardware === 'pull' ? 'pull' : effectiveKnob === 't' ? 'tknob' : 'knob';
+  const pickDoorOption = (id: 'pull' | 'knob' | 'tknob') => {
+    setDoorHardware(id === 'pull' ? 'pull' : 'knob');
+    if (id !== 'pull') setKnobShape(id === 'tknob' ? 't' : 'round');
+  };
   const doorFinish = CONFIG_DATA.doorFinishes[currentColor.finish];
   const hasRender = Boolean(currentColor.kitchen) && brokenRender !== currentColor.kitchen;
 
@@ -114,13 +133,14 @@ export function CabinetConfigurator() {
     if (f && FINISH_NAMES[f]) setHwFinish(f);
     if (q.get('view') === '3d') setView('3d');
     if (q.get('doors') === 'knob') setDoorHardware('knob');
+    if (q.get('knob') === 't') setKnobShape('t');
     if (q.get('island') === '0') setShowIsland(false);
     if (q.get('ar') === '1') setArrivedForAr(true);
   }, []);
 
   const selection: ConfigSelection = useMemo(
-    () => ({ style, color: currentColor.id, hw: hwType, finish: hwFinishKey, doors: doorHardware, island: showIsland }),
-    [style, currentColor.id, hwType, hwFinishKey, doorHardware, showIsland],
+    () => ({ style, color: currentColor.id, hw: hwType, finish: hwFinishKey, doors: doorHardware, knob: effectiveKnob, island: showIsland }),
+    [style, currentColor.id, hwType, hwFinishKey, doorHardware, effectiveKnob, showIsland],
   );
   const configKey = configQuery(selection).toString();
 
@@ -213,10 +233,10 @@ export function CabinetConfigurator() {
       `Door style: ${currentStyle.name}`,
       `Color: ${currentColor.color}`,
       `Hardware: ${currentHw.name} - ${FINISH_NAMES[hwFinishKey] || hwFinishKey}`,
-      `Doors use: ${doorHardware === 'knob' ? 'knobs' : 'pulls'}`,
+      `Doors use: ${doorHardwareLabel(selection)}`,
       `Design summary: https://vulpinehomes.com/configurator/summary?${configKey}`,
     ].join('\n');
-  }, [currentStyle.name, currentColor.color, currentHw.name, hwFinishKey, doorHardware, configKey]);
+  }, [currentStyle.name, currentColor.color, currentHw.name, hwFinishKey, selection, configKey]);
   const quoteHref = `/request-bid?${new URLSearchParams({ configuration: quoteSummary }).toString()}`;
   const foxSelection: FoxSelection = useMemo(
     () => ({ style, color: currentColor.id, hw: hwType, finish: hwFinishKey, doors: doorHardware, view }),
@@ -224,7 +244,7 @@ export function CabinetConfigurator() {
   );
 
   const description = `${currentStyle.name} doors in ${currentColor.color}, ${currentHw.name} hardware in ${FINISH_NAMES[hwFinishKey] || hwFinishKey}, ${
-    doorHardware === 'knob' ? 'knobs' : 'pulls'
+    doorHardwareLabel(selection)
   } on doors${view === '3d' ? (showIsland ? ', with island' : ', without island') : ''}`;
   const arTitle = `${currentStyle.name} · ${currentColor.color} · ${currentHw.name} ${FINISH_NAMES[hwFinishKey] || ''}`.trim();
 
@@ -344,6 +364,7 @@ export function CabinetConfigurator() {
                 hwFinishId={hwFinishKey}
                 hwFinish={CONFIG_DATA.hardwareFinishes[hwFinishKey]}
                 doorHardware={doorHardware}
+                knobShape={effectiveKnob}
                 showIsland={showIsland}
               />
             )}
@@ -601,15 +622,15 @@ export function CabinetConfigurator() {
             <div className={styles.panel}>
               <p className={styles.eyebrow}>On the doors</p>
               <div className={styles.chips} role="radiogroup" aria-label="Door hardware" onKeyDown={radioKeys}>
-                {(['pull', 'knob'] as const).map((k) => (
+                {doorOptions.map((o) => (
                   <button
-                    key={k}
+                    key={o.id}
                     type="button"
-                    className={cn(styles.chip, doorHardware === k && styles.chipActive)}
-                    onClick={() => setDoorHardware(k)}
-                    {...radio(doorHardware === k)}
+                    className={cn(styles.chip, doorOption === o.id && styles.chipActive)}
+                    onClick={() => pickDoorOption(o.id)}
+                    {...radio(doorOption === o.id)}
                   >
-                    {k === 'pull' ? 'Pulls on doors' : 'Knobs on doors'}
+                    {o.label}
                   </button>
                 ))}
               </div>
@@ -706,9 +727,9 @@ export function CabinetConfigurator() {
                     {CONFIG_DATA.hardware[id].name}
                   </button>
                 ))}
-                {(['pull', 'knob'] as const).map((k) => (
-                  <button key={k} type="button" className={cn(styles.chip, styles.chipSubtle, doorHardware === k && styles.chipActive)} aria-pressed={doorHardware === k} onClick={() => setDoorHardware(k)}>
-                    {k === 'pull' ? 'Pulls on doors' : 'Knobs on doors'}
+                {doorOptions.map((o) => (
+                  <button key={o.id} type="button" className={cn(styles.chip, styles.chipSubtle, doorOption === o.id && styles.chipActive)} aria-pressed={doorOption === o.id} onClick={() => pickDoorOption(o.id)}>
+                    {o.label}
                   </button>
                 ))}
               </div>
