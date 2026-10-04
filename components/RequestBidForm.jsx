@@ -1,12 +1,21 @@
 'use client';
 
-import { useState } from 'react';
+import { useEffect, useRef, useState } from 'react';
 import { SMS_CONSENT_TEXT } from '../lib/sms-consent';
 
 export default function RequestBidForm() {
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [successMessage, setSuccessMessage] = useState('');
   const [errorMessage, setErrorMessage] = useState('');
+  const messageRef = useRef(null);
+
+  // Prefill project details when arriving from the cabinet configurator (?configuration=...)
+  useEffect(() => {
+    const configuration = new URLSearchParams(window.location.search).get('configuration');
+    if (configuration && messageRef.current && !messageRef.current.value) {
+      messageRef.current.value = `${configuration.slice(0, 1000)}\n\n`;
+    }
+  }, []);
 
   async function handleSubmit(event) {
     event.preventDefault();
@@ -129,6 +138,7 @@ export default function RequestBidForm() {
           className="form-textarea"
           id="message"
           name="message"
+          ref={messageRef}
           placeholder="Tell us about unit count, materials needed, location, and schedule."
           required
         ></textarea>

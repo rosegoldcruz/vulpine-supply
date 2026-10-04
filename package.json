@@ -13,21 +13,26 @@
     "db:status": "tsx scripts/db-status.ts",
     "db:check": "tsx scripts/db-check.ts",
     "generate:icons": "node scripts/generate-icons.mjs",
-    "optimize:materials": "node scripts/optimize-material-images.mjs"
+    "optimize:materials": "node scripts/optimize-material-images.mjs",
+    "build:cabs-dataset": "node scripts/build-cabs-dataset.mjs",
+    "sync:configurator-assets": "node scripts/sync-configurator-assets.mjs"
   },
   "dependencies": {
     "drizzle-orm": "^0.45.2",
+    "framer-motion": "^12.43.0",
     "gsap": "^3.12.5",
     "next": "^15.3.3",
     "next-sitemap": "^4.2.3",
     "postgres": "^3.4.9",
     "react": "^19.1.0",
-    "react-dom": "^19.1.0"
+    "react-dom": "^19.1.0",
+    "three": "^0.170.0"
   },
   "devDependencies": {
     "@types/node": "^22.15.31",
     "@types/react": "^19.1.6",
     "@types/react-dom": "^19.1.6",
+    "@types/three": "^0.170.0",
     "drizzle-kit": "^0.31.10",
     "sharp": "^0.33.5",
     "tsx": "^4.23.12",

@@ -32,6 +32,9 @@ export default function RequestBidPage() {
             <a href="/supply">Supply Categories</a>
           </li>
           <li>
+            <a href="/configurator">Configurator</a>
+          </li>
+          <li>
             <a href="/request-bid">Request a Bid</a>
           </li>
           <li>
@@ -68,6 +71,9 @@ export default function RequestBidPage() {
           </li>
           <li>
             <a href="/supply">Supply Categories</a>
+          </li>
+          <li>
+            <a href="/configurator">Configurator</a>
           </li>
           <li>
             <a href="/request-bid">Request a Bid</a>

@@ -12,6 +12,7 @@ const PAGE_HTML_BEFORE_SUPPLY = `
   <a href="#" class="nav-logo">Vulpine<span>.</span></a>
   <ul class="nav-links">
     <li><a href="#supply">What We Supply</a></li>
+    <li><a href="/configurator">Configurator</a></li>
     <li><a href="#turns">Property Turns</a></li>
     <li><a href="#mf-split">Multifamily</a></li>
     <li><a href="#contractors">Contractors</a></li>
@@ -190,6 +191,7 @@ const PAGE_HTML_BEFORE_SUPPLY = `
   <div class="footer-logo">Vulpine<span>.</span></div>
   <ul class="footer-links">
     <li><a href="#supply">Supply</a></li>
+    <li><a href="/configurator">Configurator</a></li>
     <li><a href="#turns">Property Turns</a></li>
     <li><a href="#mf-split">Multifamily</a></li>
     <li><a href="#contractors">Contractors</a></li>

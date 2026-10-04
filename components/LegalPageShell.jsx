@@ -12,6 +12,7 @@ export default function LegalPageShell({ title, description, lastUpdated, sectio
         </a>
         <ul className="nav-links">
           <li><a href="/supply">Supply Categories</a></li>
+          <li><a href="/configurator">Configurator</a></li>
           <li><a href="/terms">Terms</a></li>
           <li><a href="/privacy">Privacy</a></li>
         </ul>
