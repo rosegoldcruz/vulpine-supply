@@ -2,8 +2,6 @@
  * Server-side design summary PDF (mirrors components/configurator/DesignSummary.tsx: wordmark, kitchen photo,
  * door + hardware cards, spec table, design link + QR). No prices, by design.
  */
-import { readFile } from 'node:fs/promises';
-import path from 'node:path';
 import React from 'react';
 import { Document, Font, Image, Link, Page, StyleSheet, Text, View, renderToBuffer } from '@react-pdf/renderer';
 import QRCode from 'qrcode';
@@ -66,8 +64,6 @@ export interface AssetSource {
   origin?: string;
   /** forwarded so protected preview deployments let us read our own /public files */
   cookie?: string;
-  /** skip the local /public read (tests the HTTP path) */
-  skipDisk?: boolean;
 }
 
 type PdfImage = { data: Buffer; format: 'png' | 'jpg' };
@@ -78,9 +74,12 @@ function imageFormat(buf: Buffer): 'png' | 'jpg' | null {
   return null;
 }
 
-/** /public asset: local disk first (dev / traced files), then this deployment over HTTP, then production. */
+/**
+ * /public asset over HTTP: this deployment first, then production. (No disk read on purpose: a dynamic
+ * path under public/ makes the file tracer pull all of public/ into the function bundle.)
+ */
 async function loadAsset(rel: string, src: AssetSource): Promise<PdfImage | null> {
-  const tries: (() => Promise<Buffer>)[] = src.skipDisk ? [] : [() => readFile(path.join(process.cwd(), 'public', rel))];
+  const tries: (() => Promise<Buffer>)[] = [];
   const urlPath = '/' + rel.split('/').map(encodeURIComponent).join('/');
   const fetchBuf = async (url: string, headers: Record<string, string>) => {
     const res = await fetch(url, { headers, signal: AbortSignal.timeout(10000), cache: 'no-store' });
