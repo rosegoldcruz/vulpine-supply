@@ -1,0 +1,60 @@
+{
+  "cameraName": "ConstructionReferenceCamera",
+  "modelYawDegrees": -35,
+  "cameraElevationDegrees": 8,
+  "modelRotation": [
+    0,
+    -0.3007057995042731,
+    0,
+    0.9537169507482269
+  ],
+  "groundTranslation": [
+    0.004481256008148193,
+    0.9523299932479858,
+    0.0001621246337890625
+  ],
+  "cameraPosition": [
+    0,
+    1.536980041267077,
+    4.159125888714596
+  ],
+  "cameraRotation": [
+    -0.0697564737441253,
+    0,
+    0,
+    0.9975640502598242
+  ],
+  "target": [
+    0,
+    0.9524530172348022,
+    0
+  ],
+  "perspective": {
+    "yfov": 0.6108652381980153,
+    "znear": 0.01,
+    "zfar": 100
+  },
+  "files": [
+    {
+      "file": "building-stage-0.glb",
+      "bytes": 693148,
+      "binaryPayloadSha256": "dff41595567964c2344ee0f0b6a3e29848e9bd0c5f1bdee834ac013ecbd63f00"
+    },
+    {
+      "file": "building-stage-1.glb",
+      "bytes": 1565108,
+      "binaryPayloadSha256": "4c47fc2bf922af6c3dd596dec6f9a8640438a5a07a6cce822158d43b801cc096"
+    },
+    {
+      "file": "building-stage-2.glb",
+      "bytes": 1958588,
+      "binaryPayloadSha256": "94ebebf2e664d9e8ea37acf0a4d85cb5702ee09b2847d87d424766656e202f2e"
+    },
+    {
+      "file": "building-stage-3.glb",
+      "bytes": 2345280,
+      "binaryPayloadSha256": "d942aceefce8863b42e5949774c2196ece6e984ea4bb8ec679211acedddffc05"
+    }
+  ],
+  "note": "All four files use the same pose and full-building camera. Use the embedded camera; per-file auto-fit loses consistent framing. Angles are a visual match, not recovered screenshot metadata."
+}

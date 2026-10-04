@@ -1,5 +1,44 @@
 # Building construction states
 
+## Current delivery: shared diagonal presentation
+
+The four user-selected files now live directly under `public/GLB/`:
+`building-stage-0.glb`, `building-stage-1.glb`, `building-stage-2.glb`, and
+`building-stage-3.glb`. Each includes the same `BuildingPresentation` rotation,
+`BuildingGroundAlignment` offset, and `ConstructionReferenceCamera`.
+
+The shared setup is a **−35° model yaw**, **8° downward camera pitch**, **35°
+vertical field of view**, and camera position **[0, 1.5369800413, 4.1591258887]**.
+The target is **[0, 0.9524530172, 0]**. These are visually selected to match the
+supplied screenshot's low three-quarter view, not recovered screenshot metadata.
+The model's common ground is Y=0 and its scale is unchanged. There is no path.
+
+Use the embedded camera for every state. Do not auto-center, auto-scale or
+auto-frame each partial building. An external viewer may ignore glTF cameras;
+select `ConstructionReferenceCamera` in its camera menu when available. A GLB
+cannot force an external viewer to use its authored camera. Consumers should
+only update camera aspect ratio for their viewport, not recompute framing from
+the changing stage bounds. This setup is an endpoint pose, not an animation clip.
+
+`public/GLB/building-presentation.json` records identical numeric settings and
+binary-payload hashes. The pose edit preserves every compressed geometry and
+texture byte; only scene JSON and chunk offsets change. Stage 3's whole-file hash
+therefore changes, while its actual geometry/texture payload remains identical.
+
+```sh
+node tools/building-stages/pose.mjs
+node tools/building-stages/verify-pose.mjs
+```
+
+`pose.mjs` is idempotent and edits only the four selected root-level GLBs and their
+presentation manifest. The original pre-pose files were backed up outside Git.
+The earlier source-generation layout below is historical; the user's deletions
+of those source/assembly paths have not been undone by this pose task. The old
+`build.mjs` / `verify.mjs` commands require those generation inputs to be restored
+explicitly before reuse.
+
+## Original generation layout
+
 The source is `public/GLB/multifamily-building.glb`, the existing optimized building,
 not an AI replacement. The prior `/public/models/` handoff path was incorrect.
 
