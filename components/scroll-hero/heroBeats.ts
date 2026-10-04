@@ -8,7 +8,14 @@ export const rangeProgress=(p:number,start:number,end:number)=>clamp01((p-start)
 export const getBeatProgress=(p:number,name:BeatName)=>rangeProgress(p,beats[name].start,beats[name].end)
 export const isBeatActive=(p:number,name:BeatName)=>p>=beats[name].start&&p<=beats[name].end
 // Three distinct arrivals per group. Every item gets the same travel time.
-export const stream={itemGap:.30,groupGap:.16,travel:1.65}
-export const startTime=(index:number)=>index*stream.itemGap+Math.floor(index/3)*stream.groupGap
-export const itemProgress=(p:number,index:number,total:number)=> (p*(startTime(total-1)+stream.travel)-startTime(index))/stream.travel
+export const stream = { itemGap: .34, groupGap: .16, travel: 1.65 }
+export const outputStream = { itemGap: .65, groupGap: .20, travel: 2.0 }
+export const startTime = (index: number, output = false) => {
+  const timing = output ? outputStream : stream
+  return index * timing.itemGap + Math.floor(index / 3) * timing.groupGap
+}
+export const itemProgress = (p: number, index: number, total: number, output = false) => {
+  const timing = output ? outputStream : stream
+  return (p * (startTime(total - 1, output) + timing.travel) - startTime(index, output)) / timing.travel
+}
 export const floorPlanPaths=Array.from({length:10},(_,i)=>`/GLB/${i>=7?'web/':''}floor_plan_${i+1}.glb`)
