@@ -1,0 +1,64 @@
+{
+  "source": "/GLB/multifamily-building.glb",
+  "sourceSha256": "fce60b4dfafff3378970646de15fb4924fc0c96e90bea46b301e82ea8669668a",
+  "units": "Original model units; not calibrated architectural dimensions",
+  "upAxis": "Y",
+  "bounds": {
+    "min": [
+      -0.45870301127433777,
+      -0.9523299932479858,
+      -0.5326939821243286
+    ],
+    "max": [
+      0.4497404992580414,
+      0.9525760412216187,
+      0.5323697328567505
+    ]
+  },
+  "baseFraction": 0.025,
+  "cuts": [
+    -0.9523309932479859,
+    -0.9047073423862457,
+    -0.28561288118362427,
+    0.3334815800189972,
+    0.9525770412216187
+  ],
+  "nodes": [
+    "stage_0_ground",
+    "stage_1_lower_third",
+    "stage_2_middle_third",
+    "stage_3_upper_third"
+  ],
+  "sourceTriangles": 198964,
+  "bandTriangles": [
+    14080,
+    91754,
+    39628,
+    63216
+  ],
+  "surfaceAreaRelativeError": 4.790317449493472e-16,
+  "stageRule": "Show assembly nodes with constructionBand <= stage. Do not recenter individual stages.",
+  "limitation": "Visual height bands of the existing exterior mesh, not BIM floors. Cut faces are open; no structural interiors or caps invented.",
+  "files": [
+    {
+      "file": "building-stage-0.glb",
+      "bytes": 692076
+    },
+    {
+      "file": "building-stage-1.glb",
+      "bytes": 1564040
+    },
+    {
+      "file": "building-stage-2.glb",
+      "bytes": 1957520
+    },
+    {
+      "file": "building-stage-3.glb",
+      "bytes": 2344212
+    },
+    {
+      "file": "building-assembly.glb",
+      "bytes": 2509272
+    }
+  ]
+}
