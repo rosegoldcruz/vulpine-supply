@@ -2,9 +2,9 @@
  "mounts": {
   "door_A03_LS36": {
    "position": [
-    -0.51924,
+    -0.49679,
     0.75336,
-    -2.04013
+    -2.06259
    ],
    "quaternion": [
     0.270598,
@@ -23,17 +23,157 @@
     0.70711
    ],
    "orientation": "vertical",
-   "hardware": "pull_bar",
-   "bar_length_m": 0.1524,
-   "center_to_center_m": 0.1143,
+   "mount_type": "door_vertical",
+   "cabinet_type": "base",
+   "placement": "corner_anchor",
+   "anchor": [
+    -0.49679,
+    0.81051,
+    -2.06259
+   ],
+   "anchor_dir": [
+    0.0,
+    -1.0,
+    0.0
+   ],
+   "knob_position": [
+    -0.49679,
+    0.81051,
+    -2.06259
+   ],
+   "size_class": "small",
+   "front_width_m": 0.2812,
+   "front_height_m": 0.7701,
+   "hardware": "pull_bar_4_5in",
+   "bar_length_m": 0.1143,
+   "center_to_center_m": 0.064,
+   "by_style": {
+    "arch": {
+     "pull": "pull_arch_6in",
+     "length_m": 0.1524,
+     "center_to_center_m": 0.096,
+     "position": [
+      -0.49679,
+      0.73431,
+      -2.06259
+     ],
+     "knob": "knob_arch",
+     "knob_position": [
+      -0.49679,
+      0.81051,
+      -2.06259
+     ]
+    },
+    "artisan": {
+     "pull": "pull_artisan_4_75in",
+     "length_m": 0.1206,
+     "center_to_center_m": 0.096,
+     "position": [
+      -0.49679,
+      0.75019,
+      -2.06259
+     ],
+     "knob": "knob_artisan",
+     "knob_position": [
+      -0.49679,
+      0.81051,
+      -2.06259
+     ]
+    },
+    "cottage": {
+     "pull": "pull_cottage_4_75in",
+     "length_m": 0.1206,
+     "center_to_center_m": 0.096,
+     "position": [
+      -0.49679,
+      0.75019,
+      -2.06259
+     ],
+     "knob": "knob_cottage",
+     "knob_position": [
+      -0.49679,
+      0.81051,
+      -2.06259
+     ]
+    },
+    "loft": {
+     "pull": "pull_loft_4_625in",
+     "length_m": 0.1175,
+     "center_to_center_m": 0.1085,
+     "position": [
+      -0.49679,
+      0.75178,
+      -2.06259
+     ],
+     "knob": "knob_loft",
+     "knob_position": [
+      -0.49679,
+      0.81051,
+      -2.06259
+     ]
+    },
+    "square": {
+     "pull": "pull_square_4_25in",
+     "length_m": 0.1079,
+     "center_to_center_m": 0.096,
+     "position": [
+      -0.49679,
+      0.75654,
+      -2.06259
+     ],
+     "knob": "knob_square",
+     "knob_position": [
+      -0.49679,
+      0.81051,
+      -2.06259
+     ]
+    },
+    "bar": {
+     "pull": "pull_bar_4_5in",
+     "length_m": 0.1143,
+     "center_to_center_m": 0.064,
+     "position": [
+      -0.49679,
+      0.75336,
+      -2.06259
+     ],
+     "knob": "knob_bar",
+     "knob_position": [
+      -0.49679,
+      0.81051,
+      -2.06259
+     ]
+    },
+    "generic": {
+     "pull": "pull_generic_6in",
+     "length_m": 0.1524,
+     "center_to_center_m": 0.1143,
+     "position": [
+      -0.49679,
+      0.73431,
+      -2.06259
+     ],
+     "knob": "knob_generic",
+     "knob_position": [
+      -0.49679,
+      0.81051,
+      -2.06259
+     ]
+    }
+   },
    "pull": "pull_A03_LS36",
-   "front": "door_A03_LS36"
+   "front": "door_A03_LS36",
+   "latch_dir": [
+    -0.70711,
+    0.0,
+    0.70711
+   ]
   },
   "door_A01_WEC2430": {
    "position": [
-    -0.51924,
+    -0.49679,
     1.49454,
-    -2.47119
+    -2.49364
    ],
    "quaternion": [
     0.270598,
@@ -52,17 +192,157 @@
     0.70711
    ],
    "orientation": "vertical",
-   "hardware": "pull_bar",
-   "bar_length_m": 0.1524,
-   "center_to_center_m": 0.1143,
+   "mount_type": "door_vertical",
+   "cabinet_type": "upper",
+   "placement": "corner_anchor",
+   "anchor": [
+    -0.49679,
+    1.43739,
+    -2.49364
+   ],
+   "anchor_dir": [
+    0.0,
+    1.0,
+    0.0
+   ],
+   "knob_position": [
+    -0.49679,
+    1.43739,
+    -2.49364
+   ],
+   "size_class": "small",
+   "front_width_m": 0.2812,
+   "front_height_m": 0.7574,
+   "hardware": "pull_bar_4_5in",
+   "bar_length_m": 0.1143,
+   "center_to_center_m": 0.064,
+   "by_style": {
+    "arch": {
+     "pull": "pull_arch_6in",
+     "length_m": 0.1524,
+     "center_to_center_m": 0.096,
+     "position": [
+      -0.49679,
+      1.51359,
+      -2.49364
+     ],
+     "knob": "knob_arch",
+     "knob_position": [
+      -0.49679,
+      1.43739,
+      -2.49364
+     ]
+    },
+    "artisan": {
+     "pull": "pull_artisan_4_75in",
+     "length_m": 0.1206,
+     "center_to_center_m": 0.096,
+     "position": [
+      -0.49679,
+      1.49771,
+      -2.49364
+     ],
+     "knob": "knob_artisan",
+     "knob_position": [
+      -0.49679,
+      1.43739,
+      -2.49364
+     ]
+    },
+    "cottage": {
+     "pull": "pull_cottage_4_75in",
+     "length_m": 0.1206,
+     "center_to_center_m": 0.096,
+     "position": [
+      -0.49679,
+      1.49771,
+      -2.49364
+     ],
+     "knob": "knob_cottage",
+     "knob_position": [
+      -0.49679,
+      1.43739,
+      -2.49364
+     ]
+    },
+    "loft": {
+     "pull": "pull_loft_4_625in",
+     "length_m": 0.1175,
+     "center_to_center_m": 0.1085,
+     "position": [
+      -0.49679,
+      1.49612,
+      -2.49364
+     ],
+     "knob": "knob_loft",
+     "knob_position": [
+      -0.49679,
+      1.43739,
+      -2.49364
+     ]
+    },
+    "square": {
+     "pull": "pull_square_4_25in",
+     "length_m": 0.1079,
+     "center_to_center_m": 0.096,
+     "position": [
+      -0.49679,
+      1.49136,
+      -2.49364
+     ],
+     "knob": "knob_square",
+     "knob_position": [
+      -0.49679,
+      1.43739,
+      -2.49364
+     ]
+    },
+    "bar": {
+     "pull": "pull_bar_4_5in",
+     "length_m": 0.1143,
+     "center_to_center_m": 0.064,
+     "position": [
+      -0.49679,
+      1.49454,
+      -2.49364
+     ],
+     "knob": "knob_bar",
+     "knob_position": [
+      -0.49679,
+      1.43739,
+      -2.49364
+     ]
+    },
+    "generic": {
+     "pull": "pull_generic_6in",
+     "length_m": 0.1524,
+     "center_to_center_m": 0.1143,
+     "position": [
+      -0.49679,
+      1.51359,
+      -2.49364
+     ],
+     "knob": "knob_generic",
+     "knob_position": [
+      -0.49679,
+      1.43739,
+      -2.49364
+     ]
+    }
+   },
    "pull": "pull_A01_WEC2430",
-   "front": "door_A01_WEC2430"
+   "front": "door_A01_WEC2430",
+   "latch_dir": [
+    -0.70711,
+    0.0,
+    0.70711
+   ]
   },
   "door_A02_W1530": {
    "position": [
-    -0.78865,
+    -0.7662,
     1.49454,
-    -2.20178
+    -2.22423
    ],
    "quaternion": [
     0.270598,
@@ -81,17 +361,157 @@
     0.70711
    ],
    "orientation": "vertical",
-   "hardware": "pull_bar",
-   "bar_length_m": 0.1524,
-   "center_to_center_m": 0.1143,
+   "mount_type": "door_vertical",
+   "cabinet_type": "upper",
+   "placement": "corner_anchor",
+   "anchor": [
+    -0.7662,
+    1.43739,
+    -2.22423
+   ],
+   "anchor_dir": [
+    0.0,
+    1.0,
+    0.0
+   ],
+   "knob_position": [
+    -0.7662,
+    1.43739,
+    -2.22423
+   ],
+   "size_class": "small",
+   "front_width_m": 0.3764,
+   "front_height_m": 0.7574,
+   "hardware": "pull_bar_4_5in",
+   "bar_length_m": 0.1143,
+   "center_to_center_m": 0.064,
+   "by_style": {
+    "arch": {
+     "pull": "pull_arch_6in",
+     "length_m": 0.1524,
+     "center_to_center_m": 0.096,
+     "position": [
+      -0.7662,
+      1.51359,
+      -2.22423
+     ],
+     "knob": "knob_arch",
+     "knob_position": [
+      -0.7662,
+      1.43739,
+      -2.22423
+     ]
+    },
+    "artisan": {
+     "pull": "pull_artisan_4_75in",
+     "length_m": 0.1206,
+     "center_to_center_m": 0.096,
+     "position": [
+      -0.7662,
+      1.49771,
+      -2.22423
+     ],
+     "knob": "knob_artisan",
+     "knob_position": [
+      -0.7662,
+      1.43739,
+      -2.22423
+     ]
+    },
+    "cottage": {
+     "pull": "pull_cottage_4_75in",
+     "length_m": 0.1206,
+     "center_to_center_m": 0.096,
+     "position": [
+      -0.7662,
+      1.49771,
+      -2.22423
+     ],
+     "knob": "knob_cottage",
+     "knob_position": [
+      -0.7662,
+      1.43739,
+      -2.22423
+     ]
+    },
+    "loft": {
+     "pull": "pull_loft_4_625in",
+     "length_m": 0.1175,
+     "center_to_center_m": 0.1085,
+     "position": [
+      -0.7662,
+      1.49612,
+      -2.22423
+     ],
+     "knob": "knob_loft",
+     "knob_position": [
+      -0.7662,
+      1.43739,
+      -2.22423
+     ]
+    },
+    "square": {
+     "pull": "pull_square_4_25in",
+     "length_m": 0.1079,
+     "center_to_center_m": 0.096,
+     "position": [
+      -0.7662,
+      1.49136,
+      -2.22423
+     ],
+     "knob": "knob_square",
+     "knob_position": [
+      -0.7662,
+      1.43739,
+      -2.22423
+     ]
+    },
+    "bar": {
+     "pull": "pull_bar_4_5in",
+     "length_m": 0.1143,
+     "center_to_center_m": 0.064,
+     "position": [
+      -0.7662,
+      1.49454,
+      -2.22423
+     ],
+     "knob": "knob_bar",
+     "knob_position": [
+      -0.7662,
+      1.43739,
+      -2.22423
+     ]
+    },
+    "generic": {
+     "pull": "pull_generic_6in",
+     "length_m": 0.1524,
+     "center_to_center_m": 0.1143,
+     "position": [
+      -0.7662,
+      1.51359,
+      -2.22423
+     ],
+     "knob": "knob_generic",
+     "knob_position": [
+      -0.7662,
+      1.43739,
+      -2.22423
+     ]
+    }
+   },
    "pull": "pull_A02_W1530",
-   "front": "door_A02_W1530"
+   "front": "door_A02_W1530",
+   "latch_dir": [
+    -0.70711,
+    0.0,
+    0.70711
+   ]
   },
   "door_B03_W1530": {
    "position": [
-    0.10615,
+    0.0837,
     1.49454,
-    -2.20178
+    -2.22423
    ],
    "quaternion": [
     -0.270598,
@@ -110,17 +530,157 @@
     0.70711
    ],
    "orientation": "vertical",
-   "hardware": "pull_bar",
-   "bar_length_m": 0.1524,
-   "center_to_center_m": 0.1143,
+   "mount_type": "door_vertical",
+   "cabinet_type": "upper",
+   "placement": "corner_anchor",
+   "anchor": [
+    0.0837,
+    1.43739,
+    -2.22423
+   ],
+   "anchor_dir": [
+    0.0,
+    1.0,
+    0.0
+   ],
+   "knob_position": [
+    0.0837,
+    1.43739,
+    -2.22423
+   ],
+   "size_class": "small",
+   "front_width_m": 0.3764,
+   "front_height_m": 0.7574,
+   "hardware": "pull_bar_4_5in",
+   "bar_length_m": 0.1143,
+   "center_to_center_m": 0.064,
+   "by_style": {
+    "arch": {
+     "pull": "pull_arch_6in",
+     "length_m": 0.1524,
+     "center_to_center_m": 0.096,
+     "position": [
+      0.0837,
+      1.51359,
+      -2.22423
+     ],
+     "knob": "knob_arch",
+     "knob_position": [
+      0.0837,
+      1.43739,
+      -2.22423
+     ]
+    },
+    "artisan": {
+     "pull": "pull_artisan_4_75in",
+     "length_m": 0.1206,
+     "center_to_center_m": 0.096,
+     "position": [
+      0.0837,
+      1.49771,
+      -2.22423
+     ],
+     "knob": "knob_artisan",
+     "knob_position": [
+      0.0837,
+      1.43739,
+      -2.22423
+     ]
+    },
+    "cottage": {
+     "pull": "pull_cottage_4_75in",
+     "length_m": 0.1206,
+     "center_to_center_m": 0.096,
+     "position": [
+      0.0837,
+      1.49771,
+      -2.22423
+     ],
+     "knob": "knob_cottage",
+     "knob_position": [
+      0.0837,
+      1.43739,
+      -2.22423
+     ]
+    },
+    "loft": {
+     "pull": "pull_loft_4_625in",
+     "length_m": 0.1175,
+     "center_to_center_m": 0.1085,
+     "position": [
+      0.0837,
+      1.49612,
+      -2.22423
+     ],
+     "knob": "knob_loft",
+     "knob_position": [
+      0.0837,
+      1.43739,
+      -2.22423
+     ]
+    },
+    "square": {
+     "pull": "pull_square_4_25in",
+     "length_m": 0.1079,
+     "center_to_center_m": 0.096,
+     "position": [
+      0.0837,
+      1.49136,
+      -2.22423
+     ],
+     "knob": "knob_square",
+     "knob_position": [
+      0.0837,
+      1.43739,
+      -2.22423
+     ]
+    },
+    "bar": {
+     "pull": "pull_bar_4_5in",
+     "length_m": 0.1143,
+     "center_to_center_m": 0.064,
+     "position": [
+      0.0837,
+      1.49454,
+      -2.22423
+     ],
+     "knob": "knob_bar",
+     "knob_position": [
+      0.0837,
+      1.43739,
+      -2.22423
+     ]
+    },
+    "generic": {
+     "pull": "pull_generic_6in",
+     "length_m": 0.1524,
+     "center_to_center_m": 0.1143,
+     "position": [
+      0.0837,
+      1.51359,
+      -2.22423
+     ],
+     "knob": "knob_generic",
+     "knob_position": [
+      0.0837,
+      1.43739,
+      -2.22423
+     ]
+    }
+   },
    "pull": "pull_B03_W1530",
-   "front": "door_B03_W1530"
+   "front": "door_B03_W1530",
+   "latch_dir": [
+    0.70711,
+    0.0,
+    0.70711
+   ]
   },
   "door_A04_W2430_L": {
    "position": [
-    -1.00467,
+    -0.98222,
     1.49454,
-    -1.98576
+    -2.00821
    ],
    "quaternion": [
     0.270598,
@@ -139,17 +699,157 @@
     0.70711
    ],
    "orientation": "vertical",
-   "hardware": "pull_bar",
-   "bar_length_m": 0.1524,
-   "center_to_center_m": 0.1143,
+   "mount_type": "door_vertical",
+   "cabinet_type": "upper",
+   "placement": "corner_anchor",
+   "anchor": [
+    -0.98222,
+    1.43739,
+    -2.00821
+   ],
+   "anchor_dir": [
+    0.0,
+    1.0,
+    0.0
+   ],
+   "knob_position": [
+    -0.98222,
+    1.43739,
+    -2.00821
+   ],
+   "size_class": "small",
+   "front_width_m": 0.3009,
+   "front_height_m": 0.7574,
+   "hardware": "pull_bar_4_5in",
+   "bar_length_m": 0.1143,
+   "center_to_center_m": 0.064,
+   "by_style": {
+    "arch": {
+     "pull": "pull_arch_6in",
+     "length_m": 0.1524,
+     "center_to_center_m": 0.096,
+     "position": [
+      -0.98222,
+      1.51359,
+      -2.00821
+     ],
+     "knob": "knob_arch",
+     "knob_position": [
+      -0.98222,
+      1.43739,
+      -2.00821
+     ]
+    },
+    "artisan": {
+     "pull": "pull_artisan_4_75in",
+     "length_m": 0.1206,
+     "center_to_center_m": 0.096,
+     "position": [
+      -0.98222,
+      1.49771,
+      -2.00821
+     ],
+     "knob": "knob_artisan",
+     "knob_position": [
+      -0.98222,
+      1.43739,
+      -2.00821
+     ]
+    },
+    "cottage": {
+     "pull": "pull_cottage_4_75in",
+     "length_m": 0.1206,
+     "center_to_center_m": 0.096,
+     "position": [
+      -0.98222,
+      1.49771,
+      -2.00821
+     ],
+     "knob": "knob_cottage",
+     "knob_position": [
+      -0.98222,
+      1.43739,
+      -2.00821
+     ]
+    },
+    "loft": {
+     "pull": "pull_loft_4_625in",
+     "length_m": 0.1175,
+     "center_to_center_m": 0.1085,
+     "position": [
+      -0.98222,
+      1.49612,
+      -2.00821
+     ],
+     "knob": "knob_loft",
+     "knob_position": [
+      -0.98222,
+      1.43739,
+      -2.00821
+     ]
+    },
+    "square": {
+     "pull": "pull_square_4_25in",
+     "length_m": 0.1079,
+     "center_to_center_m": 0.096,
+     "position": [
+      -0.98222,
+      1.49136,
+      -2.00821
+     ],
+     "knob": "knob_square",
+     "knob_position": [
+      -0.98222,
+      1.43739,
+      -2.00821
+     ]
+    },
+    "bar": {
+     "pull": "pull_bar_4_5in",
+     "length_m": 0.1143,
+     "center_to_center_m": 0.064,
+     "position": [
+      -0.98222,
+      1.49454,
+      -2.00821
+     ],
+     "knob": "knob_bar",
+     "knob_position": [
+      -0.98222,
+      1.43739,
+      -2.00821
+     ]
+    },
+    "generic": {
+     "pull": "pull_generic_6in",
+     "length_m": 0.1524,
+     "center_to_center_m": 0.1143,
+     "position": [
+      -0.98222,
+      1.51359,
+      -2.00821
+     ],
+     "knob": "knob_generic",
+     "knob_position": [
+      -0.98222,
+      1.43739,
+      -2.00821
+     ]
+    }
+   },
    "pull": "pull_A04_W2430_L",
-   "front": "door_A04_W2430_L"
+   "front": "door_A04_W2430_L",
+   "latch_dir": [
+    -0.70711,
+    0.0,
+    0.70711
+   ]
   },
   "door_A04_W2430_R": {
    "position": [
-    -1.05181,
+    -1.07426,
     1.49454,
-    -1.93861
+    -1.91616
    ],
    "quaternion": [
     0.270598,
@@ -168,17 +868,157 @@
     0.70711
    ],
    "orientation": "vertical",
-   "hardware": "pull_bar",
-   "bar_length_m": 0.1524,
-   "center_to_center_m": 0.1143,
+   "mount_type": "door_vertical",
+   "cabinet_type": "upper",
+   "placement": "corner_anchor",
+   "anchor": [
+    -1.07426,
+    1.43739,
+    -1.91616
+   ],
+   "anchor_dir": [
+    0.0,
+    1.0,
+    0.0
+   ],
+   "knob_position": [
+    -1.07426,
+    1.43739,
+    -1.91616
+   ],
+   "size_class": "small",
+   "front_width_m": 0.3009,
+   "front_height_m": 0.7574,
+   "hardware": "pull_bar_4_5in",
+   "bar_length_m": 0.1143,
+   "center_to_center_m": 0.064,
+   "by_style": {
+    "arch": {
+     "pull": "pull_arch_6in",
+     "length_m": 0.1524,
+     "center_to_center_m": 0.096,
+     "position": [
+      -1.07426,
+      1.51359,
+      -1.91616
+     ],
+     "knob": "knob_arch",
+     "knob_position": [
+      -1.07426,
+      1.43739,
+      -1.91616
+     ]
+    },
+    "artisan": {
+     "pull": "pull_artisan_4_75in",
+     "length_m": 0.1206,
+     "center_to_center_m": 0.096,
+     "position": [
+      -1.07426,
+      1.49771,
+      -1.91616
+     ],
+     "knob": "knob_artisan",
+     "knob_position": [
+      -1.07426,
+      1.43739,
+      -1.91616
+     ]
+    },
+    "cottage": {
+     "pull": "pull_cottage_4_75in",
+     "length_m": 0.1206,
+     "center_to_center_m": 0.096,
+     "position": [
+      -1.07426,
+      1.49771,
+      -1.91616
+     ],
+     "knob": "knob_cottage",
+     "knob_position": [
+      -1.07426,
+      1.43739,
+      -1.91616
+     ]
+    },
+    "loft": {
+     "pull": "pull_loft_4_625in",
+     "length_m": 0.1175,
+     "center_to_center_m": 0.1085,
+     "position": [
+      -1.07426,
+      1.49612,
+      -1.91616
+     ],
+     "knob": "knob_loft",
+     "knob_position": [
+      -1.07426,
+      1.43739,
+      -1.91616
+     ]
+    },
+    "square": {
+     "pull": "pull_square_4_25in",
+     "length_m": 0.1079,
+     "center_to_center_m": 0.096,
+     "position": [
+      -1.07426,
+      1.49136,
+      -1.91616
+     ],
+     "knob": "knob_square",
+     "knob_position": [
+      -1.07426,
+      1.43739,
+      -1.91616
+     ]
+    },
+    "bar": {
+     "pull": "pull_bar_4_5in",
+     "length_m": 0.1143,
+     "center_to_center_m": 0.064,
+     "position": [
+      -1.07426,
+      1.49454,
+      -1.91616
+     ],
+     "knob": "knob_bar",
+     "knob_position": [
+      -1.07426,
+      1.43739,
+      -1.91616
+     ]
+    },
+    "generic": {
+     "pull": "pull_generic_6in",
+     "length_m": 0.1524,
+     "center_to_center_m": 0.1143,
+     "position": [
+      -1.07426,
+      1.51359,
+      -1.91616
+     ],
+     "knob": "knob_generic",
+     "knob_position": [
+      -1.07426,
+      1.43739,
+      -1.91616
+     ]
+    }
+   },
    "pull": "pull_A04_W2430_R",
-   "front": "door_A04_W2430_R"
+   "front": "door_A04_W2430_R",
+   "latch_dir": [
+    0.70711,
+    0.0,
+    -0.70711
+   ]
   },
   "door_A05_SB36_L": {
    "position": [
-    -1.32796,
+    -1.3055,
     0.60414,
-    -1.23142
+    -1.25387
    ],
    "quaternion": [
     0.270598,
@@ -197,17 +1037,157 @@
     0.70711
    ],
    "orientation": "vertical",
-   "hardware": "pull_bar",
-   "bar_length_m": 0.1524,
-   "center_to_center_m": 0.1143,
+   "mount_type": "door_vertical",
+   "cabinet_type": "base",
+   "placement": "corner_anchor",
+   "anchor": [
+    -1.3055,
+    0.66129,
+    -1.25387
+   ],
+   "anchor_dir": [
+    0.0,
+    -1.0,
+    0.0
+   ],
+   "knob_position": [
+    -1.3055,
+    0.66129,
+    -1.25387
+   ],
+   "size_class": "small",
+   "front_width_m": 0.4533,
+   "front_height_m": 0.6209,
+   "hardware": "pull_bar_4_5in",
+   "bar_length_m": 0.1143,
+   "center_to_center_m": 0.064,
+   "by_style": {
+    "arch": {
+     "pull": "pull_arch_6in",
+     "length_m": 0.1524,
+     "center_to_center_m": 0.096,
+     "position": [
+      -1.3055,
+      0.58509,
+      -1.25387
+     ],
+     "knob": "knob_arch",
+     "knob_position": [
+      -1.3055,
+      0.66129,
+      -1.25387
+     ]
+    },
+    "artisan": {
+     "pull": "pull_artisan_4_75in",
+     "length_m": 0.1206,
+     "center_to_center_m": 0.096,
+     "position": [
+      -1.3055,
+      0.60096,
+      -1.25387
+     ],
+     "knob": "knob_artisan",
+     "knob_position": [
+      -1.3055,
+      0.66129,
+      -1.25387
+     ]
+    },
+    "cottage": {
+     "pull": "pull_cottage_4_75in",
+     "length_m": 0.1206,
+     "center_to_center_m": 0.096,
+     "position": [
+      -1.3055,
+      0.60096,
+      -1.25387
+     ],
+     "knob": "knob_cottage",
+     "knob_position": [
+      -1.3055,
+      0.66129,
+      -1.25387
+     ]
+    },
+    "loft": {
+     "pull": "pull_loft_4_625in",
+     "length_m": 0.1175,
+     "center_to_center_m": 0.1085,
+     "position": [
+      -1.3055,
+      0.60255,
+      -1.25387
+     ],
+     "knob": "knob_loft",
+     "knob_position": [
+      -1.3055,
+      0.66129,
+      -1.25387
+     ]
+    },
+    "square": {
+     "pull": "pull_square_4_25in",
+     "length_m": 0.1079,
+     "center_to_center_m": 0.096,
+     "position": [
+      -1.3055,
+      0.60731,
+      -1.25387
+     ],
+     "knob": "knob_square",
+     "knob_position": [
+      -1.3055,
+      0.66129,
+      -1.25387
+     ]
+    },
+    "bar": {
+     "pull": "pull_bar_4_5in",
+     "length_m": 0.1143,
+     "center_to_center_m": 0.064,
+     "position": [
+      -1.3055,
+      0.60414,
+      -1.25387
+     ],
+     "knob": "knob_bar",
+     "knob_position": [
+      -1.3055,
+      0.66129,
+      -1.25387
+     ]
+    },
+    "generic": {
+     "pull": "pull_generic_6in",
+     "length_m": 0.1524,
+     "center_to_center_m": 0.1143,
+     "position": [
+      -1.3055,
+      0.58509,
+      -1.25387
+     ],
+     "knob": "knob_generic",
+     "knob_position": [
+      -1.3055,
+      0.66129,
+      -1.25387
+     ]
+    }
+   },
    "pull": "pull_A05_SB36_L",
-   "front": "door_A05_SB36_L"
+   "front": "door_A05_SB36_L",
+   "latch_dir": [
+    -0.70711,
+    0.0,
+    0.70711
+   ]
   },
   "door_A05_SB36_R": {
    "position": [
-    -1.3751,
+    -1.39755,
     0.60414,
-    -1.18427
+    -1.16182
    ],
    "quaternion": [
     0.270598,
@@ -226,11 +1206,151 @@
     0.70711
    ],
    "orientation": "vertical",
-   "hardware": "pull_bar",
-   "bar_length_m": 0.1524,
-   "center_to_center_m": 0.1143,
+   "mount_type": "door_vertical",
+   "cabinet_type": "base",
+   "placement": "corner_anchor",
+   "anchor": [
+    -1.39755,
+    0.66129,
+    -1.16182
+   ],
+   "anchor_dir": [
+    0.0,
+    -1.0,
+    0.0
+   ],
+   "knob_position": [
+    -1.39755,
+    0.66129,
+    -1.16182
+   ],
+   "size_class": "small",
+   "front_width_m": 0.4533,
+   "front_height_m": 0.6209,
+   "hardware": "pull_bar_4_5in",
+   "bar_length_m": 0.1143,
+   "center_to_center_m": 0.064,
+   "by_style": {
+    "arch": {
+     "pull": "pull_arch_6in",
+     "length_m": 0.1524,
+     "center_to_center_m": 0.096,
+     "position": [
+      -1.39755,
+      0.58509,
+      -1.16182
+     ],
+     "knob": "knob_arch",
+     "knob_position": [
+      -1.39755,
+      0.66129,
+      -1.16182
+     ]
+    },
+    "artisan": {
+     "pull": "pull_artisan_4_75in",
+     "length_m": 0.1206,
+     "center_to_center_m": 0.096,
+     "position": [
+      -1.39755,
+      0.60096,
+      -1.16182
+     ],
+     "knob": "knob_artisan",
+     "knob_position": [
+      -1.39755,
+      0.66129,
+      -1.16182
+     ]
+    },
+    "cottage": {
+     "pull": "pull_cottage_4_75in",
+     "length_m": 0.1206,
+     "center_to_center_m": 0.096,
+     "position": [
+      -1.39755,
+      0.60096,
+      -1.16182
+     ],
+     "knob": "knob_cottage",
+     "knob_position": [
+      -1.39755,
+      0.66129,
+      -1.16182
+     ]
+    },
+    "loft": {
+     "pull": "pull_loft_4_625in",
+     "length_m": 0.1175,
+     "center_to_center_m": 0.1085,
+     "position": [
+      -1.39755,
+      0.60255,
+      -1.16182
+     ],
+     "knob": "knob_loft",
+     "knob_position": [
+      -1.39755,
+      0.66129,
+      -1.16182
+     ]
+    },
+    "square": {
+     "pull": "pull_square_4_25in",
+     "length_m": 0.1079,
+     "center_to_center_m": 0.096,
+     "position": [
+      -1.39755,
+      0.60731,
+      -1.16182
+     ],
+     "knob": "knob_square",
+     "knob_position": [
+      -1.39755,
+      0.66129,
+      -1.16182
+     ]
+    },
+    "bar": {
+     "pull": "pull_bar_4_5in",
+     "length_m": 0.1143,
+     "center_to_center_m": 0.064,
+     "position": [
+      -1.39755,
+      0.60414,
+      -1.16182
+     ],
+     "knob": "knob_bar",
+     "knob_position": [
+      -1.39755,
+      0.66129,
+      -1.16182
+     ]
+    },
+    "generic": {
+     "pull": "pull_generic_6in",
+     "length_m": 0.1524,
+     "center_to_center_m": 0.1143,
+     "position": [
+      -1.39755,
+      0.58509,
+      -1.16182
+     ],
+     "knob": "knob_generic",
+     "knob_position": [
+      -1.39755,
+      0.66129,
+      -1.16182
+     ]
+    }
+   },
    "pull": "pull_A05_SB36_R",
-   "front": "door_A05_SB36_R"
+   "front": "door_A05_SB36_R",
+   "latch_dir": [
+    0.70711,
+    0.0,
+    -0.70711
+   ]
   },
   "drawer_A06_B15_1": {
    "position": [
@@ -255,17 +1375,152 @@
     0.70711
    ],
    "orientation": "horizontal",
-   "hardware": "pull_bar_8in",
-   "bar_length_m": 0.2032,
-   "center_to_center_m": 0.1651,
+   "mount_type": "drawer_horizontal",
+   "cabinet_type": "base",
+   "placement": "centered",
+   "anchor": [
+    -1.80952,
+    0.80099,
+    -0.74985
+   ],
+   "anchor_dir": [
+    0.0,
+    0.0,
+    0.0
+   ],
+   "knob_position": [
+    -1.80952,
+    0.80099,
+    -0.74985
+   ],
+   "size_class": "large",
+   "front_width_m": 0.3764,
+   "front_height_m": 0.146,
+   "hardware": "pull_bar_6in",
+   "bar_length_m": 0.1524,
+   "center_to_center_m": 0.096,
+   "by_style": {
+    "arch": {
+     "pull": "pull_arch_7_125in",
+     "length_m": 0.181,
+     "center_to_center_m": 0.128,
+     "position": [
+      -1.80952,
+      0.80099,
+      -0.74985
+     ],
+     "knob": "knob_arch",
+     "knob_position": [
+      -1.80952,
+      0.80099,
+      -0.74985
+     ]
+    },
+    "artisan": {
+     "pull": "pull_artisan_6_0625in",
+     "length_m": 0.154,
+     "center_to_center_m": 0.128,
+     "position": [
+      -1.80952,
+      0.80099,
+      -0.74985
+     ],
+     "knob": "knob_artisan",
+     "knob_position": [
+      -1.80952,
+      0.80099,
+      -0.74985
+     ]
+    },
+    "cottage": {
+     "pull": "pull_cottage_6_0625in",
+     "length_m": 0.154,
+     "center_to_center_m": 0.128,
+     "position": [
+      -1.80952,
+      0.80099,
+      -0.74985
+     ],
+     "knob": "knob_cottage",
+     "knob_position": [
+      -1.80952,
+      0.80099,
+      -0.74985
+     ]
+    },
+    "loft": {
+     "pull": "pull_loft_5_875in",
+     "length_m": 0.1492,
+     "center_to_center_m": 0.1402,
+     "position": [
+      -1.80952,
+      0.80099,
+      -0.74985
+     ],
+     "knob": "knob_loft",
+     "knob_position": [
+      -1.80952,
+      0.80099,
+      -0.74985
+     ]
+    },
+    "square": {
+     "pull": "pull_square_5_4375in",
+     "length_m": 0.1381,
+     "center_to_center_m": 0.128,
+     "position": [
+      -1.80952,
+      0.80099,
+      -0.74985
+     ],
+     "knob": "knob_square",
+     "knob_position": [
+      -1.80952,
+      0.80099,
+      -0.74985
+     ]
+    },
+    "bar": {
+     "pull": "pull_bar_6in",
+     "length_m": 0.1524,
+     "center_to_center_m": 0.096,
+     "position": [
+      -1.80952,
+      0.80099,
+      -0.74985
+     ],
+     "knob": "knob_bar",
+     "knob_position": [
+      -1.80952,
+      0.80099,
+      -0.74985
+     ]
+    },
+    "generic": {
+     "pull": "pull_generic_8in",
+     "length_m": 0.2032,
+     "center_to_center_m": 0.1651,
+     "position": [
+      -1.80952,
+      0.80099,
+      -0.74985
+     ],
+     "knob": "knob_generic",
+     "knob_position": [
+      -1.80952,
+      0.80099,
+      -0.74985
+     ]
+    }
+   },
    "pull": "pull_A06_B15_1",
    "front": "drawer_A06_B15_1"
   },
   "door_A06_B15": {
    "position": [
-    -1.69888,
+    -1.72134,
     0.60414,
-    -0.86049
+    -0.83804
    ],
    "quaternion": [
     0.270598,
@@ -284,17 +1539,157 @@
     0.70711
    ],
    "orientation": "vertical",
-   "hardware": "pull_bar",
-   "bar_length_m": 0.1524,
-   "center_to_center_m": 0.1143,
+   "mount_type": "door_vertical",
+   "cabinet_type": "base",
+   "placement": "corner_anchor",
+   "anchor": [
+    -1.72134,
+    0.66129,
+    -0.83804
+   ],
+   "anchor_dir": [
+    0.0,
+    -1.0,
+    0.0
+   ],
+   "knob_position": [
+    -1.72134,
+    0.66129,
+    -0.83804
+   ],
+   "size_class": "small",
+   "front_width_m": 0.3764,
+   "front_height_m": 0.6209,
+   "hardware": "pull_bar_4_5in",
+   "bar_length_m": 0.1143,
+   "center_to_center_m": 0.064,
+   "by_style": {
+    "arch": {
+     "pull": "pull_arch_6in",
+     "length_m": 0.1524,
+     "center_to_center_m": 0.096,
+     "position": [
+      -1.72134,
+      0.58509,
+      -0.83804
+     ],
+     "knob": "knob_arch",
+     "knob_position": [
+      -1.72134,
+      0.66129,
+      -0.83804
+     ]
+    },
+    "artisan": {
+     "pull": "pull_artisan_4_75in",
+     "length_m": 0.1206,
+     "center_to_center_m": 0.096,
+     "position": [
+      -1.72134,
+      0.60096,
+      -0.83804
+     ],
+     "knob": "knob_artisan",
+     "knob_position": [
+      -1.72134,
+      0.66129,
+      -0.83804
+     ]
+    },
+    "cottage": {
+     "pull": "pull_cottage_4_75in",
+     "length_m": 0.1206,
+     "center_to_center_m": 0.096,
+     "position": [
+      -1.72134,
+      0.60096,
+      -0.83804
+     ],
+     "knob": "knob_cottage",
+     "knob_position": [
+      -1.72134,
+      0.66129,
+      -0.83804
+     ]
+    },
+    "loft": {
+     "pull": "pull_loft_4_625in",
+     "length_m": 0.1175,
+     "center_to_center_m": 0.1085,
+     "position": [
+      -1.72134,
+      0.60255,
+      -0.83804
+     ],
+     "knob": "knob_loft",
+     "knob_position": [
+      -1.72134,
+      0.66129,
+      -0.83804
+     ]
+    },
+    "square": {
+     "pull": "pull_square_4_25in",
+     "length_m": 0.1079,
+     "center_to_center_m": 0.096,
+     "position": [
+      -1.72134,
+      0.60731,
+      -0.83804
+     ],
+     "knob": "knob_square",
+     "knob_position": [
+      -1.72134,
+      0.66129,
+      -0.83804
+     ]
+    },
+    "bar": {
+     "pull": "pull_bar_4_5in",
+     "length_m": 0.1143,
+     "center_to_center_m": 0.064,
+     "position": [
+      -1.72134,
+      0.60414,
+      -0.83804
+     ],
+     "knob": "knob_bar",
+     "knob_position": [
+      -1.72134,
+      0.66129,
+      -0.83804
+     ]
+    },
+    "generic": {
+     "pull": "pull_generic_6in",
+     "length_m": 0.1524,
+     "center_to_center_m": 0.1143,
+     "position": [
+      -1.72134,
+      0.58509,
+      -0.83804
+     ],
+     "knob": "knob_generic",
+     "knob_position": [
+      -1.72134,
+      0.66129,
+      -0.83804
+     ]
+    }
+   },
    "pull": "pull_A06_B15",
-   "front": "door_A06_B15"
+   "front": "door_A06_B15",
+   "latch_dir": [
+    0.70711,
+    0.0,
+    -0.70711
+   ]
   },
   "door_A07_W1530": {
    "position": [
-    -1.91441,
+    -1.93686,
     1.49454,
-    -1.07601
+    -1.05356
    ],
    "quaternion": [
     0.270598,
@@ -313,17 +1708,157 @@
     0.70711
    ],
    "orientation": "vertical",
-   "hardware": "pull_bar",
-   "bar_length_m": 0.1524,
-   "center_to_center_m": 0.1143,
+   "mount_type": "door_vertical",
+   "cabinet_type": "upper",
+   "placement": "corner_anchor",
+   "anchor": [
+    -1.93686,
+    1.43739,
+    -1.05356
+   ],
+   "anchor_dir": [
+    0.0,
+    1.0,
+    0.0
+   ],
+   "knob_position": [
+    -1.93686,
+    1.43739,
+    -1.05356
+   ],
+   "size_class": "small",
+   "front_width_m": 0.3764,
+   "front_height_m": 0.7574,
+   "hardware": "pull_bar_4_5in",
+   "bar_length_m": 0.1143,
+   "center_to_center_m": 0.064,
+   "by_style": {
+    "arch": {
+     "pull": "pull_arch_6in",
+     "length_m": 0.1524,
+     "center_to_center_m": 0.096,
+     "position": [
+      -1.93686,
+      1.51359,
+      -1.05356
+     ],
+     "knob": "knob_arch",
+     "knob_position": [
+      -1.93686,
+      1.43739,
+      -1.05356
+     ]
+    },
+    "artisan": {
+     "pull": "pull_artisan_4_75in",
+     "length_m": 0.1206,
+     "center_to_center_m": 0.096,
+     "position": [
+      -1.93686,
+      1.49771,
+      -1.05356
+     ],
+     "knob": "knob_artisan",
+     "knob_position": [
+      -1.93686,
+      1.43739,
+      -1.05356
+     ]
+    },
+    "cottage": {
+     "pull": "pull_cottage_4_75in",
+     "length_m": 0.1206,
+     "center_to_center_m": 0.096,
+     "position": [
+      -1.93686,
+      1.49771,
+      -1.05356
+     ],
+     "knob": "knob_cottage",
+     "knob_position": [
+      -1.93686,
+      1.43739,
+      -1.05356
+     ]
+    },
+    "loft": {
+     "pull": "pull_loft_4_625in",
+     "length_m": 0.1175,
+     "center_to_center_m": 0.1085,
+     "position": [
+      -1.93686,
+      1.49612,
+      -1.05356
+     ],
+     "knob": "knob_loft",
+     "knob_position": [
+      -1.93686,
+      1.43739,
+      -1.05356
+     ]
+    },
+    "square": {
+     "pull": "pull_square_4_25in",
+     "length_m": 0.1079,
+     "center_to_center_m": 0.096,
+     "position": [
+      -1.93686,
+      1.49136,
+      -1.05356
+     ],
+     "knob": "knob_square",
+     "knob_position": [
+      -1.93686,
+      1.43739,
+      -1.05356
+     ]
+    },
+    "bar": {
+     "pull": "pull_bar_4_5in",
+     "length_m": 0.1143,
+     "center_to_center_m": 0.064,
+     "position": [
+      -1.93686,
+      1.49454,
+      -1.05356
+     ],
+     "knob": "knob_bar",
+     "knob_position": [
+      -1.93686,
+      1.43739,
+      -1.05356
+     ]
+    },
+    "generic": {
+     "pull": "pull_generic_6in",
+     "length_m": 0.1524,
+     "center_to_center_m": 0.1143,
+     "position": [
+      -1.93686,
+      1.51359,
+      -1.05356
+     ],
+     "knob": "knob_generic",
+     "knob_position": [
+      -1.93686,
+      1.43739,
+      -1.05356
+     ]
+    }
+   },
    "pull": "pull_A07_W1530",
-   "front": "door_A07_W1530"
+   "front": "door_A07_W1530",
+   "latch_dir": [
+    0.70711,
+    0.0,
+    -0.70711
+   ]
   },
   "door_A08_W361524_L": {
    "position": [
-    -2.25741,
+    -2.23496,
     1.87554,
-    -0.30196
+    -0.32441
    ],
    "quaternion": [
     0.270598,
@@ -342,17 +1877,157 @@
     0.70711
    ],
    "orientation": "vertical",
-   "hardware": "pull_bar",
-   "bar_length_m": 0.1524,
-   "center_to_center_m": 0.1143,
+   "mount_type": "door_vertical",
+   "cabinet_type": "upper",
+   "placement": "corner_anchor",
+   "anchor": [
+    -2.23496,
+    1.81839,
+    -0.32441
+   ],
+   "anchor_dir": [
+    0.0,
+    1.0,
+    0.0
+   ],
+   "knob_position": [
+    -2.23496,
+    1.81839,
+    -0.32441
+   ],
+   "size_class": "small",
+   "front_width_m": 0.4533,
+   "front_height_m": 0.3764,
+   "hardware": "pull_bar_4_5in",
+   "bar_length_m": 0.1143,
+   "center_to_center_m": 0.064,
+   "by_style": {
+    "arch": {
+     "pull": "pull_arch_6in",
+     "length_m": 0.1524,
+     "center_to_center_m": 0.096,
+     "position": [
+      -2.23496,
+      1.89459,
+      -0.32441
+     ],
+     "knob": "knob_arch",
+     "knob_position": [
+      -2.23496,
+      1.81839,
+      -0.32441
+     ]
+    },
+    "artisan": {
+     "pull": "pull_artisan_4_75in",
+     "length_m": 0.1206,
+     "center_to_center_m": 0.096,
+     "position": [
+      -2.23496,
+      1.87871,
+      -0.32441
+     ],
+     "knob": "knob_artisan",
+     "knob_position": [
+      -2.23496,
+      1.81839,
+      -0.32441
+     ]
+    },
+    "cottage": {
+     "pull": "pull_cottage_4_75in",
+     "length_m": 0.1206,
+     "center_to_center_m": 0.096,
+     "position": [
+      -2.23496,
+      1.87871,
+      -0.32441
+     ],
+     "knob": "knob_cottage",
+     "knob_position": [
+      -2.23496,
+      1.81839,
+      -0.32441
+     ]
+    },
+    "loft": {
+     "pull": "pull_loft_4_625in",
+     "length_m": 0.1175,
+     "center_to_center_m": 0.1085,
+     "position": [
+      -2.23496,
+      1.87712,
+      -0.32441
+     ],
+     "knob": "knob_loft",
+     "knob_position": [
+      -2.23496,
+      1.81839,
+      -0.32441
+     ]
+    },
+    "square": {
+     "pull": "pull_square_4_25in",
+     "length_m": 0.1079,
+     "center_to_center_m": 0.096,
+     "position": [
+      -2.23496,
+      1.87236,
+      -0.32441
+     ],
+     "knob": "knob_square",
+     "knob_position": [
+      -2.23496,
+      1.81839,
+      -0.32441
+     ]
+    },
+    "bar": {
+     "pull": "pull_bar_4_5in",
+     "length_m": 0.1143,
+     "center_to_center_m": 0.064,
+     "position": [
+      -2.23496,
+      1.87554,
+      -0.32441
+     ],
+     "knob": "knob_bar",
+     "knob_position": [
+      -2.23496,
+      1.81839,
+      -0.32441
+     ]
+    },
+    "generic": {
+     "pull": "pull_generic_6in",
+     "length_m": 0.1524,
+     "center_to_center_m": 0.1143,
+     "position": [
+      -2.23496,
+      1.89459,
+      -0.32441
+     ],
+     "knob": "knob_generic",
+     "knob_position": [
+      -2.23496,
+      1.81839,
+      -0.32441
+     ]
+    }
+   },
    "pull": "pull_A08_W361524_L",
-   "front": "door_A08_W361524_L"
+   "front": "door_A08_W361524_L",
+   "latch_dir": [
+    -0.70711,
+    0.0,
+    0.70711
+   ]
   },
   "door_A08_W361524_R": {
    "position": [
-    -2.30456,
+    -2.32701,
     1.87554,
-    -0.25482
+    -0.23236
    ],
    "quaternion": [
     0.270598,
@@ -371,11 +2046,151 @@
     0.70711
    ],
    "orientation": "vertical",
-   "hardware": "pull_bar",
-   "bar_length_m": 0.1524,
-   "center_to_center_m": 0.1143,
+   "mount_type": "door_vertical",
+   "cabinet_type": "upper",
+   "placement": "corner_anchor",
+   "anchor": [
+    -2.32701,
+    1.81839,
+    -0.23236
+   ],
+   "anchor_dir": [
+    0.0,
+    1.0,
+    0.0
+   ],
+   "knob_position": [
+    -2.32701,
+    1.81839,
+    -0.23236
+   ],
+   "size_class": "small",
+   "front_width_m": 0.4533,
+   "front_height_m": 0.3764,
+   "hardware": "pull_bar_4_5in",
+   "bar_length_m": 0.1143,
+   "center_to_center_m": 0.064,
+   "by_style": {
+    "arch": {
+     "pull": "pull_arch_6in",
+     "length_m": 0.1524,
+     "center_to_center_m": 0.096,
+     "position": [
+      -2.32701,
+      1.89459,
+      -0.23236
+     ],
+     "knob": "knob_arch",
+     "knob_position": [
+      -2.32701,
+      1.81839,
+      -0.23236
+     ]
+    },
+    "artisan": {
+     "pull": "pull_artisan_4_75in",
+     "length_m": 0.1206,
+     "center_to_center_m": 0.096,
+     "position": [
+      -2.32701,
+      1.87871,
+      -0.23236
+     ],
+     "knob": "knob_artisan",
+     "knob_position": [
+      -2.32701,
+      1.81839,
+      -0.23236
+     ]
+    },
+    "cottage": {
+     "pull": "pull_cottage_4_75in",
+     "length_m": 0.1206,
+     "center_to_center_m": 0.096,
+     "position": [
+      -2.32701,
+      1.87871,
+      -0.23236
+     ],
+     "knob": "knob_cottage",
+     "knob_position": [
+      -2.32701,
+      1.81839,
+      -0.23236
+     ]
+    },
+    "loft": {
+     "pull": "pull_loft_4_625in",
+     "length_m": 0.1175,
+     "center_to_center_m": 0.1085,
+     "position": [
+      -2.32701,
+      1.87712,
+      -0.23236
+     ],
+     "knob": "knob_loft",
+     "knob_position": [
+      -2.32701,
+      1.81839,
+      -0.23236
+     ]
+    },
+    "square": {
+     "pull": "pull_square_4_25in",
+     "length_m": 0.1079,
+     "center_to_center_m": 0.096,
+     "position": [
+      -2.32701,
+      1.87236,
+      -0.23236
+     ],
+     "knob": "knob_square",
+     "knob_position": [
+      -2.32701,
+      1.81839,
+      -0.23236
+     ]
+    },
+    "bar": {
+     "pull": "pull_bar_4_5in",
+     "length_m": 0.1143,
+     "center_to_center_m": 0.064,
+     "position": [
+      -2.32701,
+      1.87554,
+      -0.23236
+     ],
+     "knob": "knob_bar",
+     "knob_position": [
+      -2.32701,
+      1.81839,
+      -0.23236
+     ]
+    },
+    "generic": {
+     "pull": "pull_generic_6in",
+     "length_m": 0.1524,
+     "center_to_center_m": 0.1143,
+     "position": [
+      -2.32701,
+      1.89459,
+      -0.23236
+     ],
+     "knob": "knob_generic",
+     "knob_position": [
+      -2.32701,
+      1.81839,
+      -0.23236
+     ]
+    }
+   },
    "pull": "pull_A08_W361524_R",
-   "front": "door_A08_W361524_R"
+   "front": "door_A08_W361524_R",
+   "latch_dir": [
+    0.70711,
+    0.0,
+    -0.70711
+   ]
   },
   "drawer_B04_B12_1": {
    "position": [
@@ -400,17 +2215,152 @@
     0.70711
    ],
    "orientation": "horizontal",
-   "hardware": "pull_bar",
-   "bar_length_m": 0.1524,
-   "center_to_center_m": 0.1143,
+   "mount_type": "drawer_horizontal",
+   "cabinet_type": "base",
+   "placement": "centered",
+   "anchor": [
+    0.02245,
+    0.80099,
+    -1.85442
+   ],
+   "anchor_dir": [
+    0.0,
+    0.0,
+    0.0
+   ],
+   "knob_position": [
+    0.02245,
+    0.80099,
+    -1.85442
+   ],
+   "size_class": "small",
+   "front_width_m": 0.3002,
+   "front_height_m": 0.146,
+   "hardware": "pull_bar_4_5in",
+   "bar_length_m": 0.1143,
+   "center_to_center_m": 0.064,
+   "by_style": {
+    "arch": {
+     "pull": "pull_arch_6in",
+     "length_m": 0.1524,
+     "center_to_center_m": 0.096,
+     "position": [
+      0.02245,
+      0.80099,
+      -1.85442
+     ],
+     "knob": "knob_arch",
+     "knob_position": [
+      0.02245,
+      0.80099,
+      -1.85442
+     ]
+    },
+    "artisan": {
+     "pull": "pull_artisan_4_75in",
+     "length_m": 0.1206,
+     "center_to_center_m": 0.096,
+     "position": [
+      0.02245,
+      0.80099,
+      -1.85442
+     ],
+     "knob": "knob_artisan",
+     "knob_position": [
+      0.02245,
+      0.80099,
+      -1.85442
+     ]
+    },
+    "cottage": {
+     "pull": "pull_cottage_4_75in",
+     "length_m": 0.1206,
+     "center_to_center_m": 0.096,
+     "position": [
+      0.02245,
+      0.80099,
+      -1.85442
+     ],
+     "knob": "knob_cottage",
+     "knob_position": [
+      0.02245,
+      0.80099,
+      -1.85442
+     ]
+    },
+    "loft": {
+     "pull": "pull_loft_4_625in",
+     "length_m": 0.1175,
+     "center_to_center_m": 0.1085,
+     "position": [
+      0.02245,
+      0.80099,
+      -1.85442
+     ],
+     "knob": "knob_loft",
+     "knob_position": [
+      0.02245,
+      0.80099,
+      -1.85442
+     ]
+    },
+    "square": {
+     "pull": "pull_square_4_25in",
+     "length_m": 0.1079,
+     "center_to_center_m": 0.096,
+     "position": [
+      0.02245,
+      0.80099,
+      -1.85442
+     ],
+     "knob": "knob_square",
+     "knob_position": [
+      0.02245,
+      0.80099,
+      -1.85442
+     ]
+    },
+    "bar": {
+     "pull": "pull_bar_4_5in",
+     "length_m": 0.1143,
+     "center_to_center_m": 0.064,
+     "position": [
+      0.02245,
+      0.80099,
+      -1.85442
+     ],
+     "knob": "knob_bar",
+     "knob_position": [
+      0.02245,
+      0.80099,
+      -1.85442
+     ]
+    },
+    "generic": {
+     "pull": "pull_generic_6in",
+     "length_m": 0.1524,
+     "center_to_center_m": 0.1143,
+     "position": [
+      0.02245,
+      0.80099,
+      -1.85442
+     ],
+     "knob": "knob_generic",
+     "knob_position": [
+      0.02245,
+      0.80099,
+      -1.85442
+     ]
+    }
+   },
    "pull": "pull_B04_B12_1",
    "front": "drawer_B04_B12_1"
   },
   "door_B04_B12": {
    "position": [
-    0.10615,
+    0.0837,
     0.60414,
-    -1.77073
+    -1.79318
    ],
    "quaternion": [
     -0.270598,
@@ -429,17 +2379,157 @@
     0.70711
    ],
    "orientation": "vertical",
-   "hardware": "pull_bar",
-   "bar_length_m": 0.1524,
-   "center_to_center_m": 0.1143,
+   "mount_type": "door_vertical",
+   "cabinet_type": "base",
+   "placement": "corner_anchor",
+   "anchor": [
+    0.0837,
+    0.66129,
+    -1.79318
+   ],
+   "anchor_dir": [
+    0.0,
+    -1.0,
+    0.0
+   ],
+   "knob_position": [
+    0.0837,
+    0.66129,
+    -1.79318
+   ],
+   "size_class": "small",
+   "front_width_m": 0.3002,
+   "front_height_m": 0.6209,
+   "hardware": "pull_bar_4_5in",
+   "bar_length_m": 0.1143,
+   "center_to_center_m": 0.064,
+   "by_style": {
+    "arch": {
+     "pull": "pull_arch_6in",
+     "length_m": 0.1524,
+     "center_to_center_m": 0.096,
+     "position": [
+      0.0837,
+      0.58509,
+      -1.79318
+     ],
+     "knob": "knob_arch",
+     "knob_position": [
+      0.0837,
+      0.66129,
+      -1.79318
+     ]
+    },
+    "artisan": {
+     "pull": "pull_artisan_4_75in",
+     "length_m": 0.1206,
+     "center_to_center_m": 0.096,
+     "position": [
+      0.0837,
+      0.60096,
+      -1.79318
+     ],
+     "knob": "knob_artisan",
+     "knob_position": [
+      0.0837,
+      0.66129,
+      -1.79318
+     ]
+    },
+    "cottage": {
+     "pull": "pull_cottage_4_75in",
+     "length_m": 0.1206,
+     "center_to_center_m": 0.096,
+     "position": [
+      0.0837,
+      0.60096,
+      -1.79318
+     ],
+     "knob": "knob_cottage",
+     "knob_position": [
+      0.0837,
+      0.66129,
+      -1.79318
+     ]
+    },
+    "loft": {
+     "pull": "pull_loft_4_625in",
+     "length_m": 0.1175,
+     "center_to_center_m": 0.1085,
+     "position": [
+      0.0837,
+      0.60255,
+      -1.79318
+     ],
+     "knob": "knob_loft",
+     "knob_position": [
+      0.0837,
+      0.66129,
+      -1.79318
+     ]
+    },
+    "square": {
+     "pull": "pull_square_4_25in",
+     "length_m": 0.1079,
+     "center_to_center_m": 0.096,
+     "position": [
+      0.0837,
+      0.60731,
+      -1.79318
+     ],
+     "knob": "knob_square",
+     "knob_position": [
+      0.0837,
+      0.66129,
+      -1.79318
+     ]
+    },
+    "bar": {
+     "pull": "pull_bar_4_5in",
+     "length_m": 0.1143,
+     "center_to_center_m": 0.064,
+     "position": [
+      0.0837,
+      0.60414,
+      -1.79318
+     ],
+     "knob": "knob_bar",
+     "knob_position": [
+      0.0837,
+      0.66129,
+      -1.79318
+     ]
+    },
+    "generic": {
+     "pull": "pull_generic_6in",
+     "length_m": 0.1524,
+     "center_to_center_m": 0.1143,
+     "position": [
+      0.0837,
+      0.58509,
+      -1.79318
+     ],
+     "knob": "knob_generic",
+     "knob_position": [
+      0.0837,
+      0.66129,
+      -1.79318
+     ]
+    }
+   },
    "pull": "pull_B04_B12",
-   "front": "door_B04_B12"
+   "front": "door_B04_B12",
+   "latch_dir": [
+    0.70711,
+    0.0,
+    0.70711
+   ]
   },
   "door_B05_W1230": {
    "position": [
-    0.32167,
+    0.29922,
     1.49454,
-    -1.98625
+    -2.0087
    ],
    "quaternion": [
     -0.270598,
@@ -458,17 +2548,157 @@
     0.70711
    ],
    "orientation": "vertical",
-   "hardware": "pull_bar",
-   "bar_length_m": 0.1524,
-   "center_to_center_m": 0.1143,
+   "mount_type": "door_vertical",
+   "cabinet_type": "upper",
+   "placement": "corner_anchor",
+   "anchor": [
+    0.29922,
+    1.43739,
+    -2.0087
+   ],
+   "anchor_dir": [
+    0.0,
+    1.0,
+    0.0
+   ],
+   "knob_position": [
+    0.29922,
+    1.43739,
+    -2.0087
+   ],
+   "size_class": "small",
+   "front_width_m": 0.3002,
+   "front_height_m": 0.7574,
+   "hardware": "pull_bar_4_5in",
+   "bar_length_m": 0.1143,
+   "center_to_center_m": 0.064,
+   "by_style": {
+    "arch": {
+     "pull": "pull_arch_6in",
+     "length_m": 0.1524,
+     "center_to_center_m": 0.096,
+     "position": [
+      0.29922,
+      1.51359,
+      -2.0087
+     ],
+     "knob": "knob_arch",
+     "knob_position": [
+      0.29922,
+      1.43739,
+      -2.0087
+     ]
+    },
+    "artisan": {
+     "pull": "pull_artisan_4_75in",
+     "length_m": 0.1206,
+     "center_to_center_m": 0.096,
+     "position": [
+      0.29922,
+      1.49771,
+      -2.0087
+     ],
+     "knob": "knob_artisan",
+     "knob_position": [
+      0.29922,
+      1.43739,
+      -2.0087
+     ]
+    },
+    "cottage": {
+     "pull": "pull_cottage_4_75in",
+     "length_m": 0.1206,
+     "center_to_center_m": 0.096,
+     "position": [
+      0.29922,
+      1.49771,
+      -2.0087
+     ],
+     "knob": "knob_cottage",
+     "knob_position": [
+      0.29922,
+      1.43739,
+      -2.0087
+     ]
+    },
+    "loft": {
+     "pull": "pull_loft_4_625in",
+     "length_m": 0.1175,
+     "center_to_center_m": 0.1085,
+     "position": [
+      0.29922,
+      1.49612,
+      -2.0087
+     ],
+     "knob": "knob_loft",
+     "knob_position": [
+      0.29922,
+      1.43739,
+      -2.0087
+     ]
+    },
+    "square": {
+     "pull": "pull_square_4_25in",
+     "length_m": 0.1079,
+     "center_to_center_m": 0.096,
+     "position": [
+      0.29922,
+      1.49136,
+      -2.0087
+     ],
+     "knob": "knob_square",
+     "knob_position": [
+      0.29922,
+      1.43739,
+      -2.0087
+     ]
+    },
+    "bar": {
+     "pull": "pull_bar_4_5in",
+     "length_m": 0.1143,
+     "center_to_center_m": 0.064,
+     "position": [
+      0.29922,
+      1.49454,
+      -2.0087
+     ],
+     "knob": "knob_bar",
+     "knob_position": [
+      0.29922,
+      1.43739,
+      -2.0087
+     ]
+    },
+    "generic": {
+     "pull": "pull_generic_6in",
+     "length_m": 0.1524,
+     "center_to_center_m": 0.1143,
+     "position": [
+      0.29922,
+      1.51359,
+      -2.0087
+     ],
+     "knob": "knob_generic",
+     "knob_position": [
+      0.29922,
+      1.43739,
+      -2.0087
+     ]
+    }
+   },
    "pull": "pull_B05_W1230",
-   "front": "door_B05_W1230"
+   "front": "door_B05_W1230",
+   "latch_dir": [
+    0.70711,
+    0.0,
+    0.70711
+   ]
   },
   "door_B06_W3015_L": {
    "position": [
-    0.59157,
+    0.56912,
     1.87554,
-    -1.71635
+    -1.7388
    ],
    "quaternion": [
     -0.270598,
@@ -487,17 +2717,157 @@
     0.70711
    ],
    "orientation": "vertical",
-   "hardware": "pull_bar",
-   "bar_length_m": 0.1524,
-   "center_to_center_m": 0.1143,
+   "mount_type": "door_vertical",
+   "cabinet_type": "upper",
+   "placement": "corner_anchor",
+   "anchor": [
+    0.56912,
+    1.81839,
+    -1.7388
+   ],
+   "anchor_dir": [
+    0.0,
+    1.0,
+    0.0
+   ],
+   "knob_position": [
+    0.56912,
+    1.81839,
+    -1.7388
+   ],
+   "size_class": "small",
+   "front_width_m": 0.3771,
+   "front_height_m": 0.3764,
+   "hardware": "pull_bar_4_5in",
+   "bar_length_m": 0.1143,
+   "center_to_center_m": 0.064,
+   "by_style": {
+    "arch": {
+     "pull": "pull_arch_6in",
+     "length_m": 0.1524,
+     "center_to_center_m": 0.096,
+     "position": [
+      0.56912,
+      1.89459,
+      -1.7388
+     ],
+     "knob": "knob_arch",
+     "knob_position": [
+      0.56912,
+      1.81839,
+      -1.7388
+     ]
+    },
+    "artisan": {
+     "pull": "pull_artisan_4_75in",
+     "length_m": 0.1206,
+     "center_to_center_m": 0.096,
+     "position": [
+      0.56912,
+      1.87871,
+      -1.7388
+     ],
+     "knob": "knob_artisan",
+     "knob_position": [
+      0.56912,
+      1.81839,
+      -1.7388
+     ]
+    },
+    "cottage": {
+     "pull": "pull_cottage_4_75in",
+     "length_m": 0.1206,
+     "center_to_center_m": 0.096,
+     "position": [
+      0.56912,
+      1.87871,
+      -1.7388
+     ],
+     "knob": "knob_cottage",
+     "knob_position": [
+      0.56912,
+      1.81839,
+      -1.7388
+     ]
+    },
+    "loft": {
+     "pull": "pull_loft_4_625in",
+     "length_m": 0.1175,
+     "center_to_center_m": 0.1085,
+     "position": [
+      0.56912,
+      1.87712,
+      -1.7388
+     ],
+     "knob": "knob_loft",
+     "knob_position": [
+      0.56912,
+      1.81839,
+      -1.7388
+     ]
+    },
+    "square": {
+     "pull": "pull_square_4_25in",
+     "length_m": 0.1079,
+     "center_to_center_m": 0.096,
+     "position": [
+      0.56912,
+      1.87236,
+      -1.7388
+     ],
+     "knob": "knob_square",
+     "knob_position": [
+      0.56912,
+      1.81839,
+      -1.7388
+     ]
+    },
+    "bar": {
+     "pull": "pull_bar_4_5in",
+     "length_m": 0.1143,
+     "center_to_center_m": 0.064,
+     "position": [
+      0.56912,
+      1.87554,
+      -1.7388
+     ],
+     "knob": "knob_bar",
+     "knob_position": [
+      0.56912,
+      1.81839,
+      -1.7388
+     ]
+    },
+    "generic": {
+     "pull": "pull_generic_6in",
+     "length_m": 0.1524,
+     "center_to_center_m": 0.1143,
+     "position": [
+      0.56912,
+      1.89459,
+      -1.7388
+     ],
+     "knob": "knob_generic",
+     "knob_position": [
+      0.56912,
+      1.81839,
+      -1.7388
+     ]
+    }
+   },
    "pull": "pull_B06_W3015_L",
-   "front": "door_B06_W3015_L"
+   "front": "door_B06_W3015_L",
+   "latch_dir": [
+    0.70711,
+    0.0,
+    0.70711
+   ]
   },
   "door_B06_W3015_R": {
    "position": [
-    0.63872,
+    0.66117,
     1.87554,
-    -1.66921
+    -1.64675
    ],
    "quaternion": [
     -0.270598,
@@ -516,11 +2886,151 @@
     0.70711
    ],
    "orientation": "vertical",
-   "hardware": "pull_bar",
-   "bar_length_m": 0.1524,
-   "center_to_center_m": 0.1143,
+   "mount_type": "door_vertical",
+   "cabinet_type": "upper",
+   "placement": "corner_anchor",
+   "anchor": [
+    0.66117,
+    1.81839,
+    -1.64675
+   ],
+   "anchor_dir": [
+    0.0,
+    1.0,
+    0.0
+   ],
+   "knob_position": [
+    0.66117,
+    1.81839,
+    -1.64675
+   ],
+   "size_class": "small",
+   "front_width_m": 0.3771,
+   "front_height_m": 0.3764,
+   "hardware": "pull_bar_4_5in",
+   "bar_length_m": 0.1143,
+   "center_to_center_m": 0.064,
+   "by_style": {
+    "arch": {
+     "pull": "pull_arch_6in",
+     "length_m": 0.1524,
+     "center_to_center_m": 0.096,
+     "position": [
+      0.66117,
+      1.89459,
+      -1.64675
+     ],
+     "knob": "knob_arch",
+     "knob_position": [
+      0.66117,
+      1.81839,
+      -1.64675
+     ]
+    },
+    "artisan": {
+     "pull": "pull_artisan_4_75in",
+     "length_m": 0.1206,
+     "center_to_center_m": 0.096,
+     "position": [
+      0.66117,
+      1.87871,
+      -1.64675
+     ],
+     "knob": "knob_artisan",
+     "knob_position": [
+      0.66117,
+      1.81839,
+      -1.64675
+     ]
+    },
+    "cottage": {
+     "pull": "pull_cottage_4_75in",
+     "length_m": 0.1206,
+     "center_to_center_m": 0.096,
+     "position": [
+      0.66117,
+      1.87871,
+      -1.64675
+     ],
+     "knob": "knob_cottage",
+     "knob_position": [
+      0.66117,
+      1.81839,
+      -1.64675
+     ]
+    },
+    "loft": {
+     "pull": "pull_loft_4_625in",
+     "length_m": 0.1175,
+     "center_to_center_m": 0.1085,
+     "position": [
+      0.66117,
+      1.87712,
+      -1.64675
+     ],
+     "knob": "knob_loft",
+     "knob_position": [
+      0.66117,
+      1.81839,
+      -1.64675
+     ]
+    },
+    "square": {
+     "pull": "pull_square_4_25in",
+     "length_m": 0.1079,
+     "center_to_center_m": 0.096,
+     "position": [
+      0.66117,
+      1.87236,
+      -1.64675
+     ],
+     "knob": "knob_square",
+     "knob_position": [
+      0.66117,
+      1.81839,
+      -1.64675
+     ]
+    },
+    "bar": {
+     "pull": "pull_bar_4_5in",
+     "length_m": 0.1143,
+     "center_to_center_m": 0.064,
+     "position": [
+      0.66117,
+      1.87554,
+      -1.64675
+     ],
+     "knob": "knob_bar",
+     "knob_position": [
+      0.66117,
+      1.81839,
+      -1.64675
+     ]
+    },
+    "generic": {
+     "pull": "pull_generic_6in",
+     "length_m": 0.1524,
+     "center_to_center_m": 0.1143,
+     "position": [
+      0.66117,
+      1.89459,
+      -1.64675
+     ],
+     "knob": "knob_generic",
+     "knob_position": [
+      0.66117,
+      1.81839,
+      -1.64675
+     ]
+    }
+   },
    "pull": "pull_B06_W3015_R",
-   "front": "door_B06_W3015_R"
+   "front": "door_B06_W3015_R",
+   "latch_dir": [
+    -0.70711,
+    0.0,
+    -0.70711
+   ]
   },
   "drawer_B07_DB18_1": {
    "position": [
@@ -545,16 +3055,151 @@
     0.70711
    ],
    "orientation": "horizontal",
-   "hardware": "pull_bar_8in",
-   "bar_length_m": 0.2032,
-   "center_to_center_m": 0.1651,
+   "mount_type": "drawer_horizontal",
+   "cabinet_type": "base",
+   "placement": "centered",
+   "anchor": [
+    0.83067,
+    0.80099,
+    -1.0462
+   ],
+   "anchor_dir": [
+    0.0,
+    0.0,
+    0.0
+   ],
+   "knob_position": [
+    0.83067,
+    0.80099,
+    -1.0462
+   ],
+   "size_class": "large",
+   "front_width_m": 0.4526,
+   "front_height_m": 0.146,
+   "hardware": "pull_bar_6in",
+   "bar_length_m": 0.1524,
+   "center_to_center_m": 0.096,
+   "by_style": {
+    "arch": {
+     "pull": "pull_arch_7_125in",
+     "length_m": 0.181,
+     "center_to_center_m": 0.128,
+     "position": [
+      0.83067,
+      0.80099,
+      -1.0462
+     ],
+     "knob": "knob_arch",
+     "knob_position": [
+      0.83067,
+      0.80099,
+      -1.0462
+     ]
+    },
+    "artisan": {
+     "pull": "pull_artisan_6_0625in",
+     "length_m": 0.154,
+     "center_to_center_m": 0.128,
+     "position": [
+      0.83067,
+      0.80099,
+      -1.0462
+     ],
+     "knob": "knob_artisan",
+     "knob_position": [
+      0.83067,
+      0.80099,
+      -1.0462
+     ]
+    },
+    "cottage": {
+     "pull": "pull_cottage_6_0625in",
+     "length_m": 0.154,
+     "center_to_center_m": 0.128,
+     "position": [
+      0.83067,
+      0.80099,
+      -1.0462
+     ],
+     "knob": "knob_cottage",
+     "knob_position": [
+      0.83067,
+      0.80099,
+      -1.0462
+     ]
+    },
+    "loft": {
+     "pull": "pull_loft_5_875in",
+     "length_m": 0.1492,
+     "center_to_center_m": 0.1402,
+     "position": [
+      0.83067,
+      0.80099,
+      -1.0462
+     ],
+     "knob": "knob_loft",
+     "knob_position": [
+      0.83067,
+      0.80099,
+      -1.0462
+     ]
+    },
+    "square": {
+     "pull": "pull_square_5_4375in",
+     "length_m": 0.1381,
+     "center_to_center_m": 0.128,
+     "position": [
+      0.83067,
+      0.80099,
+      -1.0462
+     ],
+     "knob": "knob_square",
+     "knob_position": [
+      0.83067,
+      0.80099,
+      -1.0462
+     ]
+    },
+    "bar": {
+     "pull": "pull_bar_6in",
+     "length_m": 0.1524,
+     "center_to_center_m": 0.096,
+     "position": [
+      0.83067,
+      0.80099,
+      -1.0462
+     ],
+     "knob": "knob_bar",
+     "knob_position": [
+      0.83067,
+      0.80099,
+      -1.0462
+     ]
+    },
+    "generic": {
+     "pull": "pull_generic_8in",
+     "length_m": 0.2032,
+     "center_to_center_m": 0.1651,
+     "position": [
+      0.83067,
+      0.80099,
+      -1.0462
+     ],
+     "knob": "knob_generic",
+     "knob_position": [
+      0.83067,
+      0.80099,
+      -1.0462
+     ]
+    }
+   },
    "pull": "pull_B07_DB18_1",
    "front": "drawer_B07_DB18_1"
   },
   "drawer_B07_DB18_2": {
    "position": [
     0.83067,
-    0.68034,
+    0.57036,
     -1.0462
    ],
    "quaternion": [
@@ -574,16 +3219,151 @@
     0.70711
    ],
    "orientation": "horizontal",
-   "hardware": "pull_bar_8in",
-   "bar_length_m": 0.2032,
-   "center_to_center_m": 0.1651,
+   "mount_type": "drawer_horizontal",
+   "cabinet_type": "base",
+   "placement": "centered",
+   "anchor": [
+    0.83067,
+    0.57036,
+    -1.0462
+   ],
+   "anchor_dir": [
+    0.0,
+    0.0,
+    0.0
+   ],
+   "knob_position": [
+    0.83067,
+    0.57036,
+    -1.0462
+   ],
+   "size_class": "large",
+   "front_width_m": 0.4526,
+   "front_height_m": 0.3089,
+   "hardware": "pull_bar_6in",
+   "bar_length_m": 0.1524,
+   "center_to_center_m": 0.096,
+   "by_style": {
+    "arch": {
+     "pull": "pull_arch_7_125in",
+     "length_m": 0.181,
+     "center_to_center_m": 0.128,
+     "position": [
+      0.83067,
+      0.57036,
+      -1.0462
+     ],
+     "knob": "knob_arch",
+     "knob_position": [
+      0.83067,
+      0.57036,
+      -1.0462
+     ]
+    },
+    "artisan": {
+     "pull": "pull_artisan_6_0625in",
+     "length_m": 0.154,
+     "center_to_center_m": 0.128,
+     "position": [
+      0.83067,
+      0.57036,
+      -1.0462
+     ],
+     "knob": "knob_artisan",
+     "knob_position": [
+      0.83067,
+      0.57036,
+      -1.0462
+     ]
+    },
+    "cottage": {
+     "pull": "pull_cottage_6_0625in",
+     "length_m": 0.154,
+     "center_to_center_m": 0.128,
+     "position": [
+      0.83067,
+      0.57036,
+      -1.0462
+     ],
+     "knob": "knob_cottage",
+     "knob_position": [
+      0.83067,
+      0.57036,
+      -1.0462
+     ]
+    },
+    "loft": {
+     "pull": "pull_loft_5_875in",
+     "length_m": 0.1492,
+     "center_to_center_m": 0.1402,
+     "position": [
+      0.83067,
+      0.57036,
+      -1.0462
+     ],
+     "knob": "knob_loft",
+     "knob_position": [
+      0.83067,
+      0.57036,
+      -1.0462
+     ]
+    },
+    "square": {
+     "pull": "pull_square_5_4375in",
+     "length_m": 0.1381,
+     "center_to_center_m": 0.128,
+     "position": [
+      0.83067,
+      0.57036,
+      -1.0462
+     ],
+     "knob": "knob_square",
+     "knob_position": [
+      0.83067,
+      0.57036,
+      -1.0462
+     ]
+    },
+    "bar": {
+     "pull": "pull_bar_6in",
+     "length_m": 0.1524,
+     "center_to_center_m": 0.096,
+     "position": [
+      0.83067,
+      0.57036,
+      -1.0462
+     ],
+     "knob": "knob_bar",
+     "knob_position": [
+      0.83067,
+      0.57036,
+      -1.0462
+     ]
+    },
+    "generic": {
+     "pull": "pull_generic_8in",
+     "length_m": 0.2032,
+     "center_to_center_m": 0.1651,
+     "position": [
+      0.83067,
+      0.57036,
+      -1.0462
+     ],
+     "knob": "knob_generic",
+     "knob_position": [
+      0.83067,
+      0.57036,
+      -1.0462
+     ]
+    }
+   },
    "pull": "pull_B07_DB18_2",
    "front": "drawer_B07_DB18_2"
   },
   "drawer_B07_DB18_3": {
    "position": [
     0.83067,
-    0.3683,
+    0.25832,
     -1.0462
    ],
    "quaternion": [
@@ -603,17 +3383,152 @@
     0.70711
    ],
    "orientation": "horizontal",
-   "hardware": "pull_bar_8in",
-   "bar_length_m": 0.2032,
-   "center_to_center_m": 0.1651,
+   "mount_type": "drawer_horizontal",
+   "cabinet_type": "base",
+   "placement": "centered",
+   "anchor": [
+    0.83067,
+    0.25832,
+    -1.0462
+   ],
+   "anchor_dir": [
+    0.0,
+    0.0,
+    0.0
+   ],
+   "knob_position": [
+    0.83067,
+    0.25832,
+    -1.0462
+   ],
+   "size_class": "large",
+   "front_width_m": 0.4526,
+   "front_height_m": 0.3089,
+   "hardware": "pull_bar_6in",
+   "bar_length_m": 0.1524,
+   "center_to_center_m": 0.096,
+   "by_style": {
+    "arch": {
+     "pull": "pull_arch_7_125in",
+     "length_m": 0.181,
+     "center_to_center_m": 0.128,
+     "position": [
+      0.83067,
+      0.25832,
+      -1.0462
+     ],
+     "knob": "knob_arch",
+     "knob_position": [
+      0.83067,
+      0.25832,
+      -1.0462
+     ]
+    },
+    "artisan": {
+     "pull": "pull_artisan_6_0625in",
+     "length_m": 0.154,
+     "center_to_center_m": 0.128,
+     "position": [
+      0.83067,
+      0.25832,
+      -1.0462
+     ],
+     "knob": "knob_artisan",
+     "knob_position": [
+      0.83067,
+      0.25832,
+      -1.0462
+     ]
+    },
+    "cottage": {
+     "pull": "pull_cottage_6_0625in",
+     "length_m": 0.154,
+     "center_to_center_m": 0.128,
+     "position": [
+      0.83067,
+      0.25832,
+      -1.0462
+     ],
+     "knob": "knob_cottage",
+     "knob_position": [
+      0.83067,
+      0.25832,
+      -1.0462
+     ]
+    },
+    "loft": {
+     "pull": "pull_loft_5_875in",
+     "length_m": 0.1492,
+     "center_to_center_m": 0.1402,
+     "position": [
+      0.83067,
+      0.25832,
+      -1.0462
+     ],
+     "knob": "knob_loft",
+     "knob_position": [
+      0.83067,
+      0.25832,
+      -1.0462
+     ]
+    },
+    "square": {
+     "pull": "pull_square_5_4375in",
+     "length_m": 0.1381,
+     "center_to_center_m": 0.128,
+     "position": [
+      0.83067,
+      0.25832,
+      -1.0462
+     ],
+     "knob": "knob_square",
+     "knob_position": [
+      0.83067,
+      0.25832,
+      -1.0462
+     ]
+    },
+    "bar": {
+     "pull": "pull_bar_6in",
+     "length_m": 0.1524,
+     "center_to_center_m": 0.096,
+     "position": [
+      0.83067,
+      0.25832,
+      -1.0462
+     ],
+     "knob": "knob_bar",
+     "knob_position": [
+      0.83067,
+      0.25832,
+      -1.0462
+     ]
+    },
+    "generic": {
+     "pull": "pull_generic_8in",
+     "length_m": 0.2032,
+     "center_to_center_m": 0.1651,
+     "position": [
+      0.83067,
+      0.25832,
+      -1.0462
+     ],
+     "knob": "knob_generic",
+     "knob_position": [
+      0.83067,
+      0.25832,
+      -1.0462
+     ]
+    }
+   },
    "pull": "pull_B07_DB18_3",
    "front": "drawer_B07_DB18_3"
   },
   "door_B08_W1830": {
    "position": [
-    0.90862,
+    0.93107,
     1.49454,
-    -1.3993
+    -1.37685
    ],
    "quaternion": [
     -0.270598,
@@ -632,11 +3547,151 @@
     0.70711
    ],
    "orientation": "vertical",
-   "hardware": "pull_bar",
-   "bar_length_m": 0.1524,
-   "center_to_center_m": 0.1143,
+   "mount_type": "door_vertical",
+   "cabinet_type": "upper",
+   "placement": "corner_anchor",
+   "anchor": [
+    0.93107,
+    1.43739,
+    -1.37685
+   ],
+   "anchor_dir": [
+    0.0,
+    1.0,
+    0.0
+   ],
+   "knob_position": [
+    0.93107,
+    1.43739,
+    -1.37685
+   ],
+   "size_class": "small",
+   "front_width_m": 0.4526,
+   "front_height_m": 0.7574,
+   "hardware": "pull_bar_4_5in",
+   "bar_length_m": 0.1143,
+   "center_to_center_m": 0.064,
+   "by_style": {
+    "arch": {
+     "pull": "pull_arch_6in",
+     "length_m": 0.1524,
+     "center_to_center_m": 0.096,
+     "position": [
+      0.93107,
+      1.51359,
+      -1.37685
+     ],
+     "knob": "knob_arch",
+     "knob_position": [
+      0.93107,
+      1.43739,
+      -1.37685
+     ]
+    },
+    "artisan": {
+     "pull": "pull_artisan_4_75in",
+     "length_m": 0.1206,
+     "center_to_center_m": 0.096,
+     "position": [
+      0.93107,
+      1.49771,
+      -1.37685
+     ],
+     "knob": "knob_artisan",
+     "knob_position": [
+      0.93107,
+      1.43739,
+      -1.37685
+     ]
+    },
+    "cottage": {
+     "pull": "pull_cottage_4_75in",
+     "length_m": 0.1206,
+     "center_to_center_m": 0.096,
+     "position": [
+      0.93107,
+      1.49771,
+      -1.37685
+     ],
+     "knob": "knob_cottage",
+     "knob_position": [
+      0.93107,
+      1.43739,
+      -1.37685
+     ]
+    },
+    "loft": {
+     "pull": "pull_loft_4_625in",
+     "length_m": 0.1175,
+     "center_to_center_m": 0.1085,
+     "position": [
+      0.93107,
+      1.49612,
+      -1.37685
+     ],
+     "knob": "knob_loft",
+     "knob_position": [
+      0.93107,
+      1.43739,
+      -1.37685
+     ]
+    },
+    "square": {
+     "pull": "pull_square_4_25in",
+     "length_m": 0.1079,
+     "center_to_center_m": 0.096,
+     "position": [
+      0.93107,
+      1.49136,
+      -1.37685
+     ],
+     "knob": "knob_square",
+     "knob_position": [
+      0.93107,
+      1.43739,
+      -1.37685
+     ]
+    },
+    "bar": {
+     "pull": "pull_bar_4_5in",
+     "length_m": 0.1143,
+     "center_to_center_m": 0.064,
+     "position": [
+      0.93107,
+      1.49454,
+      -1.37685
+     ],
+     "knob": "knob_bar",
+     "knob_position": [
+      0.93107,
+      1.43739,
+      -1.37685
+     ]
+    },
+    "generic": {
+     "pull": "pull_generic_6in",
+     "length_m": 0.1524,
+     "center_to_center_m": 0.1143,
+     "position": [
+      0.93107,
+      1.51359,
+      -1.37685
+     ],
+     "knob": "knob_generic",
+     "knob_position": [
+      0.93107,
+      1.43739,
+      -1.37685
+     ]
+    }
+   },
    "pull": "pull_B08_W1830",
-   "front": "door_B08_W1830"
+   "front": "door_B08_W1830",
+   "latch_dir": [
+    -0.70711,
+    0.0,
+    -0.70711
+   ]
   },
   "island_drawer_I01_IB18_1": {
    "position": [
@@ -661,17 +3716,152 @@
     -0.70711
    ],
    "orientation": "horizontal",
-   "hardware": "pull_bar_8in",
-   "bar_length_m": 0.2032,
-   "center_to_center_m": 0.1651,
+   "mount_type": "drawer_horizontal",
+   "cabinet_type": "base",
+   "placement": "centered",
+   "anchor": [
+    -0.43105,
+    0.80099,
+    -0.61964
+   ],
+   "anchor_dir": [
+    0.0,
+    0.0,
+    0.0
+   ],
+   "knob_position": [
+    -0.43105,
+    0.80099,
+    -0.61964
+   ],
+   "size_class": "large",
+   "front_width_m": 0.4526,
+   "front_height_m": 0.146,
+   "hardware": "pull_bar_6in",
+   "bar_length_m": 0.1524,
+   "center_to_center_m": 0.096,
+   "by_style": {
+    "arch": {
+     "pull": "pull_arch_7_125in",
+     "length_m": 0.181,
+     "center_to_center_m": 0.128,
+     "position": [
+      -0.43105,
+      0.80099,
+      -0.61964
+     ],
+     "knob": "knob_arch",
+     "knob_position": [
+      -0.43105,
+      0.80099,
+      -0.61964
+     ]
+    },
+    "artisan": {
+     "pull": "pull_artisan_6_0625in",
+     "length_m": 0.154,
+     "center_to_center_m": 0.128,
+     "position": [
+      -0.43105,
+      0.80099,
+      -0.61964
+     ],
+     "knob": "knob_artisan",
+     "knob_position": [
+      -0.43105,
+      0.80099,
+      -0.61964
+     ]
+    },
+    "cottage": {
+     "pull": "pull_cottage_6_0625in",
+     "length_m": 0.154,
+     "center_to_center_m": 0.128,
+     "position": [
+      -0.43105,
+      0.80099,
+      -0.61964
+     ],
+     "knob": "knob_cottage",
+     "knob_position": [
+      -0.43105,
+      0.80099,
+      -0.61964
+     ]
+    },
+    "loft": {
+     "pull": "pull_loft_5_875in",
+     "length_m": 0.1492,
+     "center_to_center_m": 0.1402,
+     "position": [
+      -0.43105,
+      0.80099,
+      -0.61964
+     ],
+     "knob": "knob_loft",
+     "knob_position": [
+      -0.43105,
+      0.80099,
+      -0.61964
+     ]
+    },
+    "square": {
+     "pull": "pull_square_5_4375in",
+     "length_m": 0.1381,
+     "center_to_center_m": 0.128,
+     "position": [
+      -0.43105,
+      0.80099,
+      -0.61964
+     ],
+     "knob": "knob_square",
+     "knob_position": [
+      -0.43105,
+      0.80099,
+      -0.61964
+     ]
+    },
+    "bar": {
+     "pull": "pull_bar_6in",
+     "length_m": 0.1524,
+     "center_to_center_m": 0.096,
+     "position": [
+      -0.43105,
+      0.80099,
+      -0.61964
+     ],
+     "knob": "knob_bar",
+     "knob_position": [
+      -0.43105,
+      0.80099,
+      -0.61964
+     ]
+    },
+    "generic": {
+     "pull": "pull_generic_8in",
+     "length_m": 0.2032,
+     "center_to_center_m": 0.1651,
+     "position": [
+      -0.43105,
+      0.80099,
+      -0.61964
+     ],
+     "knob": "knob_generic",
+     "knob_position": [
+      -0.43105,
+      0.80099,
+      -0.61964
+     ]
+    }
+   },
    "pull": "island_pull_I01_IB18_1",
    "front": "island_drawer_I01_IB18_1"
   },
   "island_door_I01_IB18": {
    "position": [
-    -0.56863,
+    -0.54618,
     0.60414,
-    -0.48206
+    -0.50451
    ],
    "quaternion": [
     -0.653282,
@@ -690,17 +3880,157 @@
     -0.70711
    ],
    "orientation": "vertical",
-   "hardware": "pull_bar",
-   "bar_length_m": 0.1524,
-   "center_to_center_m": 0.1143,
+   "mount_type": "door_vertical",
+   "cabinet_type": "base",
+   "placement": "corner_anchor",
+   "anchor": [
+    -0.54618,
+    0.66129,
+    -0.50451
+   ],
+   "anchor_dir": [
+    0.0,
+    -1.0,
+    0.0
+   ],
+   "knob_position": [
+    -0.54618,
+    0.66129,
+    -0.50451
+   ],
+   "size_class": "small",
+   "front_width_m": 0.4526,
+   "front_height_m": 0.6209,
+   "hardware": "pull_bar_4_5in",
+   "bar_length_m": 0.1143,
+   "center_to_center_m": 0.064,
+   "by_style": {
+    "arch": {
+     "pull": "pull_arch_6in",
+     "length_m": 0.1524,
+     "center_to_center_m": 0.096,
+     "position": [
+      -0.54618,
+      0.58509,
+      -0.50451
+     ],
+     "knob": "knob_arch",
+     "knob_position": [
+      -0.54618,
+      0.66129,
+      -0.50451
+     ]
+    },
+    "artisan": {
+     "pull": "pull_artisan_4_75in",
+     "length_m": 0.1206,
+     "center_to_center_m": 0.096,
+     "position": [
+      -0.54618,
+      0.60096,
+      -0.50451
+     ],
+     "knob": "knob_artisan",
+     "knob_position": [
+      -0.54618,
+      0.66129,
+      -0.50451
+     ]
+    },
+    "cottage": {
+     "pull": "pull_cottage_4_75in",
+     "length_m": 0.1206,
+     "center_to_center_m": 0.096,
+     "position": [
+      -0.54618,
+      0.60096,
+      -0.50451
+     ],
+     "knob": "knob_cottage",
+     "knob_position": [
+      -0.54618,
+      0.66129,
+      -0.50451
+     ]
+    },
+    "loft": {
+     "pull": "pull_loft_4_625in",
+     "length_m": 0.1175,
+     "center_to_center_m": 0.1085,
+     "position": [
+      -0.54618,
+      0.60255,
+      -0.50451
+     ],
+     "knob": "knob_loft",
+     "knob_position": [
+      -0.54618,
+      0.66129,
+      -0.50451
+     ]
+    },
+    "square": {
+     "pull": "pull_square_4_25in",
+     "length_m": 0.1079,
+     "center_to_center_m": 0.096,
+     "position": [
+      -0.54618,
+      0.60731,
+      -0.50451
+     ],
+     "knob": "knob_square",
+     "knob_position": [
+      -0.54618,
+      0.66129,
+      -0.50451
+     ]
+    },
+    "bar": {
+     "pull": "pull_bar_4_5in",
+     "length_m": 0.1143,
+     "center_to_center_m": 0.064,
+     "position": [
+      -0.54618,
+      0.60414,
+      -0.50451
+     ],
+     "knob": "knob_bar",
+     "knob_position": [
+      -0.54618,
+      0.66129,
+      -0.50451
+     ]
+    },
+    "generic": {
+     "pull": "pull_generic_6in",
+     "length_m": 0.1524,
+     "center_to_center_m": 0.1143,
+     "position": [
+      -0.54618,
+      0.58509,
+      -0.50451
+     ],
+     "knob": "knob_generic",
+     "knob_position": [
+      -0.54618,
+      0.66129,
+      -0.50451
+     ]
+    }
+   },
    "pull": "island_pull_I01_IB18",
-   "front": "island_door_I01_IB18"
+   "front": "island_door_I01_IB18",
+   "latch_dir": [
+    -0.70711,
+    0.0,
+    0.70711
+   ]
   },
   "island_door_I02_ISB36_L": {
    "position": [
-    -0.89241,
+    -0.86996,
     0.60414,
-    -0.15828
+    -0.18073
    ],
    "quaternion": [
     -0.653282,
@@ -719,17 +4049,157 @@
     -0.70711
    ],
    "orientation": "vertical",
-   "hardware": "pull_bar",
-   "bar_length_m": 0.1524,
-   "center_to_center_m": 0.1143,
+   "mount_type": "door_vertical",
+   "cabinet_type": "base",
+   "placement": "corner_anchor",
+   "anchor": [
+    -0.86996,
+    0.66129,
+    -0.18073
+   ],
+   "anchor_dir": [
+    0.0,
+    -1.0,
+    0.0
+   ],
+   "knob_position": [
+    -0.86996,
+    0.66129,
+    -0.18073
+   ],
+   "size_class": "small",
+   "front_width_m": 0.4533,
+   "front_height_m": 0.6209,
+   "hardware": "pull_bar_4_5in",
+   "bar_length_m": 0.1143,
+   "center_to_center_m": 0.064,
+   "by_style": {
+    "arch": {
+     "pull": "pull_arch_6in",
+     "length_m": 0.1524,
+     "center_to_center_m": 0.096,
+     "position": [
+      -0.86996,
+      0.58509,
+      -0.18073
+     ],
+     "knob": "knob_arch",
+     "knob_position": [
+      -0.86996,
+      0.66129,
+      -0.18073
+     ]
+    },
+    "artisan": {
+     "pull": "pull_artisan_4_75in",
+     "length_m": 0.1206,
+     "center_to_center_m": 0.096,
+     "position": [
+      -0.86996,
+      0.60096,
+      -0.18073
+     ],
+     "knob": "knob_artisan",
+     "knob_position": [
+      -0.86996,
+      0.66129,
+      -0.18073
+     ]
+    },
+    "cottage": {
+     "pull": "pull_cottage_4_75in",
+     "length_m": 0.1206,
+     "center_to_center_m": 0.096,
+     "position": [
+      -0.86996,
+      0.60096,
+      -0.18073
+     ],
+     "knob": "knob_cottage",
+     "knob_position": [
+      -0.86996,
+      0.66129,
+      -0.18073
+     ]
+    },
+    "loft": {
+     "pull": "pull_loft_4_625in",
+     "length_m": 0.1175,
+     "center_to_center_m": 0.1085,
+     "position": [
+      -0.86996,
+      0.60255,
+      -0.18073
+     ],
+     "knob": "knob_loft",
+     "knob_position": [
+      -0.86996,
+      0.66129,
+      -0.18073
+     ]
+    },
+    "square": {
+     "pull": "pull_square_4_25in",
+     "length_m": 0.1079,
+     "center_to_center_m": 0.096,
+     "position": [
+      -0.86996,
+      0.60731,
+      -0.18073
+     ],
+     "knob": "knob_square",
+     "knob_position": [
+      -0.86996,
+      0.66129,
+      -0.18073
+     ]
+    },
+    "bar": {
+     "pull": "pull_bar_4_5in",
+     "length_m": 0.1143,
+     "center_to_center_m": 0.064,
+     "position": [
+      -0.86996,
+      0.60414,
+      -0.18073
+     ],
+     "knob": "knob_bar",
+     "knob_position": [
+      -0.86996,
+      0.66129,
+      -0.18073
+     ]
+    },
+    "generic": {
+     "pull": "pull_generic_6in",
+     "length_m": 0.1524,
+     "center_to_center_m": 0.1143,
+     "position": [
+      -0.86996,
+      0.58509,
+      -0.18073
+     ],
+     "knob": "knob_generic",
+     "knob_position": [
+      -0.86996,
+      0.66129,
+      -0.18073
+     ]
+    }
+   },
    "pull": "island_pull_I02_ISB36_L",
-   "front": "island_door_I02_ISB36_L"
+   "front": "island_door_I02_ISB36_L",
+   "latch_dir": [
+    -0.70711,
+    0.0,
+    0.70711
+   ]
   },
   "island_door_I02_ISB36_R": {
    "position": [
-    -0.93956,
+    -0.96201,
     0.60414,
-    -0.11113
+    -0.08868
    ],
    "quaternion": [
     -0.653282,
@@ -748,11 +4218,151 @@
     -0.70711
    ],
    "orientation": "vertical",
-   "hardware": "pull_bar",
-   "bar_length_m": 0.1524,
-   "center_to_center_m": 0.1143,
+   "mount_type": "door_vertical",
+   "cabinet_type": "base",
+   "placement": "corner_anchor",
+   "anchor": [
+    -0.96201,
+    0.66129,
+    -0.08868
+   ],
+   "anchor_dir": [
+    0.0,
+    -1.0,
+    0.0
+   ],
+   "knob_position": [
+    -0.96201,
+    0.66129,
+    -0.08868
+   ],
+   "size_class": "small",
+   "front_width_m": 0.4533,
+   "front_height_m": 0.6209,
+   "hardware": "pull_bar_4_5in",
+   "bar_length_m": 0.1143,
+   "center_to_center_m": 0.064,
+   "by_style": {
+    "arch": {
+     "pull": "pull_arch_6in",
+     "length_m": 0.1524,
+     "center_to_center_m": 0.096,
+     "position": [
+      -0.96201,
+      0.58509,
+      -0.08868
+     ],
+     "knob": "knob_arch",
+     "knob_position": [
+      -0.96201,
+      0.66129,
+      -0.08868
+     ]
+    },
+    "artisan": {
+     "pull": "pull_artisan_4_75in",
+     "length_m": 0.1206,
+     "center_to_center_m": 0.096,
+     "position": [
+      -0.96201,
+      0.60096,
+      -0.08868
+     ],
+     "knob": "knob_artisan",
+     "knob_position": [
+      -0.96201,
+      0.66129,
+      -0.08868
+     ]
+    },
+    "cottage": {
+     "pull": "pull_cottage_4_75in",
+     "length_m": 0.1206,
+     "center_to_center_m": 0.096,
+     "position": [
+      -0.96201,
+      0.60096,
+      -0.08868
+     ],
+     "knob": "knob_cottage",
+     "knob_position": [
+      -0.96201,
+      0.66129,
+      -0.08868
+     ]
+    },
+    "loft": {
+     "pull": "pull_loft_4_625in",
+     "length_m": 0.1175,
+     "center_to_center_m": 0.1085,
+     "position": [
+      -0.96201,
+      0.60255,
+      -0.08868
+     ],
+     "knob": "knob_loft",
+     "knob_position": [
+      -0.96201,
+      0.66129,
+      -0.08868
+     ]
+    },
+    "square": {
+     "pull": "pull_square_4_25in",
+     "length_m": 0.1079,
+     "center_to_center_m": 0.096,
+     "position": [
+      -0.96201,
+      0.60731,
+      -0.08868
+     ],
+     "knob": "knob_square",
+     "knob_position": [
+      -0.96201,
+      0.66129,
+      -0.08868
+     ]
+    },
+    "bar": {
+     "pull": "pull_bar_4_5in",
+     "length_m": 0.1143,
+     "center_to_center_m": 0.064,
+     "position": [
+      -0.96201,
+      0.60414,
+      -0.08868
+     ],
+     "knob": "knob_bar",
+     "knob_position": [
+      -0.96201,
+      0.66129,
+      -0.08868
+     ]
+    },
+    "generic": {
+     "pull": "pull_generic_6in",
+     "length_m": 0.1524,
+     "center_to_center_m": 0.1143,
+     "position": [
+      -0.96201,
+      0.58509,
+      -0.08868
+     ],
+     "knob": "knob_generic",
+     "knob_position": [
+      -0.96201,
+      0.66129,
+      -0.08868
+     ]
+    }
+   },
    "pull": "island_pull_I02_ISB36_R",
-   "front": "island_door_I02_ISB36_R"
+   "front": "island_door_I02_ISB36_R",
+   "latch_dir": [
+    0.70711,
+    0.0,
+    -0.70711
+   ]
   },
   "island_drawer_I03_IDB18_1": {
    "position": [
@@ -777,16 +4387,151 @@
     -0.70711
    ],
    "orientation": "horizontal",
-   "hardware": "pull_bar_8in",
-   "bar_length_m": 0.2032,
-   "center_to_center_m": 0.1651,
+   "mount_type": "drawer_horizontal",
+   "cabinet_type": "base",
+   "placement": "centered",
+   "anchor": [
+    -1.40092,
+    0.80099,
+    0.35023
+   ],
+   "anchor_dir": [
+    0.0,
+    0.0,
+    0.0
+   ],
+   "knob_position": [
+    -1.40092,
+    0.80099,
+    0.35023
+   ],
+   "size_class": "large",
+   "front_width_m": 0.4526,
+   "front_height_m": 0.146,
+   "hardware": "pull_bar_6in",
+   "bar_length_m": 0.1524,
+   "center_to_center_m": 0.096,
+   "by_style": {
+    "arch": {
+     "pull": "pull_arch_7_125in",
+     "length_m": 0.181,
+     "center_to_center_m": 0.128,
+     "position": [
+      -1.40092,
+      0.80099,
+      0.35023
+     ],
+     "knob": "knob_arch",
+     "knob_position": [
+      -1.40092,
+      0.80099,
+      0.35023
+     ]
+    },
+    "artisan": {
+     "pull": "pull_artisan_6_0625in",
+     "length_m": 0.154,
+     "center_to_center_m": 0.128,
+     "position": [
+      -1.40092,
+      0.80099,
+      0.35023
+     ],
+     "knob": "knob_artisan",
+     "knob_position": [
+      -1.40092,
+      0.80099,
+      0.35023
+     ]
+    },
+    "cottage": {
+     "pull": "pull_cottage_6_0625in",
+     "length_m": 0.154,
+     "center_to_center_m": 0.128,
+     "position": [
+      -1.40092,
+      0.80099,
+      0.35023
+     ],
+     "knob": "knob_cottage",
+     "knob_position": [
+      -1.40092,
+      0.80099,
+      0.35023
+     ]
+    },
+    "loft": {
+     "pull": "pull_loft_5_875in",
+     "length_m": 0.1492,
+     "center_to_center_m": 0.1402,
+     "position": [
+      -1.40092,
+      0.80099,
+      0.35023
+     ],
+     "knob": "knob_loft",
+     "knob_position": [
+      -1.40092,
+      0.80099,
+      0.35023
+     ]
+    },
+    "square": {
+     "pull": "pull_square_5_4375in",
+     "length_m": 0.1381,
+     "center_to_center_m": 0.128,
+     "position": [
+      -1.40092,
+      0.80099,
+      0.35023
+     ],
+     "knob": "knob_square",
+     "knob_position": [
+      -1.40092,
+      0.80099,
+      0.35023
+     ]
+    },
+    "bar": {
+     "pull": "pull_bar_6in",
+     "length_m": 0.1524,
+     "center_to_center_m": 0.096,
+     "position": [
+      -1.40092,
+      0.80099,
+      0.35023
+     ],
+     "knob": "knob_bar",
+     "knob_position": [
+      -1.40092,
+      0.80099,
+      0.35023
+     ]
+    },
+    "generic": {
+     "pull": "pull_generic_8in",
+     "length_m": 0.2032,
+     "center_to_center_m": 0.1651,
+     "position": [
+      -1.40092,
+      0.80099,
+      0.35023
+     ],
+     "knob": "knob_generic",
+     "knob_position": [
+      -1.40092,
+      0.80099,
+      0.35023
+     ]
+    }
+   },
    "pull": "island_pull_I03_IDB18_1",
    "front": "island_drawer_I03_IDB18_1"
   },
   "island_drawer_I03_IDB18_2": {
    "position": [
     -1.40092,
-    0.68034,
+    0.57036,
     0.35023
    ],
    "quaternion": [
@@ -806,16 +4551,151 @@
     -0.70711
    ],
    "orientation": "horizontal",
-   "hardware": "pull_bar_8in",
-   "bar_length_m": 0.2032,
-   "center_to_center_m": 0.1651,
+   "mount_type": "drawer_horizontal",
+   "cabinet_type": "base",
+   "placement": "centered",
+   "anchor": [
+    -1.40092,
+    0.57036,
+    0.35023
+   ],
+   "anchor_dir": [
+    0.0,
+    0.0,
+    0.0
+   ],
+   "knob_position": [
+    -1.40092,
+    0.57036,
+    0.35023
+   ],
+   "size_class": "large",
+   "front_width_m": 0.4526,
+   "front_height_m": 0.3089,
+   "hardware": "pull_bar_6in",
+   "bar_length_m": 0.1524,
+   "center_to_center_m": 0.096,
+   "by_style": {
+    "arch": {
+     "pull": "pull_arch_7_125in",
+     "length_m": 0.181,
+     "center_to_center_m": 0.128,
+     "position": [
+      -1.40092,
+      0.57036,
+      0.35023
+     ],
+     "knob": "knob_arch",
+     "knob_position": [
+      -1.40092,
+      0.57036,
+      0.35023
+     ]
+    },
+    "artisan": {
+     "pull": "pull_artisan_6_0625in",
+     "length_m": 0.154,
+     "center_to_center_m": 0.128,
+     "position": [
+      -1.40092,
+      0.57036,
+      0.35023
+     ],
+     "knob": "knob_artisan",
+     "knob_position": [
+      -1.40092,
+      0.57036,
+      0.35023
+     ]
+    },
+    "cottage": {
+     "pull": "pull_cottage_6_0625in",
+     "length_m": 0.154,
+     "center_to_center_m": 0.128,
+     "position": [
+      -1.40092,
+      0.57036,
+      0.35023
+     ],
+     "knob": "knob_cottage",
+     "knob_position": [
+      -1.40092,
+      0.57036,
+      0.35023
+     ]
+    },
+    "loft": {
+     "pull": "pull_loft_5_875in",
+     "length_m": 0.1492,
+     "center_to_center_m": 0.1402,
+     "position": [
+      -1.40092,
+      0.57036,
+      0.35023
+     ],
+     "knob": "knob_loft",
+     "knob_position": [
+      -1.40092,
+      0.57036,
+      0.35023
+     ]
+    },
+    "square": {
+     "pull": "pull_square_5_4375in",
+     "length_m": 0.1381,
+     "center_to_center_m": 0.128,
+     "position": [
+      -1.40092,
+      0.57036,
+      0.35023
+     ],
+     "knob": "knob_square",
+     "knob_position": [
+      -1.40092,
+      0.57036,
+      0.35023
+     ]
+    },
+    "bar": {
+     "pull": "pull_bar_6in",
+     "length_m": 0.1524,
+     "center_to_center_m": 0.096,
+     "position": [
+      -1.40092,
+      0.57036,
+      0.35023
+     ],
+     "knob": "knob_bar",
+     "knob_position": [
+      -1.40092,
+      0.57036,
+      0.35023
+     ]
+    },
+    "generic": {
+     "pull": "pull_generic_8in",
+     "length_m": 0.2032,
+     "center_to_center_m": 0.1651,
+     "position": [
+      -1.40092,
+      0.57036,
+      0.35023
+     ],
+     "knob": "knob_generic",
+     "knob_position": [
+      -1.40092,
+      0.57036,
+      0.35023
+     ]
+    }
+   },
    "pull": "island_pull_I03_IDB18_2",
    "front": "island_drawer_I03_IDB18_2"
   },
   "island_drawer_I03_IDB18_3": {
    "position": [
     -1.40092,
-    0.3683,
+    0.25832,
     0.35023
    ],
    "quaternion": [
@@ -835,9 +4715,144 @@
     -0.70711
    ],
    "orientation": "horizontal",
-   "hardware": "pull_bar_8in",
-   "bar_length_m": 0.2032,
-   "center_to_center_m": 0.1651,
+   "mount_type": "drawer_horizontal",
+   "cabinet_type": "base",
+   "placement": "centered",
+   "anchor": [
+    -1.40092,
+    0.25832,
+    0.35023
+   ],
+   "anchor_dir": [
+    0.0,
+    0.0,
+    0.0
+   ],
+   "knob_position": [
+    -1.40092,
+    0.25832,
+    0.35023
+   ],
+   "size_class": "large",
+   "front_width_m": 0.4526,
+   "front_height_m": 0.3089,
+   "hardware": "pull_bar_6in",
+   "bar_length_m": 0.1524,
+   "center_to_center_m": 0.096,
+   "by_style": {
+    "arch": {
+     "pull": "pull_arch_7_125in",
+     "length_m": 0.181,
+     "center_to_center_m": 0.128,
+     "position": [
+      -1.40092,
+      0.25832,
+      0.35023
+     ],
+     "knob": "knob_arch",
+     "knob_position": [
+      -1.40092,
+      0.25832,
+      0.35023
+     ]
+    },
+    "artisan": {
+     "pull": "pull_artisan_6_0625in",
+     "length_m": 0.154,
+     "center_to_center_m": 0.128,
+     "position": [
+      -1.40092,
+      0.25832,
+      0.35023
+     ],
+     "knob": "knob_artisan",
+     "knob_position": [
+      -1.40092,
+      0.25832,
+      0.35023
+     ]
+    },
+    "cottage": {
+     "pull": "pull_cottage_6_0625in",
+     "length_m": 0.154,
+     "center_to_center_m": 0.128,
+     "position": [
+      -1.40092,
+      0.25832,
+      0.35023
+     ],
+     "knob": "knob_cottage",
+     "knob_position": [
+      -1.40092,
+      0.25832,
+      0.35023
+     ]
+    },
+    "loft": {
+     "pull": "pull_loft_5_875in",
+     "length_m": 0.1492,
+     "center_to_center_m": 0.1402,
+     "position": [
+      -1.40092,
+      0.25832,
+      0.35023
+     ],
+     "knob": "knob_loft",
+     "knob_position": [
+      -1.40092,
+      0.25832,
+      0.35023
+     ]
+    },
+    "square": {
+     "pull": "pull_square_5_4375in",
+     "length_m": 0.1381,
+     "center_to_center_m": 0.128,
+     "position": [
+      -1.40092,
+      0.25832,
+      0.35023
+     ],
+     "knob": "knob_square",
+     "knob_position": [
+      -1.40092,
+      0.25832,
+      0.35023
+     ]
+    },
+    "bar": {
+     "pull": "pull_bar_6in",
+     "length_m": 0.1524,
+     "center_to_center_m": 0.096,
+     "position": [
+      -1.40092,
+      0.25832,
+      0.35023
+     ],
+     "knob": "knob_bar",
+     "knob_position": [
+      -1.40092,
+      0.25832,
+      0.35023
+     ]
+    },
+    "generic": {
+     "pull": "pull_generic_8in",
+     "length_m": 0.2032,
+     "center_to_center_m": 0.1651,
+     "position": [
+      -1.40092,
+      0.25832,
+      0.35023
+     ],
+     "knob": "knob_generic",
+     "knob_position": [
+      -1.40092,
+      0.25832,
+      0.35023
+     ]
+    }
+   },
    "pull": "island_pull_I03_IDB18_3",
    "front": "island_drawer_I03_IDB18_3"
   }
@@ -1262,6 +5277,228 @@
     0.8763
    ],
    "pull": ""
+  }
+ },
+ "placement_rules": {
+  "units": "glTF world metres (kitchen root is identity)",
+  "door": "vertical; centreline 2-1/2\" (63.5 mm) in from the latch edge (edge opposite the hinge); base doors: top end of the pull 2-1/2\" below the door top; uppers: bottom end 2-1/2\" above the door bottom. position = anchor + anchor_dir * length/2; knobs at the anchor (2-1/2\" from both edges).",
+  "drawer": "horizontal; centred on the drawer front (both directions) whatever the length; knobs at the centre.",
+  "size_class": "doors: small (style's shorter pull). drawers: front width < 14\" (356 mm) -> small, >= 14\" -> large (style's longer pull)."
+ },
+ "hardware_catalog": {
+  "arch": {
+   "name": "Arch",
+   "profile": "bowed rectangular bar (tapered ends), round posts set in from the ends",
+   "finishes": [
+    "rose_gold",
+    "satin_nickel",
+    "matte_black",
+    "chrome"
+   ],
+   "finish_size_images": {
+    "rose_gold": [
+     "Knob: 1 7/16\"",
+     "Pull: 6\"",
+     "Pull: 7 1/8\""
+    ],
+    "satin_nickel": [
+     "Knob: 1 7/16\"",
+     "Pull: 6\"",
+     "Pull: 7 1/8\""
+    ],
+    "matte_black": [
+     "Knob: 1 7/16\"",
+     "Pull: 6\"",
+     "Pull: 7 1/8\""
+    ],
+    "chrome": [
+     "Knob: 1 7/16\"",
+     "Pull: 6\"",
+     "Pull: 7 1/8\""
+    ]
+   },
+   "pulls": {
+    "6in": "pull_arch_6in",
+    "7_125in": "pull_arch_7_125in"
+   },
+   "knob": "knob_arch",
+   "small": "pull_arch_6in",
+   "large": "pull_arch_7_125in"
+  },
+  "artisan": {
+   "name": "Artisan",
+   "profile": "straight flat rectangular bar overhanging spool posts (collar at both ends)",
+   "finishes": [
+    "rose_gold",
+    "satin_nickel",
+    "matte_black",
+    "chrome"
+   ],
+   "finish_size_images": {
+    "rose_gold": [
+     "Knob: 1 7/32\"",
+     "Pull: 4 3/4\"",
+     "Pull: 6 1/16\""
+    ],
+    "satin_nickel": [
+     "Knob: 1 7/32\"",
+     "Pull: 4 3/4\"",
+     "Pull: 6 1/16\""
+    ],
+    "matte_black": [
+     "Knob: 1 7/32\"",
+     "Pull: 4 3/4\"",
+     "Pull: 6 1/16\""
+    ],
+    "chrome": [
+     "Knob: 1 7/32\"",
+     "Pull: 4 3/4\"",
+     "Pull: 6 1/16\""
+    ]
+   },
+   "pulls": {
+    "4_75in": "pull_artisan_4_75in",
+    "6_0625in": "pull_artisan_6_0625in"
+   },
+   "knob": "knob_artisan",
+   "small": "pull_artisan_4_75in",
+   "large": "pull_artisan_6_0625in"
+  },
+  "cottage": {
+   "name": "Cottage",
+   "profile": "arched rounded bar rising from square cushion feet",
+   "finishes": [
+    "rose_gold",
+    "satin_nickel",
+    "chrome"
+   ],
+   "finish_size_images": {
+    "rose_gold": [
+     "Knob",
+     "Pull: 96mm",
+     "Pull: 128mm"
+    ],
+    "satin_nickel": [
+     "Knob: 1 7/32\"",
+     "Pull: 4 3/4\"",
+     "Pull: 6 1/16\""
+    ],
+    "chrome": [
+     "Knob: 1 7/32\"",
+     "Pull: 4 3/4\"",
+     "Pull: 6 1/16\""
+    ]
+   },
+   "pulls": {
+    "4_75in": "pull_cottage_4_75in",
+    "6_0625in": "pull_cottage_6_0625in"
+   },
+   "knob": "knob_cottage",
+   "small": "pull_cottage_4_75in",
+   "large": "pull_cottage_6_0625in"
+  },
+  "loft": {
+   "name": "Loft",
+   "profile": "square-cornered U (staple) pull, flat strap section (wide face)",
+   "finishes": [
+    "rose_gold",
+    "satin_nickel",
+    "matte_black",
+    "chrome"
+   ],
+   "finish_size_images": {
+    "rose_gold": [
+     "Knob: 15/16\"",
+     "Pull: 4 5/8\"",
+     "Pull: 5 7/8\""
+    ],
+    "satin_nickel": [
+     "Knob: 15/16\"",
+     "Pull: 4 5/8\"",
+     "Pull: 5 7/8\""
+    ],
+    "matte_black": [
+     "Knob: 15/16\"",
+     "Pull: 4 5/8\"",
+     "Pull: 5 7/8\""
+    ],
+    "chrome": [
+     "Knob: 15/16\"",
+     "Pull: 4 5/8\"",
+     "Pull: 5 7/8\""
+    ]
+   },
+   "pulls": {
+    "4_625in": "pull_loft_4_625in",
+    "5_875in": "pull_loft_5_875in"
+   },
+   "knob": "knob_loft",
+   "small": "pull_loft_4_625in",
+   "large": "pull_loft_5_875in"
+  },
+  "square": {
+   "name": "Square",
+   "profile": "square-cornered U pull, square bar section",
+   "finishes": [
+    "rose_gold",
+    "satin_nickel",
+    "matte_black",
+    "chrome"
+   ],
+   "finish_size_images": {
+    "rose_gold": [
+     "Knob: 15/16\"",
+     "Pull: 4 1/4\""
+    ],
+    "satin_nickel": [
+     "Knob: 15/16\"",
+     "Pull: 4 1/4\"",
+     "Pull: 5 7/16\""
+    ],
+    "matte_black": [
+     "Knob: 15/16\"",
+     "Pull: 4 1/4\"",
+     "Pull: 5 7/16\""
+    ],
+    "chrome": [
+     "Knob: 15/16\"",
+     "Pull: 4 1/4\"",
+     "Pull: 5 7/16\""
+    ]
+   },
+   "pulls": {
+    "4_25in": "pull_square_4_25in",
+    "5_4375in": "pull_square_5_4375in"
+   },
+   "knob": "knob_square",
+   "small": "pull_square_4_25in",
+   "large": "pull_square_5_4375in"
+  },
+  "bar": {
+   "name": "Bar",
+   "profile": "1/2\" round bar on round posts (T-bar)",
+   "finishes": [
+    "satin_nickel",
+    "matte_black"
+   ],
+   "finish_size_images": {
+    "satin_nickel": [
+     "Knob: Round",
+     "Pull"
+    ],
+    "matte_black": [
+     "Knob: Round",
+     "Pull: 4.5\"",
+     "Pull: 6\""
+    ]
+   },
+   "pulls": {
+    "4_5in": "pull_bar_4_5in",
+    "6in": "pull_bar_6in"
+   },
+   "knob": "knob_bar",
+   "small": "pull_bar_4_5in",
+   "large": "pull_bar_6in"
   }
  },
  "hardware": {

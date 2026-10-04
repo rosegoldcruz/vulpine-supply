@@ -369,3 +369,134 @@
   .finalDivider { display: none; }
   .padded { padding: 20px; }
 }
+
+/* ---------- a11y ---------- */
+.srOnly { position: absolute; width: 1px; height: 1px; padding: 0; margin: -1px; overflow: hidden; clip: rect(0 0 0 0); white-space: nowrap; border: 0; }
+.root :focus-visible { outline: 3px solid var(--orange); outline-offset: 2px; border-radius: 10px; }
+.scene3dCanvas:focus-visible { outline-offset: -3px; }
+
+/* ---------- view bar actions ---------- */
+.viewActions { display: flex; align-items: center; gap: 10px; flex-wrap: wrap; }
+.ghostBtn {
+  display: inline-flex; align-items: center; justify-content: center; gap: 6px;
+  border: 1.5px solid var(--gray); background: #fff; color: var(--black);
+  border-radius: 100px; padding: 8px 14px; font: 600 13px 'DM Sans', sans-serif;
+  cursor: pointer; text-decoration: none; transition: border-color 0.2s, background 0.2s;
+}
+.ghostBtn:hover { border-color: var(--black); }
+.ghostBtnActive, .ghostBtnActive:hover { border-color: var(--black); background: var(--black); color: var(--white); }
+.linkBtn { border: 0; background: none; padding: 0; font: 600 13px 'DM Sans', sans-serif; color: var(--orange); cursor: pointer; text-decoration: underline; }
+
+.arBtn {
+  display: inline-flex; align-items: center; gap: 8px; border: 0; border-radius: 100px;
+  padding: 9px 16px; background: var(--orange); color: #fff; font: 700 13px 'DM Sans', sans-serif;
+  cursor: pointer; box-shadow: 0 8px 22px rgba(238, 114, 0, 0.28); transition: transform 0.15s, background 0.2s;
+}
+.arBtn:hover { background: #d46400; transform: translateY(-1px); }
+.arBtn:disabled { opacity: 0.75; cursor: progress; transform: none; }
+.arBtnReady { animation: arPulse 1.6s ease-in-out infinite; }
+@keyframes arPulse { 0%, 100% { box-shadow: 0 0 0 0 rgba(238, 114, 0, 0.45); } 50% { box-shadow: 0 0 0 10px rgba(238, 114, 0, 0); } }
+.arError { flex-basis: 100%; font-size: 13px; color: #9a3412; }
+
+/* WebXR dom-overlay (only shown during an AR session) */
+.xrOverlay { display: none; position: fixed; inset: 0; z-index: 10000; background: transparent; touch-action: none; font-family: 'DM Sans', sans-serif; }
+.xrOverlayActive { display: block; }
+.xrHint {
+  position: absolute; top: max(18px, env(safe-area-inset-top)); left: 50%; transform: translateX(-50%);
+  background: rgba(17, 17, 17, 0.72); color: #fff; padding: 10px 16px; border-radius: 100px;
+  font-size: 14px; font-weight: 600; white-space: nowrap; pointer-events: none;
+}
+.xrHint:empty { display: none; }
+.xrControls { position: absolute; left: 0; right: 0; bottom: max(24px, env(safe-area-inset-bottom)); display: flex; justify-content: center; gap: 10px; }
+.xrBtn { border: 0; border-radius: 100px; padding: 12px 20px; background: rgba(255, 255, 255, 0.92); color: #111; font: 700 14px 'DM Sans', sans-serif; }
+.xrBtnPrimary { background: var(--orange); color: #fff; }
+
+/* QR dialog */
+.modalBackdrop { position: fixed; inset: 0; z-index: 1000; background: rgba(17, 17, 17, 0.55); display: flex; align-items: center; justify-content: center; padding: 20px; }
+.modal { background: #fff; border-radius: 18px; padding: 28px; max-width: 420px; width: 100%; display: flex; flex-direction: column; gap: 14px; box-shadow: 0 30px 80px rgba(0, 0, 0, 0.3); }
+.modalTitle { font-size: 22px; font-weight: 700; letter-spacing: -0.02em; }
+.qrBox { align-self: center; width: 236px; height: 236px; display: flex; align-items: center; justify-content: center; border: 1px solid rgba(200, 196, 190, 0.7); border-radius: 14px; }
+.qrUrl { font-size: 11px; color: var(--mid); word-break: break-all; text-align: center; }
+.modalActions { display: flex; justify-content: flex-end; gap: 10px; flex-wrap: wrap; }
+
+/* ---------- 3D overlays: progress + camera presets ---------- */
+.progress {
+  position: absolute; left: 50%; bottom: 52px; transform: translateX(-50%); z-index: 3;
+  display: flex; flex-direction: column; gap: 8px; align-items: center; min-width: 220px;
+  padding: 12px 16px; border-radius: 14px; background: rgba(255, 255, 255, 0.92);
+  font-size: 12px; font-weight: 600; color: var(--black); box-shadow: 0 10px 30px rgba(17, 17, 17, 0.12);
+}
+.progressTrack { position: relative; display: block; width: 100%; height: 4px; border-radius: 4px; background: rgba(17, 17, 17, 0.1); overflow: hidden; }
+.progressBar { position: absolute; inset: 0 auto 0 0; background: var(--orange); border-radius: 4px; transition: width 0.2s; }
+.progressIndeterminate { width: 35%; animation: indet 1.1s ease-in-out infinite; }
+@keyframes indet { from { left: -35%; } to { left: 100%; } }
+
+.presets {
+  position: absolute; top: 12px; right: 12px; z-index: 2; display: flex; gap: 4px; padding: 4px;
+  border-radius: 100px; background: rgba(255, 255, 255, 0.9); box-shadow: 0 6px 18px rgba(17, 17, 17, 0.1);
+  max-width: calc(100% - 24px); overflow-x: auto; scrollbar-width: none;
+}
+.presetBtn { border: 0; background: transparent; border-radius: 100px; padding: 7px 12px; font: 600 12px 'DM Sans', sans-serif; color: var(--mid); cursor: pointer; white-space: nowrap; }
+.presetBtn:hover:not(:disabled) { color: var(--black); }
+.presetBtn:disabled { opacity: 0.4; cursor: not-allowed; }
+.presetBtnActive, .presetBtnActive:hover:not(:disabled) { background: var(--black); color: var(--white); }
+
+/* ---------- compare ---------- */
+.compareGrid { display: grid; grid-template-columns: 1fr 1fr; gap: 14px; }
+.compareCard { margin: 0; display: flex; flex-direction: column; gap: 10px; min-width: 0; }
+.compareImg { position: relative; aspect-ratio: 1140 / 600; border-radius: 12px; overflow: hidden; background: #fff; border: 1px solid rgba(200, 196, 190, 0.6); }
+.compareDoor { position: absolute; right: 8px; bottom: 8px; width: 40px; height: 52px; border-radius: 6px; overflow: hidden; background: #fff; border: 2px solid #fff; box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2); }
+.compareCaption { display: flex; flex-direction: column; gap: 8px; align-items: flex-start; }
+.compareName { font-size: 15px; font-weight: 700; }
+.compareSelects { display: flex; gap: 6px; flex-wrap: wrap; width: 100%; }
+.select { flex: 1 1 120px; min-width: 0; border: 1.5px solid var(--gray); border-radius: 10px; padding: 7px 10px; font: 600 13px 'DM Sans', sans-serif; background: #fff; color: var(--black); }
+
+/* ---------- share / summary ---------- */
+.shareRow { display: flex; flex-wrap: wrap; gap: 8px; padding-top: 4px; }
+.finalActions { display: flex; align-items: center; gap: 18px; flex-wrap: wrap; flex: 0 0 auto; }
+.finalSecondary { color: var(--white); font-size: 14px; font-weight: 600; text-decoration: underline; text-underline-offset: 3px; }
+
+/* ---------- mobile bottom sheet ---------- */
+.sheet { display: none; }
+.chipSubtle { border-style: dashed; }
+.chipDot { display: inline-block; width: 12px; height: 12px; border-radius: 50%; margin-right: 6px; vertical-align: -1px; border: 1px solid rgba(17, 17, 17, 0.2); }
+
+@media (max-width: 700px) {
+  .root { padding-bottom: 120px; }
+  .sheet {
+    display: block; position: fixed; left: 0; right: 0; bottom: 0; z-index: 900;
+    background: rgba(251, 248, 244, 0.97); backdrop-filter: blur(12px);
+    border-top: 1px solid rgba(200, 196, 190, 0.8); border-radius: 18px 18px 0 0;
+    box-shadow: 0 -12px 30px rgba(17, 17, 17, 0.12); padding-bottom: env(safe-area-inset-bottom);
+  }
+  .sheetBody { padding: 14px 12px 4px; border-bottom: 1px solid rgba(200, 196, 190, 0.6); animation: sheetUp 0.22s ease-out; }
+  @keyframes sheetUp { from { transform: translateY(12px); opacity: 0; } to { transform: none; opacity: 1; } }
+  .sheetRow { display: flex; gap: 8px; overflow-x: auto; padding-bottom: 10px; scroll-snap-type: x proximity; scrollbar-width: none; }
+  .sheetRow > * { flex: 0 0 auto; scroll-snap-align: start; }
+  .sheetRow .chip { padding: 9px 14px; white-space: nowrap; }
+  .sheetSwatch { width: 64px; border: 0; background: none; padding: 0; display: flex; flex-direction: column; gap: 4px; font-family: 'DM Sans', sans-serif; text-align: left; }
+  .sheetSwatch .swatchName { font-size: 11px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+  .sheetTabs { display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)) auto; gap: 4px; padding: 8px; align-items: stretch; }
+  .sheetTab { border: 0; background: transparent; border-radius: 12px; padding: 6px 4px; display: flex; flex-direction: column; gap: 2px; min-width: 0; font-family: 'DM Sans', sans-serif; text-align: center; }
+  .sheetTabActive { background: #fff; box-shadow: 0 0 0 1.5px var(--orange); }
+  .sheetTabLabel { font-size: 10px; font-weight: 700; letter-spacing: 0.1em; text-transform: uppercase; color: var(--mid); }
+  .sheetTabValue { font-size: 12px; font-weight: 700; color: var(--black); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+  .sheetCta { align-self: center; background: var(--orange); color: #fff; border-radius: 100px; padding: 10px 14px; font-size: 13px; font-weight: 700; text-decoration: none; }
+  .viewBar { gap: 10px; }
+  .viewActions { width: 100%; }
+  .arBtn { flex: 1 1 auto; justify-content: center; }
+  .presets { top: auto; bottom: 10px; left: 10px; right: auto; max-width: calc(100% - 20px); }
+  .sceneHint { display: none; }
+  .stage3d .insets { bottom: auto; top: 46px; }
+  .progress { bottom: 60px; }
+  .compareGrid { gap: 10px; }
+  .modal { padding: 22px; }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .arBtnReady, .progressIndeterminate, .sheetBody { animation: none; }
+}
+
+@media print {
+  .sheet, .viewBar, .presets, .sceneHint { display: none !important; }
+}

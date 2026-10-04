@@ -1,6 +1,6 @@
 'use client';
 
-import { useEffect, useMemo, useState } from 'react';
+import { useCallback, useEffect, useMemo, useRef, useState, type KeyboardEvent } from 'react';
 import dynamic from 'next/dynamic';
 import { motion, AnimatePresence } from 'framer-motion';
 import Image from 'next/image';
@@ -8,6 +8,10 @@ import { cn } from '@/lib/utils';
 import { BrandLogo } from '@/components/brand-logo';
 import { CONFIG_DATA, FINISH_COLORS, FINISH_NAMES, cabsUrl } from './data';
 import styles from './CabinetConfigurator.module.css';
+import type { ConfiguratorEngine } from './scene/engine';
+import { ViewInYourSpace } from './ViewInYourSpace';
+import { CompareFinishes } from './CompareFinishes';
+import { SNAPSHOT_KEY, configQuery, type ConfigSelection } from './summary';
 
 const KitchenScene3D = dynamic(() => import('./KitchenScene3D'), {
   ssr: false,
@@ -16,6 +20,21 @@ const KitchenScene3D = dynamic(() => import('./KitchenScene3D'), {
 
 type StyleKey = keyof typeof CONFIG_DATA.doorStyles & string;
 type View = 'photo' | '3d';
+type SheetTab = 'style' | 'color' | 'hardware' | 'finish';
+
+/** Arrow / Home / End keys move between [role=radio] buttons of a radiogroup and select (WAI-ARIA radio pattern). */
+function radioKeys(e: KeyboardEvent<HTMLElement>) {
+  const next = { ArrowRight: 1, ArrowDown: 1, ArrowLeft: -1, ArrowUp: -1 } as Record<string, number>;
+  if (!(e.key in next) && e.key !== 'Home' && e.key !== 'End') return;
+  const items = Array.from(e.currentTarget.querySelectorAll<HTMLButtonElement>('[role="radio"]:not([disabled])'));
+  const i = items.indexOf(document.activeElement as HTMLButtonElement);
+  if (i < 0 || !items.length) return;
+  e.preventDefault();
+  const n = e.key === 'Home' ? 0 : e.key === 'End' ? items.length - 1 : (i + next[e.key] + items.length) % items.length;
+  items[n].focus();
+  items[n].click();
+}
+const radio = (checked: boolean) => ({ role: 'radio' as const, 'aria-checked': checked, tabIndex: checked ? 0 : -1 });
 
 const STYLE_KEYS = Object.keys(CONFIG_DATA.doorStyles);
 const HW_KEYS = Object.keys(CONFIG_DATA.hardware);
@@ -33,6 +52,12 @@ export function CabinetConfigurator() {
   const [showIsland, setShowIsland] = useState(true);
   const [isLoading, setIsLoading] = useState(false);
   const [brokenRender, setBrokenRender] = useState<string | null>(null);
+  const [engine, setEngine] = useState<ConfiguratorEngine | null>(null);
+  const [compareOpen, setCompareOpen] = useState(false);
+  const [copied, setCopied] = useState(false);
+  const [sheetTab, setSheetTab] = useState<SheetTab | null>(null);
+  const [arrivedForAr, setArrivedForAr] = useState(false);
+  const stageRef = useRef<HTMLDivElement>(null);
 
   // Current selections
   const currentStyle = CONFIG_DATA.doorStyles[style];
@@ -58,14 +83,69 @@ export function CabinetConfigurator() {
     const f = q.get('finish');
     if (f && FINISH_NAMES[f]) setHwFinish(f);
     if (q.get('view') === '3d') setView('3d');
+    if (q.get('doors') === 'knob') setDoorHardware('knob');
+    if (q.get('island') === '0') setShowIsland(false);
+    if (q.get('ar') === '1') setArrivedForAr(true);
   }, []);
+
+  const selection: ConfigSelection = useMemo(
+    () => ({ style, color: currentColor.id, hw: hwType, finish: hwFinishKey, doors: doorHardware, island: showIsland }),
+    [style, currentColor.id, hwType, hwFinishKey, doorHardware, showIsland],
+  );
+  const configKey = configQuery(selection).toString();
 
   // Keep the URL in sync so a selection can be shared
   useEffect(() => {
-    const q = new URLSearchParams({ style, color: currentColor.id, hw: hwType, finish: hwFinishKey });
+    const q = configQuery(selection);
     if (view === '3d') q.set('view', '3d');
+    if (new URLSearchParams(window.location.search).get('debug') === '1') q.set('debug', '1'); // dev hooks, see KitchenScene3D
     window.history.replaceState(null, '', `${window.location.pathname}?${q.toString()}`);
-  }, [style, currentColor.id, hwType, hwFinishKey, view]);
+  }, [selection, view]);
+
+  const shareUrl = () => {
+    const q = configQuery(selection);
+    if (view === '3d') q.set('view', '3d');
+    return `${window.location.origin}${window.location.pathname}?${q.toString()}`;
+  };
+  const copyShare = async () => {
+    const url = shareUrl();
+    try {
+      await navigator.clipboard.writeText(url);
+    } catch {
+      window.prompt('Copy this link to your design:', url);
+    }
+    setCopied(true);
+    window.setTimeout(() => setCopied(false), 2200);
+  };
+  const nativeShare = () => navigator.share?.({ title: 'My Vulpine cabinet design', url: shareUrl() }).catch(() => {});
+  const [canNativeShare, setCanNativeShare] = useState(false);
+  useEffect(() => setCanNativeShare(typeof navigator.share === 'function'), []);
+
+  // printable summary: hand over a still of the 3D view when it's open
+  const summaryHref = `/configurator/summary?${configKey}`;
+  const onOpenSummary = () => {
+    try {
+      const img = engine?.captureImage();
+      if (img) sessionStorage.setItem(SNAPSHOT_KEY, JSON.stringify({ key: configKey, img }));
+    } catch {
+      /* storage full / disabled: the summary falls back to the kitchen photo */
+    }
+  };
+
+  const ensure3d = useCallback(() => setView('3d'), []);
+  const onEngine = useCallback((e: ConfiguratorEngine | null) => setEngine(e), []);
+  useEffect(() => {
+    if (view !== '3d') setEngine(null);
+  }, [view]);
+
+  const openSheet = (tab: SheetTab) => {
+    const next = sheetTab === tab ? null : tab;
+    setSheetTab(next);
+    if (next && stageRef.current) {
+      const top = stageRef.current.getBoundingClientRect().top + window.scrollY - 76;
+      if (Math.abs(window.scrollY - top) > 40) window.scrollTo({ top, behavior: 'smooth' });
+    }
+  };
 
   const flash = () => {
     setIsLoading(true);
@@ -104,9 +184,21 @@ export function CabinetConfigurator() {
       `Color: ${currentColor.color}`,
       `Hardware: ${currentHw.name} - ${FINISH_NAMES[hwFinishKey] || hwFinishKey}`,
       `Doors use: ${doorHardware === 'knob' ? 'knobs' : 'pulls'}`,
+      `Design summary: https://vulpinehomes.com/configurator/summary?${configKey}`,
     ].join('\n');
     return `/request-bid?${new URLSearchParams({ configuration: summary }).toString()}`;
-  }, [currentStyle.name, currentColor.color, currentHw.name, hwFinishKey, doorHardware]);
+  }, [currentStyle.name, currentColor.color, currentHw.name, hwFinishKey, doorHardware, configKey]);
+
+  const description = `${currentStyle.name} doors in ${currentColor.color}, ${currentHw.name} hardware in ${FINISH_NAMES[hwFinishKey] || hwFinishKey}, ${
+    doorHardware === 'knob' ? 'knobs' : 'pulls'
+  } on doors${view === '3d' ? (showIsland ? ', with island' : ', without island') : ''}`;
+  const arTitle = `${currentStyle.name} · ${currentColor.color} · ${currentHw.name} ${FINISH_NAMES[hwFinishKey] || ''}`.trim();
+
+  const pickColor = (id: string) => {
+    if (id === currentColor.id) return;
+    flash();
+    setColorKey(id);
+  };
 
   return (
     <div className={styles.root}>
@@ -138,15 +230,25 @@ export function CabinetConfigurator() {
                 </button>
               ))}
             </div>
-            {view === '3d' && (
-              <label className={styles.toggle}>
-                <input type="checkbox" checked={showIsland} onChange={(e) => setShowIsland(e.target.checked)} />
-                <span>Island</span>
-              </label>
-            )}
+            <div className={styles.viewActions}>
+              {view === '3d' && (
+                <label className={styles.toggle}>
+                  <input type="checkbox" checked={showIsland} onChange={(e) => setShowIsland(e.target.checked)} />
+                  <span>Island</span>
+                </label>
+              )}
+              <button type="button" className={cn(styles.ghostBtn, compareOpen && styles.ghostBtnActive)} aria-expanded={compareOpen} aria-controls="compare-panel" onClick={() => setCompareOpen((v) => !v)}>
+                Compare finishes
+              </button>
+              <ViewInYourSpace engine={engine} ensure3d={ensure3d} configKey={configKey} title={arTitle} arrivedForAr={arrivedForAr} />
+            </div>
           </div>
 
-          <div className={cn(styles.stage, view === '3d' && styles.stage3d)}>
+          <p className={styles.srOnly} aria-live="polite">
+            {description}
+          </p>
+
+          <div ref={stageRef} className={cn(styles.stage, view === '3d' && styles.stage3d)}>
             {view === 'photo' ? (
               <>
                 <AnimatePresence mode="wait">
@@ -199,6 +301,8 @@ export function CabinetConfigurator() {
               </>
             ) : (
               <KitchenScene3D
+                description={description}
+                onEngine={onEngine}
                 styleId={style}
                 finishId={currentColor.finish}
                 finish={doorFinish}
@@ -218,13 +322,26 @@ export function CabinetConfigurator() {
             {/* Door + hardware insets */}
             <div className={styles.insets}>
               <div className={styles.inset} title={`${currentColor.color} ${currentStyle.name} door`}>
-                <Image src={cabsUrl(currentColor.door)} alt="" fill sizes="80px" className={styles.contain} />
+                <Image src={cabsUrl(currentColor.door)} alt={`${currentColor.color} ${currentStyle.name} door swatch`} fill sizes="80px" className={styles.contain} />
               </div>
               <div className={cn(styles.inset, styles.insetLight)} title={`${currentHw.name} in ${FINISH_NAMES[hwFinishKey]}`}>
-                <Image src={cabsUrl(currentHwFinish.pull)} alt="" fill sizes="80px" className={styles.contain} />
+                <Image src={cabsUrl(currentHwFinish.pull)} alt={`${currentHw.name} pull in ${FINISH_NAMES[hwFinishKey]}`} fill sizes="80px" className={styles.contain} />
               </div>
             </div>
           </div>
+
+          {compareOpen && (
+            <CompareFinishes
+              id="compare-panel"
+              current={{ style, color: currentColor.id }}
+              onUse={(s, c) => {
+                flash();
+                setStyle(s);
+                setColorKey(c);
+              }}
+              onClose={() => setCompareOpen(false)}
+            />
+          )}
 
           {/* Color Selection Thumbnails */}
           <div className={styles.panel}>
@@ -232,18 +349,14 @@ export function CabinetConfigurator() {
               <p className={styles.eyebrow}>Available finishes · {currentStyle.name}</p>
               <p className={styles.muted}>{currentStyle.options.length} colors</p>
             </div>
-            <div className={styles.swatchGrid}>
+            <div className={styles.swatchGrid} role="radiogroup" aria-label={`${currentStyle.name} colors`} onKeyDown={radioKeys}>
               {currentStyle.options.map((opt) => (
                 <button
                   key={opt.id}
                   type="button"
-                  onClick={() => {
-                    if (opt.id === currentColor.id) return;
-                    flash();
-                    setColorKey(opt.id);
-                  }}
+                  onClick={() => pickColor(opt.id)}
                   className={cn(styles.swatch, currentColor.id === opt.id && styles.swatchActive)}
-                  aria-pressed={currentColor.id === opt.id}
+                  {...radio(currentColor.id === opt.id)}
                   aria-label={opt.color}
                 >
                   <span className={styles.swatchImg}>
@@ -263,14 +376,14 @@ export function CabinetConfigurator() {
               <span className={styles.stepNum}>1</span>
               <h3 className={styles.eyebrow}>Door style</h3>
             </div>
-            <div className={styles.chips}>
+            <div className={styles.chips} role="radiogroup" aria-label="Door style" onKeyDown={radioKeys}>
               {STYLE_KEYS.map((id) => (
                 <button
                   key={id}
                   type="button"
                   onClick={() => handleStyleChange(id)}
                   className={cn(styles.chip, style === id && styles.chipActive)}
-                  aria-pressed={style === id}
+                  {...radio(style === id)}
                 >
                   {CONFIG_DATA.doorStyles[id].name}
                 </button>
@@ -321,6 +434,7 @@ export function CabinetConfigurator() {
               <a href="#hardware" className={styles.textLink}>
                 Next: choose hardware ↓
               </a>
+              <ShareRow copied={copied} onCopy={copyShare} onShare={canNativeShare ? nativeShare : undefined} summaryHref={summaryHref} onOpenSummary={onOpenSummary} />
             </div>
           </div>
         </div>
@@ -336,7 +450,7 @@ export function CabinetConfigurator() {
 
         <div className={styles.hwGrid}>
           {/* LEFT: Hardware Style Selection Cards */}
-          <div className={styles.hwList}>
+          <div className={styles.hwList} role="radiogroup" aria-label="Hardware style" onKeyDown={radioKeys}>
             {HW_KEYS.map((id) => {
               const data = CONFIG_DATA.hardware[id];
               const isSelected = hwType === id;
@@ -347,7 +461,7 @@ export function CabinetConfigurator() {
                   type="button"
                   onClick={() => handleHwTypeChange(id)}
                   className={cn(styles.hwCard, isSelected && styles.hwCardActive)}
-                  aria-pressed={isSelected}
+                  {...radio(isSelected)}
                 >
                   <span className={styles.hwThumb}>
                     <Image src={cabsUrl(firstFinishData.pull)} alt="" fill sizes="72px" className={styles.contain} />
@@ -398,7 +512,7 @@ export function CabinetConfigurator() {
                 <p className={styles.eyebrow}>Available finishes</p>
                 <p className={styles.muted}>{Object.keys(currentHw.finishes).length} options</p>
               </div>
-              <div className={styles.finishGrid}>
+              <div className={styles.finishGrid} role="radiogroup" aria-label="Hardware finish" onKeyDown={radioKeys}>
                 {Object.keys(currentHw.finishes).map((finish) => (
                   <button
                     key={finish}
@@ -408,7 +522,7 @@ export function CabinetConfigurator() {
                       setHwPreview(null);
                     }}
                     className={cn(styles.finishBtn, hwFinishKey === finish && styles.finishBtnActive)}
-                    aria-pressed={hwFinishKey === finish}
+                    {...radio(hwFinishKey === finish)}
                   >
                     <span className={styles.finishDot} style={{ backgroundColor: FINISH_COLORS[finish] || '#666' }} />
                     <span>{FINISH_NAMES[finish] || finish}</span>
@@ -439,14 +553,14 @@ export function CabinetConfigurator() {
 
             <div className={styles.panel}>
               <p className={styles.eyebrow}>On the doors</p>
-              <div className={styles.chips}>
+              <div className={styles.chips} role="radiogroup" aria-label="Door hardware" onKeyDown={radioKeys}>
                 {(['pull', 'knob'] as const).map((k) => (
                   <button
                     key={k}
                     type="button"
                     className={cn(styles.chip, doorHardware === k && styles.chipActive)}
                     onClick={() => setDoorHardware(k)}
-                    aria-pressed={doorHardware === k}
+                    {...radio(doorHardware === k)}
                   >
                     {k === 'pull' ? 'Pulls on doors' : 'Knobs on doors'}
                   </button>
@@ -486,11 +600,115 @@ export function CabinetConfigurator() {
               </div>
             </div>
           </div>
-          <a href={quoteHref} className="btn-primary">
-            Request a quote
+          <div className={styles.finalActions}>
+            <a href={summaryHref} onClick={onOpenSummary} className={styles.finalSecondary}>
+              Design summary (print / PDF)
+            </a>
+            <a href={quoteHref} className="btn-primary">
+              Request a quote
+            </a>
+          </div>
+        </div>
+      </div>
+
+      {/* Mobile bottom sheet: quick picks while the preview stays on screen */}
+      <div className={cn(styles.sheet, sheetTab && styles.sheetOpen)} aria-label="Quick design controls">
+        {sheetTab && (
+          <div className={styles.sheetBody}>
+            {sheetTab === 'style' && (
+              <div className={styles.sheetRow} role="radiogroup" aria-label="Door style" onKeyDown={radioKeys}>
+                {STYLE_KEYS.map((id) => (
+                  <button key={id} type="button" className={cn(styles.chip, style === id && styles.chipActive)} {...radio(style === id)} onClick={() => handleStyleChange(id)}>
+                    {CONFIG_DATA.doorStyles[id].name}
+                  </button>
+                ))}
+              </div>
+            )}
+            {sheetTab === 'color' && (
+              <div className={styles.sheetRow} role="radiogroup" aria-label={`${currentStyle.name} colors`} onKeyDown={radioKeys}>
+                {currentStyle.options.map((opt) => (
+                  <button
+                    key={opt.id}
+                    type="button"
+                    className={cn(styles.sheetSwatch, currentColor.id === opt.id && styles.swatchActive)}
+                    {...radio(currentColor.id === opt.id)}
+                    aria-label={opt.color}
+                    onClick={() => pickColor(opt.id)}
+                  >
+                    <span className={styles.swatchImg}>
+                      <Image src={cabsUrl(opt.door)} alt="" fill sizes="56px" className={styles.cover} />
+                    </span>
+                    <span className={styles.swatchName}>{opt.color}</span>
+                  </button>
+                ))}
+              </div>
+            )}
+            {sheetTab === 'hardware' && (
+              <div className={styles.sheetRow} role="radiogroup" aria-label="Hardware style" onKeyDown={radioKeys}>
+                {HW_KEYS.map((id) => (
+                  <button key={id} type="button" className={cn(styles.chip, hwType === id && styles.chipActive)} {...radio(hwType === id)} onClick={() => handleHwTypeChange(id)}>
+                    {CONFIG_DATA.hardware[id].name}
+                  </button>
+                ))}
+                {(['pull', 'knob'] as const).map((k) => (
+                  <button key={k} type="button" className={cn(styles.chip, styles.chipSubtle, doorHardware === k && styles.chipActive)} aria-pressed={doorHardware === k} onClick={() => setDoorHardware(k)}>
+                    {k === 'pull' ? 'Pulls on doors' : 'Knobs on doors'}
+                  </button>
+                ))}
+              </div>
+            )}
+            {sheetTab === 'finish' && (
+              <div className={styles.sheetRow} role="radiogroup" aria-label="Hardware finish" onKeyDown={radioKeys}>
+                {Object.keys(currentHw.finishes).map((f) => (
+                  <button key={f} type="button" className={cn(styles.chip, hwFinishKey === f && styles.chipActive)} {...radio(hwFinishKey === f)} onClick={() => setHwFinish(f)}>
+                    <span className={styles.chipDot} style={{ backgroundColor: FINISH_COLORS[f] || '#666' }} aria-hidden="true" />
+                    {FINISH_NAMES[f] || f}
+                  </button>
+                ))}
+              </div>
+            )}
+          </div>
+        )}
+        <div className={styles.sheetTabs} role="tablist" aria-label="Design step">
+          {(
+            [
+              ['style', 'Style', currentStyle.name],
+              ['color', 'Color', currentColor.color],
+              ['hardware', 'Hardware', currentHw.name],
+              ['finish', 'Finish', FINISH_NAMES[hwFinishKey] || hwFinishKey],
+            ] as [SheetTab, string, string][]
+          ).map(([id, label, value]) => (
+            <button key={id} type="button" role="tab" aria-selected={sheetTab === id} className={cn(styles.sheetTab, sheetTab === id && styles.sheetTabActive)} onClick={() => openSheet(id)}>
+              <span className={styles.sheetTabLabel}>{label}</span>
+              <span className={styles.sheetTabValue}>{value}</span>
+            </button>
+          ))}
+          <a href={quoteHref} className={styles.sheetCta}>
+            Quote
           </a>
         </div>
       </div>
+    </div>
+  );
+}
+
+function ShareRow(props: { copied: boolean; onCopy: () => void; onShare?: () => void; summaryHref: string; onOpenSummary: () => void }) {
+  return (
+    <div className={styles.shareRow}>
+      <button type="button" className={styles.ghostBtn} onClick={props.onCopy}>
+        {props.copied ? 'Link copied ✓' : 'Copy link to my design'}
+      </button>
+      {props.onShare && (
+        <button type="button" className={styles.ghostBtn} onClick={props.onShare}>
+          Share…
+        </button>
+      )}
+      <a href={props.summaryHref} onClick={props.onOpenSummary} className={styles.ghostBtn}>
+        Design summary
+      </a>
+      <span className={styles.srOnly} aria-live="polite">
+        {props.copied ? 'Link copied to clipboard' : ''}
+      </span>
     </div>
   );
 }

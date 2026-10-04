@@ -10,12 +10,12 @@
  * When kitchen.glb is absent (or fails to load) the procedural kitchen in ./procedural is used.
  */
 import * as THREE from 'three';
-import { GLTFLoader } from 'three/examples/jsm/loaders/GLTFLoader.js';
+import { GLTFLoader, type GLTF } from 'three/examples/jsm/loaders/GLTFLoader.js';
 import { DRACOLoader } from 'three/examples/jsm/loaders/DRACOLoader.js';
 import { OrbitControls } from 'three/examples/jsm/controls/OrbitControls.js';
 import { RoomEnvironment } from 'three/examples/jsm/environments/RoomEnvironment.js';
 import { buildProceduralKitchen, placeHardware, type HardwareAnchor, type KitchenMaterials } from './procedural';
-import { HardwareLibrary, normalizeMounts, placeMountedHardware, type Mount } from './hardware';
+import { HardwareLibrary, normalizeCatalog, normalizeMountSets, placeMountedHardware, type Mount, type MountSets } from './hardware';
 import type { DoorFinish, HardwareFinish } from '../data';
 
 const MODEL_BASE = '/models/configurator/';
@@ -23,6 +23,10 @@ const FINISH_RE = /(^|_)(door|drawer|panel)(_|$)/i;
 const HARDWARE_RE = /(^|_)(pull|knob|handle)(_|$)/i;
 const FRONT_RE = /(^|_)(door|drawer)(_|$)/i;
 const ISLAND_RE = /^island(_|$)/i;
+/** Room shell + decor left out of "View in your space" (the cabinet run, counters, sinks and appliances stay). */
+const AR_EXCLUDE_RE =
+  /^(room_|walls?_|floor|baseboard|window|backsplash|sofa|pillow|rug|coffeetable|books|plant|armchair|floorlamp|art\d|fruitbowl|cuttingboard|coffeemaker|utensil|island_stool|island_fruitbowl)/i;
+const DOOR_STYLE_IDS = ['shaker_classic', 'shaker_slide', 'slab', 'fusion_shaker', 'fusion_slide'];
 const HOME_POS = new THREE.Vector3(0.55, 2.55, 6.4);
 const HOME_TARGET = new THREE.Vector3(0, 1.05, 0.7);
 
@@ -50,6 +54,19 @@ export interface FinishDef {
 }
 
 export type EngineMode = 'loading' | 'procedural' | 'glb' | 'error';
+export type CameraPreset = 'overview' | 'uppers' | 'island' | 'door';
+export interface LoadProgress {
+  label: string;
+  /** 0..1, or null when the server didn't send sizes */
+  fraction: number | null;
+  done: boolean;
+}
+
+const easeInOutCubic = (t: number) => (t < 0.5 ? 4 * t * t * t : 1 - Math.pow(-2 * t + 2, 3) / 2);
+function worldVisible(o: THREE.Object3D | null): boolean {
+  for (let p = o; p; p = p.parent) if (!p.visible) return false;
+  return true;
+}
 
 const normKey = (s: string) => s.toLowerCase().replace(/^finish[_-]?/, '').replace(/[^a-z0-9]+/g, '_').replace(/^_|_$/g, '');
 
@@ -157,25 +174,40 @@ export class ConfiguratorEngine {
   private glbFinishes: Record<string, FinishDef> = {};
   private glbHwFinishes: Record<string, HardwareFinish> = {};
   private hwLib = new HardwareLibrary(null);
+  private mountSets: MountSets = { shared: [], byDoorStyle: {} };
+  /** mounts for the current door style (per-style set when mounts.json has one, else the shared list) */
   private mounts: Mount[] = [];
   private glbKitchen: THREE.Object3D | null = null;
   private state: EngineState | null = null;
   private buildToken = 0;
+  private loads = new Map<string, { loaded: number; total: number; done: boolean; label: string }>();
+  private tween: { fromPos: THREE.Vector3; toPos: THREE.Vector3; fromTarget: THREE.Vector3; toTarget: THREE.Vector3; t0: number; dur: number } | null = null;
+  private fadeEl: HTMLCanvasElement;
+  private recentStyles: string[] = [];
+  private recentFinishTex = new Map<string, string[]>();
   mode: EngineMode = 'loading';
   onMode?: (mode: EngineMode, detail?: string) => void;
+  onProgress?: (p: LoadProgress) => void;
 
   constructor(private container: HTMLElement) {
     this.renderer = new THREE.WebGLRenderer({ antialias: true, alpha: false, powerPreference: 'high-performance' });
+    this.renderer.domElement.setAttribute('aria-hidden', 'true');
     this.renderer.setPixelRatio(Math.min(window.devicePixelRatio || 1, 2));
     this.renderer.outputColorSpace = THREE.SRGBColorSpace;
-    this.renderer.toneMapping = THREE.ACESFilmicToneMapping;
-    this.renderer.toneMappingExposure = 0.95;
+    // Neutral (Khronos PBR Neutral) keeps paint colors true to the door swatches; ACES shifts hues
+    this.renderer.toneMapping = THREE.NeutralToneMapping;
+    this.renderer.toneMappingExposure = 0.92;
     this.renderer.shadowMap.enabled = true;
     this.renderer.shadowMap.type = THREE.PCFSoftShadowMap;
     this.renderer.domElement.style.display = 'block';
     this.renderer.domElement.style.width = '100%';
     this.renderer.domElement.style.height = '100%';
     container.appendChild(this.renderer.domElement);
+    // freeze-frame overlay used to cross-fade style / finish swaps
+    this.fadeEl = document.createElement('canvas');
+    Object.assign(this.fadeEl.style, { position: 'absolute', inset: '0', width: '100%', height: '100%', pointerEvents: 'none', opacity: '0' });
+    this.fadeEl.setAttribute('aria-hidden', 'true');
+    container.appendChild(this.fadeEl);
     this.gltf.setDRACOLoader(new DRACOLoader().setDecoderPath('/draco/'));
 
     this.scene.background = new THREE.Color('#ece6df');
@@ -191,12 +223,14 @@ export class ConfiguratorEngine {
     this.controls.enableDamping = true;
     this.controls.dampingFactor = 0.08;
     this.controls.zoomToCursor = true;
-    this.controls.minDistance = 1.2;
+    this.controls.minDistance = 0.5;
     this.controls.maxDistance = 9;
     this.controls.maxPolarAngle = Math.PI * 0.53;
     this.controls.minAzimuthAngle = -Math.PI * 0.42;
     this.controls.maxAzimuthAngle = Math.PI * 0.42;
     this.controls.addEventListener('change', () => (this.dirty = true));
+    this.controls.addEventListener('start', () => (this.tween = null)); // user input cancels a fly-to
+    this.controls.listenToKeyEvents(container); // arrows pan, shift/ctrl+arrows orbit (container is focusable)
 
     const hemi = new THREE.HemisphereLight('#fffaf3', '#8f877e', 0.5);
     this.scene.add(hemi);
@@ -204,6 +238,7 @@ export class ConfiguratorEngine {
     sun.position.set(3.2, 4.6, 3.6);
     sun.castShadow = true;
     sun.shadow.mapSize.set(2048, 2048);
+    sun.shadow.radius = 3;
     sun.shadow.camera.left = -4;
     sun.shadow.camera.right = 4;
     sun.shadow.camera.top = 4;
@@ -234,6 +269,15 @@ export class ConfiguratorEngine {
     this.resizeObs.observe(container);
     this.resize();
     this.renderer.setAnimationLoop(() => {
+      if (this.tween) {
+        const tw = this.tween;
+        const t = Math.min(1, (performance.now() - tw.t0) / tw.dur);
+        const e = easeInOutCubic(t);
+        this.camera.position.lerpVectors(tw.fromPos, tw.toPos, e);
+        this.controls.target.lerpVectors(tw.fromTarget, tw.toTarget, e);
+        if (t >= 1) this.tween = null;
+        this.dirty = true;
+      }
       const moved = this.controls.update();
       if (moved || this.dirty) {
         this.dirty = false;
@@ -261,7 +305,7 @@ export class ConfiguratorEngine {
 
   private loadTexture(url: string | undefined, srgb: boolean, flipY = true): Promise<THREE.Texture | null> {
     if (!url) return Promise.resolve(null);
-    const key = `${url}|${srgb}|${flipY}`;
+    const key = this.texKey(url, srgb, flipY);
     if (!this.texCache.has(key)) {
       this.texCache.set(
         key,
@@ -278,6 +322,55 @@ export class ConfiguratorEngine {
       );
     }
     return this.texCache.get(key)!;
+  }
+
+  private emitProgress(label: string) {
+    let loaded = 0;
+    let total = 0;
+    let unknown = false;
+    let allDone = true;
+    for (const v of this.loads.values()) {
+      loaded += v.loaded;
+      total += v.total;
+      if (!v.total) unknown = true;
+      if (!v.done) allDone = false;
+    }
+    if (allDone) {
+      this.loads.clear();
+      this.onProgress?.({ label, fraction: 1, done: true });
+    } else this.onProgress?.({ label, fraction: unknown || !total ? null : Math.min(1, loaded / total), done: false });
+  }
+
+  /** GLTFLoader with byte progress reported through onProgress (aggregated over parallel loads). */
+  private loadGltf(url: string, label: string): Promise<GLTF | null> {
+    return new Promise((resolve) => {
+      this.loads.set(url, { loaded: 0, total: 0, done: false, label });
+      this.emitProgress(label);
+      const finish = (g: GLTF | null) => {
+        const e = this.loads.get(url);
+        if (e) {
+          e.done = true;
+          e.loaded = e.total = Math.max(e.total, e.loaded);
+        }
+        this.emitProgress(label);
+        resolve(g);
+      };
+      this.gltf.load(
+        url,
+        (g) => finish(g),
+        (ev) => {
+          const e = this.loads.get(url);
+          if (!e) return;
+          e.loaded = ev.loaded;
+          e.total = ev.lengthComputable ? ev.total : 0;
+          this.emitProgress(label);
+        },
+        (err) => {
+          console.warn(`[configurator] ${url} failed to load`, err);
+          finish(null);
+        },
+      );
+    });
   }
 
   /** Resolve (once) which DevGod assets exist. */
@@ -304,21 +397,22 @@ export class ConfiguratorEngine {
     }
     if (!this.manifest.kitchen) return;
     const [kitchen, hardware, mountsJson] = await Promise.all([
-      this.gltf.loadAsync(this.manifest.kitchen).catch((e) => {
-        console.warn('[configurator] kitchen.glb failed to load, using procedural kitchen', e);
-        return null;
-      }),
-      this.manifest.hardware ? this.gltf.loadAsync(this.manifest.hardware).catch(() => null) : Promise.resolve(null),
+      this.loadGltf(this.manifest.kitchen, 'Loading kitchen'),
+      this.manifest.hardware ? this.loadGltf(this.manifest.hardware, 'Loading kitchen') : Promise.resolve(null),
       this.manifest.mounts ? fetchJson<unknown>(this.manifest.mounts) : Promise.resolve(null),
     ]);
     this.glbKitchen = kitchen?.scene ?? null;
+    if (!this.glbKitchen) console.warn('[configurator] kitchen.glb unavailable, using procedural kitchen');
     this.hwLib = new HardwareLibrary(hardware?.scene ?? null);
-    this.mounts = normalizeMounts(mountsJson);
+    this.mountSets = normalizeMountSets(mountsJson, Object.keys(this.manifest.fronts).length ? Object.keys(this.manifest.fronts) : DOOR_STYLE_IDS);
+    this.hwLib.catalog = normalizeCatalog(mountsJson);
     if (mountsJson && !Object.keys(this.glbHwFinishes).length) this.glbHwFinishes = normalizeHardwareFinishes(mountsJson);
     if (this.glbKitchen) {
       console.info(
         `[configurator] GLB assets: kitchen.glb, ${Object.keys(this.manifest.fronts).length} fronts files, ` +
-          `hardware.glb nodes [${this.hwLib.names.join(', ') || 'none'}], ${this.mounts.length} mounts, ${Object.keys(this.glbFinishes).length} finish keys`,
+          `hardware.glb nodes [${this.hwLib.names.join(', ') || 'none'}], ${this.mountSets.shared.length} shared mounts` +
+          `${Object.keys(this.mountSets.byDoorStyle).length ? ` + per-style mounts [${Object.keys(this.mountSets.byDoorStyle).join(', ')}]` : ''}, ` +
+          `${Object.keys(this.glbFinishes).length} finish keys`,
       );
     }
   }
@@ -329,10 +423,49 @@ export class ConfiguratorEngine {
       const url = this.manifest.fronts[styleId] || `${MODEL_BASE}fronts_${styleId}.glb`;
       this.frontsCache.set(
         styleId,
-        (this.manifest.fronts[styleId] || (await exists(url)) ? this.gltf.loadAsync(url).then((g) => g.scene) : Promise.resolve(null)).catch(() => null),
+        (this.manifest.fronts[styleId] || (await exists(url)) ? this.loadGltf(url, 'Loading door style').then((g) => g?.scene ?? null) : Promise.resolve(null)).catch(() => null),
       );
     }
+    this.touchStyle(styleId);
     return this.frontsCache.get(styleId)!;
+  }
+
+  /** Lazy fronts: keep the current + previous style's fronts in memory, release the rest (re-fetch is HTTP-cached). */
+  private touchStyle(styleId: string) {
+    this.recentStyles = [styleId, ...this.recentStyles.filter((s) => s !== styleId)];
+    for (const old of this.recentStyles.splice(2)) {
+      const p = this.frontsCache.get(old);
+      this.frontsCache.delete(old);
+      p?.then((root) =>
+        root?.traverse((o) => {
+          const m = o as THREE.Mesh;
+          if (m.isMesh) {
+            m.geometry?.dispose();
+            (Array.isArray(m.material) ? m.material : [m.material]).forEach((mm) => mm?.dispose());
+          }
+        }),
+      );
+    }
+  }
+
+  /** Keep textures for the 3 most recent finishes; dispose older ones. */
+  private touchFinishTextures(finishId: string, keys: string[]) {
+    this.recentFinishTex.delete(finishId);
+    this.recentFinishTex.set(finishId, keys);
+    const inUse = new Set([...this.recentFinishTex.values()].slice(-3).flat());
+    while (this.recentFinishTex.size > 3) {
+      const [oldId, oldKeys] = this.recentFinishTex.entries().next().value as [string, string[]];
+      this.recentFinishTex.delete(oldId);
+      for (const k of oldKeys) {
+        if (inUse.has(k)) continue;
+        this.texCache.get(k)?.then((t) => t?.dispose());
+        this.texCache.delete(k);
+      }
+    }
+  }
+
+  private texKey(url: string | undefined, srgb: boolean, flipY = true) {
+    return url ? `${url}|${srgb}|${flipY}` : '';
   }
 
   /** Apply full state; rebuilds geometry only when style changes. */
@@ -340,6 +473,7 @@ export class ConfiguratorEngine {
     const prev = this.state;
     this.state = next;
     const token = ++this.buildToken;
+    if (prev && this.content) this.freezeFrame();
     if (!prev || prev.styleId !== next.styleId) {
       await this.buildGeometry(next.styleId, token);
       if (token !== this.buildToken) return;
@@ -351,6 +485,48 @@ export class ConfiguratorEngine {
     this.applyHardwareFinish(next.hwFinishId, next.hwFinish);
     this.setIsland(next.showIsland);
     this.dirty = true;
+    if (token === this.buildToken) this.releaseFrame();
+  }
+
+  /** Copy the last frame onto the overlay canvas (shown instantly), so the swap underneath can cross-fade. */
+  private freezeFrame() {
+    const src = this.renderer.domElement;
+    this.renderer.render(this.scene, this.camera); // drawing buffer is valid until this task ends
+    const c = this.fadeEl;
+    if (c.width !== src.width || c.height !== src.height) {
+      c.width = src.width;
+      c.height = src.height;
+    }
+    c.getContext('2d')?.drawImage(src, 0, 0);
+    c.style.transition = 'none';
+    c.style.opacity = '1';
+  }
+
+  private releaseFrame() {
+    // two frames: one to render the new state, one so the transition starts from opacity 1
+    requestAnimationFrame(() =>
+      requestAnimationFrame(() => {
+        this.fadeEl.style.transition = 'opacity 0.55s ease';
+        this.fadeEl.style.opacity = '0';
+      }),
+    );
+  }
+
+  /** JPEG of the current view (for the printable design summary). */
+  captureImage(maxWidth = 1400): string | null {
+    if (!this.content) return null;
+    this.renderer.render(this.scene, this.camera);
+    const src = this.renderer.domElement;
+    const scale = Math.min(1, maxWidth / src.width);
+    const c = document.createElement('canvas');
+    c.width = Math.round(src.width * scale);
+    c.height = Math.round(src.height * scale);
+    c.getContext('2d')?.drawImage(src, 0, 0, c.width, c.height);
+    try {
+      return c.toDataURL('image/jpeg', 0.86);
+    } catch {
+      return null;
+    }
   }
 
   private async buildGeometry(styleId: string, token: number) {
@@ -375,24 +551,183 @@ export class ConfiguratorEngine {
   private framedGlb = false;
   /** Frame the cabinetry (finish meshes), not the whole room shell, from the open +Z side. */
   private frameObject(obj: THREE.Object3D) {
+    const v = this.overviewView(obj);
+    if (!v) return;
+    this.controls.target.copy(v.target);
+    this.camera.position.copy(v.pos);
+    this.controls.maxDistance = Math.max(v.dist * 2, 6);
+    this.framedGlb = true;
+  }
+
+  private fitDistance(box: THREE.Box3, factor: number) {
+    const size = box.getSize(new THREE.Vector3());
+    const vFov = (this.camera.fov * Math.PI) / 180;
+    const hFov = 2 * Math.atan(Math.tan(vFov / 2) * this.camera.aspect);
+    const radius = 0.5 * Math.hypot(size.x, size.y, size.z);
+    return Math.max(radius / Math.sin(vFov / 2), radius / Math.sin(hFov / 2)) * factor;
+  }
+
+  private meshBox(filter: (m: THREE.Mesh) => boolean): THREE.Box3 {
+    const box = new THREE.Box3();
+    this.content?.updateMatrixWorld(true);
+    this.content?.traverse((o) => {
+      const m = o as THREE.Mesh;
+      if (m.isMesh && filter(m) && worldVisible(m)) box.expandByObject(m);
+    });
+    return box;
+  }
+
+  private overviewView(obj: THREE.Object3D) {
     obj.updateMatrixWorld(true);
     const box = new THREE.Box3();
     obj.traverse((o) => {
       if ((o as THREE.Mesh).isMesh && o.name && FINISH_RE.test(o.name)) box.expandByObject(o);
     });
     if (box.isEmpty()) box.setFromObject(obj);
-    if (box.isEmpty()) return;
-    const size = box.getSize(new THREE.Vector3());
+    if (box.isEmpty()) return null;
     const center = box.getCenter(new THREE.Vector3());
-    const vFov = (this.camera.fov * Math.PI) / 180;
-    const hFov = 2 * Math.atan(Math.tan(vFov / 2) * this.camera.aspect);
-    const radius = 0.5 * Math.hypot(size.x, size.y, size.z);
-    const dist = Math.max(radius / Math.sin(vFov / 2), radius / Math.sin(hFov / 2)) * 0.82;
+    const dist = this.fitDistance(box, 0.82);
     const dir = new THREE.Vector3(0.12, 0.42, 1).normalize();
-    this.controls.target.copy(center).setY(Math.min(center.y, 1.0));
-    this.camera.position.copy(this.controls.target).addScaledVector(dir, dist);
-    this.controls.maxDistance = Math.max(dist * 2, 6);
-    this.framedGlb = true;
+    const target = center.clone().setY(Math.min(center.y, 1.0));
+    return { pos: target.clone().addScaledVector(dir, dist), target, dist };
+  }
+
+  /** Outward normal of a front: from mounts.json when available, else the front's local +Z. */
+  private frontNormal(o: THREE.Object3D): THREE.Vector3 {
+    const m = this.mounts.find((mm) => mm.front === o.name);
+    if (m) return new THREE.Vector3(0, 0, 1).applyQuaternion(m.quaternion).setY(0).normalize();
+    const q = o.getWorldQuaternion(new THREE.Quaternion());
+    const n = new THREE.Vector3(0, 0, 1).applyQuaternion(q).setY(0);
+    return n.lengthSq() > 1e-4 ? n.normalize() : new THREE.Vector3(0, 0, 1);
+  }
+
+  /** Camera pose for a preset, or null when it doesn't apply (e.g. island hidden). */
+  presetView(preset: CameraPreset): { pos: THREE.Vector3; target: THREE.Vector3 } | null {
+    if (!this.content) return null;
+    if (preset === 'overview') {
+      if (!this.glbKitchen) return { pos: HOME_POS.clone(), target: HOME_TARGET.clone() };
+      return this.overviewView(this.content);
+    }
+    const isIsland = (o: THREE.Object3D) => {
+      for (let p: THREE.Object3D | null = o; p && p !== this.content; p = p.parent) if (p.name && ISLAND_RE.test(p.name)) return true;
+      return false;
+    };
+    // top-level fronts (door_/drawer_ nodes), world-space boxes
+    const fronts: { obj: THREE.Object3D; box: THREE.Box3; island: boolean }[] = [];
+    this.content.updateMatrixWorld(true);
+    this.content.traverse((o) => {
+      if (!o.name || !FRONT_RE.test(o.name) || HARDWARE_RE.test(o.name)) return;
+      if (o.parent && o.parent.name && FRONT_RE.test(o.parent.name)) return;
+      if (!worldVisible(o)) return;
+      const box = new THREE.Box3().setFromObject(o);
+      if (!box.isEmpty()) fronts.push({ obj: o, box, island: isIsland(o) });
+    });
+    if (preset === 'island') {
+      const box = this.meshBox((m) => isIsland(m) && (FINISH_RE.test(m.name) || /counter/i.test(m.name)));
+      if (box.isEmpty()) return null;
+      const target = box.getCenter(new THREE.Vector3());
+      // look at the island's cabinet face as far as the orbit limits allow: blend its fronts' normal with the open side
+      const n = new THREE.Vector3();
+      const islandFronts = fronts.filter((f) => f.island);
+      const mountedIsland = islandFronts.filter((f) => this.mounts.some((m) => m.front === f.obj.name));
+      for (const f of mountedIsland.length ? mountedIsland : islandFronts) n.add(this.frontNormal(f.obj));
+      if (n.lengthSq() > 1e-4) n.normalize();
+      const h = n.add(new THREE.Vector3(0.12, 0, 1).multiplyScalar(1.2));
+      if (h.lengthSq() < 0.05) h.set(0.45, 0, 1);
+      const dir = new THREE.Vector3(h.x, 0.75 * h.length(), h.z).normalize();
+      return { pos: target.clone().addScaledVector(dir, this.fitDistance(box, 1.0)), target };
+    }
+    const walls = fronts.filter((f) => !f.island);
+    if (!walls.length) return null;
+    if (preset === 'uppers') {
+      const uppers = walls.filter((f) => f.box.getCenter(new THREE.Vector3()).y > 1.25);
+      if (!uppers.length) return null;
+      const box = new THREE.Box3();
+      const n = new THREE.Vector3();
+      for (const f of uppers) {
+        box.union(f.box);
+        n.add(this.frontNormal(f.obj));
+      }
+      if (n.lengthSq() < 1e-4) n.set(0, 0, 1);
+      n.normalize();
+      const target = box.getCenter(new THREE.Vector3());
+      const dir = new THREE.Vector3(n.x, 0.08, n.z).normalize();
+      return { pos: target.clone().addScaledVector(dir, this.fitDistance(box, 0.78)), target };
+    }
+    // close-up: the base door closest to the middle of the run (prefer doors that carry a mount)
+    const overview = this.overviewView(this.content);
+    const mid = overview?.target ?? new THREE.Vector3();
+    const doors = walls.filter((f) => /(^|_)door(_|$)/i.test(f.obj.name) && f.box.getCenter(new THREE.Vector3()).y < 1.0);
+    const pool = doors.length ? doors : walls;
+    const mounted = pool.filter((f) => this.mounts.some((m) => m.front === f.obj.name));
+    const pick = (mounted.length ? mounted : pool)
+      .map((f) => ({ f, d: f.box.getCenter(new THREE.Vector3()).setY(0).distanceTo(mid.clone().setY(0)) }))
+      .sort((a, b) => a.d - b.d)[0].f;
+    const size = pick.box.getSize(new THREE.Vector3());
+    // aim at the upper part of the door, where base-door hardware sits, with the counter edge in frame
+    const target = pick.box.getCenter(new THREE.Vector3()).setY(pick.box.max.y - size.y * 0.32);
+    const n = this.frontNormal(pick.obj);
+    let dist = Math.max(1.0, Math.max(size.y, Math.hypot(size.x, size.z)) * 2.3);
+    // don't back the camera into the island / whatever stands across the aisle
+    const rc = new THREE.Raycaster(target.clone().addScaledVector(n, 0.05), n, 0, dist + 0.3);
+    const obstacles: THREE.Object3D[] = [];
+    this.content.traverse((o) => (o as THREE.Mesh).isMesh && worldVisible(o) && obstacles.push(o));
+    const hit = rc.intersectObjects(obstacles, false)[0];
+    if (hit) dist = Math.max(0.45, Math.min(dist, hit.distance - 0.12));
+    const pos = target.clone().addScaledVector(n, dist).add(new THREE.Vector3(0, 0.22 + dist * 0.2, 0));
+    pos.addScaledVector(new THREE.Vector3(-n.z, 0, n.x), dist * 0.18); // slight 3/4 angle so the profile reads
+    return { pos, target };
+  }
+
+  /** Smoothly fly the camera to a preset. Returns false when the preset doesn't apply. */
+  setPreset(preset: CameraPreset, durationMs = 900): boolean {
+    const v = this.presetView(preset);
+    if (!v) return false;
+    const reduce = typeof window !== 'undefined' && window.matchMedia?.('(prefers-reduced-motion: reduce)').matches;
+    this.tween = {
+      fromPos: this.camera.position.clone(),
+      toPos: v.pos,
+      fromTarget: this.controls.target.clone(),
+      toTarget: v.target,
+      t0: performance.now(),
+      dur: reduce ? 1 : durationMs,
+    };
+    this.dirty = true;
+    return true;
+  }
+
+  /**
+   * A flat, self-contained copy of the configured cabinet run for AR: visible cabinetry, counters, sinks,
+   * appliances and hardware with the live materials, room shell/decor left out. Meters, Y-up,
+   * origin at floor level under the run's footprint center; the open (viewing) side faces +Z.
+   */
+  buildArModel(): THREE.Group | null {
+    if (!this.content) return null;
+    const content = this.content;
+    content.updateMatrixWorld(true);
+    const excluded = (o: THREE.Object3D) => {
+      for (let p: THREE.Object3D | null = o; p && p !== content; p = p.parent) if (p.name && AR_EXCLUDE_RE.test(p.name)) return true;
+      return false;
+    };
+    const group = new THREE.Group();
+    group.name = 'vulpine_cabinet_run';
+    content.traverse((o) => {
+      const m = o as THREE.Mesh;
+      if (!m.isMesh || !worldVisible(m) || excluded(m)) return;
+      const c = new THREE.Mesh(m.geometry, m.material);
+      c.name = m.name || 'part';
+      m.matrixWorld.decompose(c.position, c.quaternion, c.scale);
+      c.castShadow = true;
+      c.receiveShadow = true;
+      group.add(c);
+    });
+    if (!group.children.length) return null;
+    group.updateMatrixWorld(true);
+    const box = new THREE.Box3().setFromObject(group);
+    const shift = new THREE.Vector3(-(box.min.x + box.max.x) / 2, -box.min.y, -(box.min.z + box.max.z) / 2);
+    for (const c of group.children) c.position.add(shift);
+    group.updateMatrixWorld(true);
+    return group;
   }
 
   private setContent(obj: THREE.Object3D) {
@@ -454,6 +789,7 @@ export class ConfiguratorEngine {
   private mountedObjs: THREE.Object3D[] = [];
 
   private rebuildHardware(s: EngineState) {
+    this.mounts = this.mountSets.byDoorStyle[s.styleId] ?? (this.mountSets.shared.length ? this.mountSets.shared : Object.values(this.mountSets.byDoorStyle)[0] ?? []);
     const disposeAll = (list: THREE.Object3D[]) => {
       for (const o of list) {
         o.parent?.remove(o);
@@ -499,6 +835,7 @@ export class ConfiguratorEngine {
         this.loadTexture(def.roughnessMap, false, !glb),
       ]);
       if (this.state?.finishId !== finishId) return;
+      this.touchFinishTextures(finishId, [this.texKey(def.map, true, !glb), this.texKey(def.normalMap, false, !glb), this.texKey(def.roughnessMap, false, !glb)].filter(Boolean));
       for (const t of [map, normalMap, roughnessMap]) if (t) t.repeat.set(glb && def.repeat ? def.repeat[0] : 1, glb && def.repeat ? def.repeat[1] : 1);
       if (map) mat.color.set(def.color || '#ffffff');
       else mat.color.set(def.map ? def.averageColor || finish?.color || '#cccccc' : def.color || def.averageColor || finish?.color || '#cccccc');
@@ -514,6 +851,7 @@ export class ConfiguratorEngine {
       // sampled from the cabs_clean swatch (scripts/build-cabs-dataset.mjs)
       const map = finish?.textured ? await this.loadTexture(finish.texture, true) : null;
       if (this.state?.finishId !== finishId) return;
+      if (finish?.textured) this.touchFinishTextures(finishId, [this.texKey(finish.texture, true)]);
       mat.map = map;
       mat.color.set(map ? '#ffffff' : finish?.color || '#cccccc');
       mat.normalMap = null;
@@ -548,13 +886,25 @@ export class ConfiguratorEngine {
     });
   }
 
-  resetView() {
-    if (this.glbKitchen && this.content) this.frameObject(this.content);
-    else {
-      this.camera.position.copy(HOME_POS);
-      this.controls.target.copy(HOME_TARGET);
+  private debugObj: THREE.Object3D | null = null;
+  /** Dev aid (?debug=1): show an object, e.g. the AR model, in place of the kitchen; null restores. */
+  debugShow(obj: THREE.Object3D | null) {
+    if (this.debugObj) this.scene.remove(this.debugObj);
+    this.debugObj = obj;
+    if (this.content) this.content.visible = !obj;
+    if (obj) {
+      this.scene.add(obj);
+      obj.updateMatrixWorld(true);
+      const box = new THREE.Box3().setFromObject(obj);
+      const target = box.getCenter(new THREE.Vector3());
+      this.controls.target.copy(target);
+      this.camera.position.copy(target).addScaledVector(new THREE.Vector3(0.35, 0.45, 1).normalize(), this.fitDistance(box, 0.9));
     }
     this.dirty = true;
+  }
+
+  resetView() {
+    this.setPreset('overview');
   }
 
   dispose() {
@@ -570,5 +920,6 @@ export class ConfiguratorEngine {
     this.texCache.forEach((p) => p.then((t) => t?.dispose()));
     this.renderer.dispose();
     this.renderer.domElement.remove();
+    this.fadeEl.remove();
   }
 }

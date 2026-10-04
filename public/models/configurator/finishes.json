@@ -438,5 +438,236 @@
     "wheat_oak"
    ]
   }
- }
+ },
+ "hardwareStyles": {
+  "arch": {
+   "name": "Arch",
+   "profile": "bowed rectangular bar (tapered ends), round posts set in from the ends",
+   "finishes": [
+    "rose_gold",
+    "satin_nickel",
+    "matte_black",
+    "chrome"
+   ],
+   "pulls": {
+    "6in": "pull_arch_6in",
+    "7_125in": "pull_arch_7_125in"
+   },
+   "knob": "knob_arch",
+   "small": "pull_arch_6in",
+   "large": "pull_arch_7_125in",
+   "sizes": {
+    "6in": {
+     "node": "pull_arch_6in",
+     "length_m": 0.1524,
+     "center_to_center_m": 0.096,
+     "projection_m": 0.03
+    },
+    "7_125in": {
+     "node": "pull_arch_7_125in",
+     "length_m": 0.181,
+     "center_to_center_m": 0.128,
+     "projection_m": 0.03
+    }
+   },
+   "knobSize": {
+    "node": "knob_arch",
+    "label": "1 7/16\" (length)",
+    "projection_m": 0.025
+   }
+  },
+  "artisan": {
+   "name": "Artisan",
+   "profile": "straight flat rectangular bar overhanging spool posts (collar at both ends)",
+   "finishes": [
+    "rose_gold",
+    "satin_nickel",
+    "matte_black",
+    "chrome"
+   ],
+   "pulls": {
+    "4_75in": "pull_artisan_4_75in",
+    "6_0625in": "pull_artisan_6_0625in"
+   },
+   "knob": "knob_artisan",
+   "small": "pull_artisan_4_75in",
+   "large": "pull_artisan_6_0625in",
+   "sizes": {
+    "4_75in": {
+     "node": "pull_artisan_4_75in",
+     "length_m": 0.1206,
+     "center_to_center_m": 0.096,
+     "projection_m": 0.03
+    },
+    "6_0625in": {
+     "node": "pull_artisan_6_0625in",
+     "length_m": 0.154,
+     "center_to_center_m": 0.128,
+     "projection_m": 0.03
+    }
+   },
+   "knobSize": {
+    "node": "knob_artisan",
+    "label": "1 7/32\" dia",
+    "projection_m": 0.026
+   }
+  },
+  "cottage": {
+   "name": "Cottage",
+   "profile": "arched rounded bar rising from square cushion feet",
+   "finishes": [
+    "rose_gold",
+    "satin_nickel",
+    "chrome"
+   ],
+   "pulls": {
+    "4_75in": "pull_cottage_4_75in",
+    "6_0625in": "pull_cottage_6_0625in"
+   },
+   "knob": "knob_cottage",
+   "small": "pull_cottage_4_75in",
+   "large": "pull_cottage_6_0625in",
+   "sizes": {
+    "4_75in": {
+     "node": "pull_cottage_4_75in",
+     "length_m": 0.1206,
+     "center_to_center_m": 0.096,
+     "projection_m": 0.028
+    },
+    "6_0625in": {
+     "node": "pull_cottage_6_0625in",
+     "length_m": 0.154,
+     "center_to_center_m": 0.128,
+     "projection_m": 0.028
+    }
+   },
+   "knobSize": {
+    "node": "knob_cottage",
+    "label": "1 7/32\" dia",
+    "projection_m": 0.0276
+   }
+  },
+  "loft": {
+   "name": "Loft",
+   "profile": "square-cornered U (staple) pull, flat strap section (wide face)",
+   "finishes": [
+    "rose_gold",
+    "satin_nickel",
+    "matte_black",
+    "chrome"
+   ],
+   "pulls": {
+    "4_625in": "pull_loft_4_625in",
+    "5_875in": "pull_loft_5_875in"
+   },
+   "knob": "knob_loft",
+   "small": "pull_loft_4_625in",
+   "large": "pull_loft_5_875in",
+   "sizes": {
+    "4_625in": {
+     "node": "pull_loft_4_625in",
+     "length_m": 0.1175,
+     "center_to_center_m": 0.1085,
+     "projection_m": 0.032
+    },
+    "5_875in": {
+     "node": "pull_loft_5_875in",
+     "length_m": 0.1492,
+     "center_to_center_m": 0.1402,
+     "projection_m": 0.032
+    }
+   },
+   "knobSize": {
+    "node": "knob_loft",
+    "label": "15/16\" square",
+    "projection_m": 0.025
+   }
+  },
+  "square": {
+   "name": "Square",
+   "profile": "square-cornered U pull, square bar section",
+   "finishes": [
+    "rose_gold",
+    "satin_nickel",
+    "matte_black",
+    "chrome"
+   ],
+   "pulls": {
+    "4_25in": "pull_square_4_25in",
+    "5_4375in": "pull_square_5_4375in"
+   },
+   "knob": "knob_square",
+   "small": "pull_square_4_25in",
+   "large": "pull_square_5_4375in",
+   "sizes": {
+    "4_25in": {
+     "node": "pull_square_4_25in",
+     "length_m": 0.1079,
+     "center_to_center_m": 0.096,
+     "projection_m": 0.03
+    },
+    "5_4375in": {
+     "node": "pull_square_5_4375in",
+     "length_m": 0.1381,
+     "center_to_center_m": 0.128,
+     "projection_m": 0.03
+    }
+   },
+   "knobSize": {
+    "node": "knob_square",
+    "label": "15/16\" square",
+    "projection_m": 0.025
+   }
+  },
+  "bar": {
+   "name": "Bar",
+   "profile": "1/2\" round bar on round posts (T-bar)",
+   "finishes": [
+    "satin_nickel",
+    "matte_black"
+   ],
+   "pulls": {
+    "4_5in": "pull_bar_4_5in",
+    "6in": "pull_bar_6in"
+   },
+   "knob": "knob_bar",
+   "small": "pull_bar_4_5in",
+   "large": "pull_bar_6in",
+   "sizes": {
+    "4_5in": {
+     "node": "pull_bar_4_5in",
+     "length_m": 0.1143,
+     "center_to_center_m": 0.064,
+     "projection_m": 0.032
+    },
+    "6in": {
+     "node": "pull_bar_6in",
+     "length_m": 0.1524,
+     "center_to_center_m": 0.096,
+     "projection_m": 0.032
+    }
+   },
+   "knobSize": {
+    "node": "knob_bar",
+    "label": "Round (1 1/8\" dia, measured from photo)",
+    "projection_m": 0.028
+   }
+  },
+  "generic": {
+   "name": "Generic (fallback)",
+   "finishes": [
+    "satin_nickel",
+    "matte_black",
+    "chrome",
+    "rose_gold"
+   ],
+   "pulls": {
+    "6in": "pull_generic_6in",
+    "8in": "pull_generic_8in",
+    "12in": "pull_generic_12in"
+   },
+   "knob": "knob_generic"
+  }
+ },
+ "hardwareNote": "hardware.glb holds one mesh per style/size (pull_<style>_<size>, knob_<style>); finishes are materials: apply hardwareFinishes[id] (color/metalness/roughness) to the shared hardware material."
 }
