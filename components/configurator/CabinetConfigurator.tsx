@@ -11,6 +11,7 @@ import styles from './CabinetConfigurator.module.css';
 import type { ConfiguratorEngine } from './scene/engine';
 import { ViewInYourSpace } from './ViewInYourSpace';
 import { CompareFinishes } from './CompareFinishes';
+import { ProductInfoDrawer, WhyDuraBuild, colorLine } from './ProductInfo';
 import { SNAPSHOT_KEY, configQuery, designRef, type ConfigSelection } from './summary';
 import { FoxGuide, FOX_DISMISSED_KEY, FOX_EVENT, type FoxGuideHandle, type FoxSelection } from '@/components/fox/FoxGuide';
 
@@ -55,6 +56,8 @@ export function CabinetConfigurator() {
   const [brokenRender, setBrokenRender] = useState<string | null>(null);
   const [engine, setEngine] = useState<ConfiguratorEngine | null>(null);
   const [compareOpen, setCompareOpen] = useState(false);
+  const [infoOpen, setInfoOpen] = useState(false);
+  const closeInfo = useCallback(() => setInfoOpen(false), []);
   const [copied, setCopied] = useState(false);
   const [sheetTab, setSheetTab] = useState<SheetTab | null>(null);
   const [arrivedForAr, setArrivedForAr] = useState(false);
@@ -380,6 +383,11 @@ export function CabinetConfigurator() {
               <p className={styles.eyebrow}>Available finishes · {currentStyle.name}</p>
               <p className={styles.muted}>{currentStyle.options.length} colors</p>
             </div>
+            {colorLine(currentColor.id) && (
+              <p className={styles.colorLine} aria-live="polite">
+                <strong>{currentColor.color}.</strong> {colorLine(currentColor.id)}
+              </p>
+            )}
             <div className={styles.swatchGrid} role="radiogroup" aria-label={`${currentStyle.name} colors`} onKeyDown={radioKeys}>
               {currentStyle.options.map((opt) => (
                 <button
@@ -440,6 +448,9 @@ export function CabinetConfigurator() {
                 <p className={styles.eyebrow}>Door sample</p>
                 <p className={styles.bigValue}>{currentColor.color}</p>
                 <p className={styles.muted}>{currentStyle.name}</p>
+                <button type="button" className={styles.detailsBtn} onClick={() => setInfoOpen(true)} aria-haspopup="dialog" data-open-product-info>
+                  Product details
+                </button>
               </div>
             </div>
 
@@ -564,7 +575,12 @@ export function CabinetConfigurator() {
 
             {/* Gallery: pull, set, sizes */}
             <div className={styles.panel}>
-              <p className={styles.eyebrow}>Sizes &amp; views · {FINISH_NAMES[hwFinishKey]}</p>
+              <div className={styles.panelHead}>
+                <p className={styles.eyebrow}>Sizes &amp; views · {FINISH_NAMES[hwFinishKey]}</p>
+                <button type="button" className={styles.linkBtn} onClick={() => setInfoOpen(true)} aria-haspopup="dialog">
+                  Hardware specs
+                </button>
+              </div>
               <div className={styles.sizeGrid}>
                 {hwGallery.map((item) => (
                   <button
@@ -646,6 +662,10 @@ export function CabinetConfigurator() {
           )}
         </div>
       </div>
+
+      <WhyDuraBuild />
+
+      <ProductInfoDrawer open={infoOpen} onClose={closeInfo} styleId={style} colorId={currentColor.id} hwId={hwType} hwFinish={hwFinishKey} />
 
       {/* Mobile bottom sheet: quick picks while the preview stays on screen */}
       <div ref={sheetRef} className={cn(styles.sheet, sheetTab && styles.sheetOpen)} aria-label="Quick design controls">

@@ -37,10 +37,11 @@ const DOOR_FOLDERS = {
 };
 const STYLE_NAMES = {
   shaker_classic: 'Shaker Classic',
-  fusion_shaker: 'Fusion Shaker',
+  // display names match the DuraBuild catalog
+  fusion_shaker: 'Fusion Classic',
   fusion_slide: 'Fusion Slide',
   shaker_slide: 'Shaker Slide',
-  slab: 'Slab Modern',
+  slab: 'Slab',
 };
 const STYLE_ORDER = ['shaker_classic', 'fusion_shaker', 'fusion_slide', 'shaker_slide', 'slab'];
 const STYLE_TOKENS = new Set(['shaker', 'classic', 'claassic', 'clasic', 'slide', 'slab', 'fusion', 'in']);
@@ -54,8 +55,12 @@ const COLOR_FIXES = {
 };
 const COLOR_ALIASES = { 'snow gloss white': 'snow gloss' };
 const GLOSSY = new Set(['snow_gloss']);
-// Display order for colors (unknown colors go last, alphabetically)
-const COLOR_ORDER = ['flour', 'storm', 'graphite', 'mist', 'slate', 'espresso_walnut', 'latte_walnut', 'nimbus_oak', 'sable_oak', 'snow_gloss', 'urban_teak', 'platinum_teak', 'wheat_oak'];
+// Display order for colors: catalog order (solids light to dark, gloss, woodgrains, Paint Ready). Unknown colors go last, alphabetically.
+const COLOR_ORDER = [
+  'flour', 'oat', 'cloudstone', 'sage', 'mist', 'storm', 'graphite', 'slate', 'snow_gloss',
+  'nimbus_oak', 'wheat_oak', 'sable_oak', 'cafe_walnut', 'latte_walnut', 'espresso_walnut',
+  'platinum_teak', 'urban_teak', 'paint_ready',
+];
 const colorRank = (id) => (COLOR_ORDER.indexOf(id) + 1 || 99);
 
 // ------------------------------------------------------------------ hardware
@@ -195,7 +200,8 @@ function parseSize(file) {
     return null;
   }
   const kind = isKnob || inches < 2 ? 'Knob' : 'Pull';
-  return { label: `${kind}: ${label}`, sortValue: (kind === 'Knob' ? 0 : 10) + inches };
+  const shape = kind === 'Knob' && /t-?knob/.test(s) ? ' T-knob' : '';
+  return { label: `${kind}: ${label}${shape}`, sortValue: (kind === 'Knob' ? 0 : 10) + inches };
 }
 
 function classifyHardware(file) {

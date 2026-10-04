@@ -14,6 +14,38 @@
           "finish": "flour"
         },
         {
+          "id": "oat",
+          "color": "Oat",
+          "door": "doors/shaker_classic/shaker-classic-oat.png",
+          "kitchen": "kitchens/Oat-Shaker_Kitchen.jpg",
+          "doorAlt": null,
+          "finish": "oat"
+        },
+        {
+          "id": "cloudstone",
+          "color": "Cloudstone",
+          "door": "doors/shaker_classic/shaker-classic-cloudstone.png",
+          "kitchen": "kitchens/Cloudstone-Shaker_Kitchen.jpg",
+          "doorAlt": null,
+          "finish": "cloudstone"
+        },
+        {
+          "id": "sage",
+          "color": "Sage",
+          "door": "doors/shaker_classic/shaker-classic-sage.png",
+          "kitchen": "kitchens/Sage-Shaker_Kitchen.jpg",
+          "doorAlt": null,
+          "finish": "sage"
+        },
+        {
+          "id": "mist",
+          "color": "Mist",
+          "door": "doors/shaker_classic/shaker-classic-mist.png",
+          "kitchen": "kitchens/Mist-Shaker_Kitchen.jpg",
+          "doorAlt": "doors/shaker_classic/Mist-Shaker_Kitchen.jpg",
+          "finish": "mist"
+        },
+        {
           "id": "storm",
           "color": "Storm",
           "door": "doors/shaker_classic/shaker-classic-storm.png",
@@ -30,36 +62,12 @@
           "finish": "graphite"
         },
         {
-          "id": "mist",
-          "color": "Mist",
-          "door": "doors/shaker_classic/shaker-classic-mist.png",
-          "kitchen": "kitchens/Mist-Shaker_Kitchen.jpg",
-          "doorAlt": "doors/shaker_classic/Mist-Shaker_Kitchen.jpg",
-          "finish": "mist"
-        },
-        {
           "id": "slate",
           "color": "Slate",
           "door": "doors/shaker_classic/shaker-classic-slate.png",
           "kitchen": "kitchens/Slate-Shaker_Kitchen.jpg",
           "doorAlt": "doors/shaker_classic/Slate-Shaker_Kitchen.jpg",
           "finish": "slate"
-        },
-        {
-          "id": "espresso_walnut",
-          "color": "Espresso Walnut",
-          "door": "doors/shaker_classic/shaker-classic-espresso-walnut.png",
-          "kitchen": "kitchens/Espresso-Walnut-Shaker_Kitchen.jpg",
-          "doorAlt": "doors/shaker_classic/Espresso-Walnut-Shaker_Kitchen.jpg",
-          "finish": "espresso_walnut"
-        },
-        {
-          "id": "latte_walnut",
-          "color": "Latte Walnut",
-          "door": "doors/shaker_classic/shaker-claassic-latte-walnut.png",
-          "kitchen": "kitchens/Latte-Walnut-Shaker_Kitchen.jpg",
-          "doorAlt": "doors/shaker_classic/Latte-Walnut-Shaker_Kitchen.jpg",
-          "finish": "latte_walnut"
         },
         {
           "id": "nimbus_oak",
@@ -70,17 +78,57 @@
           "finish": "nimbus_oak"
         },
         {
+          "id": "wheat_oak",
+          "color": "Wheat Oak",
+          "door": "doors/shaker_classic/shaker-classic-wheat-oak.png",
+          "kitchen": "kitchens/Wheat-Oak-Shaker_Kitchen.jpg",
+          "doorAlt": null,
+          "finish": "wheat_oak"
+        },
+        {
           "id": "sable_oak",
           "color": "Sable Oak",
           "door": "doors/shaker_classic/shaker-classic-sable-oak.png",
           "kitchen": "kitchens/Sable-Oak-Shaker.jpg",
           "doorAlt": "doors/shaker_classic/Sable-Oak-Shaker.jpg",
           "finish": "sable_oak"
+        },
+        {
+          "id": "cafe_walnut",
+          "color": "Cafe Walnut",
+          "door": "doors/shaker_classic/shaker-classic-cafe-walnut.png",
+          "kitchen": "kitchens/Cafe-Walnut-Shaker_Kitchen.jpg",
+          "doorAlt": null,
+          "finish": "cafe_walnut"
+        },
+        {
+          "id": "latte_walnut",
+          "color": "Latte Walnut",
+          "door": "doors/shaker_classic/shaker-claassic-latte-walnut.png",
+          "kitchen": "kitchens/Latte-Walnut-Shaker_Kitchen.jpg",
+          "doorAlt": "doors/shaker_classic/Latte-Walnut-Shaker_Kitchen.jpg",
+          "finish": "latte_walnut"
+        },
+        {
+          "id": "espresso_walnut",
+          "color": "Espresso Walnut",
+          "door": "doors/shaker_classic/shaker-classic-espresso-walnut.png",
+          "kitchen": "kitchens/Espresso-Walnut-Shaker_Kitchen.jpg",
+          "doorAlt": "doors/shaker_classic/Espresso-Walnut-Shaker_Kitchen.jpg",
+          "finish": "espresso_walnut"
+        },
+        {
+          "id": "paint_ready",
+          "color": "Paint Ready",
+          "door": "doors/shaker_classic/shaker-classic-paint-ready.png",
+          "kitchen": "kitchens/Paint-Ready-Shaker_Kitchen.jpg",
+          "doorAlt": null,
+          "finish": "paint_ready"
         }
       ]
     },
     "fusion_shaker": {
-      "name": "Fusion Shaker",
+      "name": "Fusion Classic",
       "options": [
         {
           "id": "flour",
@@ -89,6 +137,38 @@
           "kitchen": "kitchens/Flour-Fusion-Shaker_Kitchen.jpg",
           "doorAlt": "doors/fusion_in_shaker/Flour-Fusion-Shaker_Kitchen.jpg",
           "finish": "flour"
+        },
+        {
+          "id": "oat",
+          "color": "Oat",
+          "door": "doors/fusion_in_shaker/Fusion-Shaker-oat.png",
+          "kitchen": "kitchens/Oat-Fusion-Shaker_Kitchen.jpg",
+          "doorAlt": null,
+          "finish": "oat"
+        },
+        {
+          "id": "cloudstone",
+          "color": "Cloudstone",
+          "door": "doors/fusion_in_shaker/Fusion-Shaker-cloudstone.png",
+          "kitchen": "kitchens/Cloudstone-Fusion-Shaker_Kitchen.jpg",
+          "doorAlt": null,
+          "finish": "cloudstone"
+        },
+        {
+          "id": "sage",
+          "color": "Sage",
+          "door": "doors/fusion_in_shaker/Fusion-Shaker-sage.png",
+          "kitchen": "kitchens/Sage-Fusion-Shaker_Kitchen.jpg",
+          "doorAlt": null,
+          "finish": "sage"
+        },
+        {
+          "id": "mist",
+          "color": "Mist",
+          "door": "doors/fusion_in_shaker/Fusion-Shaker-mist.png",
+          "kitchen": "kitchens/Mist-Fusion-Shaker_Kitchen.jpg",
+          "doorAlt": "doors/fusion_in_shaker/Mist-Fusion-Shaker_Kitchen.jpg",
+          "finish": "mist"
         },
         {
           "id": "storm",
@@ -107,20 +187,44 @@
           "finish": "graphite"
         },
         {
-          "id": "mist",
-          "color": "Mist",
-          "door": "doors/fusion_in_shaker/Fusion-Shaker-mist.png",
-          "kitchen": "kitchens/Mist-Fusion-Shaker_Kitchen.jpg",
-          "doorAlt": "doors/fusion_in_shaker/Mist-Fusion-Shaker_Kitchen.jpg",
-          "finish": "mist"
-        },
-        {
           "id": "slate",
           "color": "Slate",
           "door": "doors/fusion_in_shaker/Fusion-Shaker-slate.png",
           "kitchen": "kitchens/Slate-Fusion-Shaker_Kitchen.jpg",
           "doorAlt": "doors/fusion_in_shaker/Slate-Fusion-Shaker_Kitchen.jpg",
           "finish": "slate"
+        },
+        {
+          "id": "nimbus_oak",
+          "color": "Nimbus Oak",
+          "door": "doors/fusion_in_shaker/Fusion-Shaker-nimbus-oak.png",
+          "kitchen": "kitchens/Nimbus-Oak-Fusion-Shaker_Kitchen.jpg",
+          "doorAlt": null,
+          "finish": "nimbus_oak"
+        },
+        {
+          "id": "wheat_oak",
+          "color": "Wheat Oak",
+          "door": "doors/fusion_in_shaker/Fusion-Shaker-wheat-oak.png",
+          "kitchen": "kitchens/Wheat-Oak-Fusion-Shaker_Kitchen.jpg",
+          "doorAlt": null,
+          "finish": "wheat_oak"
+        },
+        {
+          "id": "cafe_walnut",
+          "color": "Cafe Walnut",
+          "door": "doors/fusion_in_shaker/Fusion-Shaker-cafe-walnut.png",
+          "kitchen": "kitchens/Cafe-Walnut-Fusion-Shaker_Kitchen.jpg",
+          "doorAlt": null,
+          "finish": "cafe_walnut"
+        },
+        {
+          "id": "latte_walnut",
+          "color": "Latte Walnut",
+          "door": "doors/fusion_in_shaker/Fusion-Shaker-latte-walnut.png",
+          "kitchen": "kitchens/Latte-Walnut-Fusion-Shaker_Kitchen.jpg",
+          "doorAlt": "doors/fusion_in_shaker/Latte-Walnut-Fusion-Shaker_Kitchen.jpg",
+          "finish": "latte_walnut"
         },
         {
           "id": "espresso_walnut",
@@ -131,12 +235,12 @@
           "finish": "espresso_walnut"
         },
         {
-          "id": "latte_walnut",
-          "color": "Latte Walnut",
-          "door": "doors/fusion_in_shaker/Fusion-Shaker-latte-walnut.png",
-          "kitchen": "kitchens/Latte-Walnut-Fusion-Shaker_Kitchen.jpg",
-          "doorAlt": "doors/fusion_in_shaker/Latte-Walnut-Fusion-Shaker_Kitchen.jpg",
-          "finish": "latte_walnut"
+          "id": "paint_ready",
+          "color": "Paint Ready",
+          "door": "doors/fusion_in_shaker/Fusion-Shaker-paint-ready.png",
+          "kitchen": "kitchens/Paint-Ready-Fusion-Shaker_Kitchen.jpg",
+          "doorAlt": null,
+          "finish": "paint_ready"
         }
       ]
     },
@@ -150,6 +254,38 @@
           "kitchen": "kitchens/Flour-Fusion-Slide_Kitchen.jpg",
           "doorAlt": "doors/fusion_in_slide/Flour-Fusion-Slide_Kitchen.jpg",
           "finish": "flour"
+        },
+        {
+          "id": "oat",
+          "color": "Oat",
+          "door": "doors/fusion_in_slide/Fusion-Slide-oat.png",
+          "kitchen": "kitchens/Oat-Fusion-Slide_Kitchen.jpg",
+          "doorAlt": null,
+          "finish": "oat"
+        },
+        {
+          "id": "cloudstone",
+          "color": "Cloudstone",
+          "door": "doors/fusion_in_slide/Fusion-Slide-cloudstone.png",
+          "kitchen": "kitchens/Cloudstone-Fusion-Slide_Kitchen.jpg",
+          "doorAlt": null,
+          "finish": "cloudstone"
+        },
+        {
+          "id": "sage",
+          "color": "Sage",
+          "door": "doors/fusion_in_slide/Fusion-Slide-sage.png",
+          "kitchen": "kitchens/Sage-Fusion-Slide_Kitchen.jpg",
+          "doorAlt": null,
+          "finish": "sage"
+        },
+        {
+          "id": "mist",
+          "color": "Mist",
+          "door": "doors/fusion_in_slide/Fusion-Slide-mist.png",
+          "kitchen": "kitchens/Mist-Fusion-Slide_Kitchen.jpg",
+          "doorAlt": null,
+          "finish": "mist"
         },
         {
           "id": "storm",
@@ -168,12 +304,60 @@
           "finish": "graphite"
         },
         {
+          "id": "slate",
+          "color": "Slate",
+          "door": "doors/fusion_in_slide/Fusion-Slide-slate.png",
+          "kitchen": "kitchens/Slate-Fusion-Slide_Kitchen.jpg",
+          "doorAlt": null,
+          "finish": "slate"
+        },
+        {
+          "id": "nimbus_oak",
+          "color": "Nimbus Oak",
+          "door": "doors/fusion_in_slide/Fusion-Slide-nimbus-oak.png",
+          "kitchen": "kitchens/Nimbus-Oak-Fusion-Slide_Kitchen.jpg",
+          "doorAlt": null,
+          "finish": "nimbus_oak"
+        },
+        {
+          "id": "wheat_oak",
+          "color": "Wheat Oak",
+          "door": "doors/fusion_in_slide/Fusion-Slide-wheat-oak.png",
+          "kitchen": "kitchens/Wheat-Oak-Fusion-Slide_Kitchen.jpg",
+          "doorAlt": null,
+          "finish": "wheat_oak"
+        },
+        {
+          "id": "cafe_walnut",
+          "color": "Cafe Walnut",
+          "door": "doors/fusion_in_slide/Fusion-Slide-cafe-walnut.png",
+          "kitchen": "kitchens/Cafe-Walnut-Fusion-Slide_Kitchen.jpg",
+          "doorAlt": null,
+          "finish": "cafe_walnut"
+        },
+        {
+          "id": "latte_walnut",
+          "color": "Latte Walnut",
+          "door": "doors/fusion_in_slide/Fusion-Slide-latte-walnut.png",
+          "kitchen": "kitchens/Latte-Walnut-Fusion-Slide_Kitchen.jpg",
+          "doorAlt": null,
+          "finish": "latte_walnut"
+        },
+        {
           "id": "espresso_walnut",
           "color": "Espresso Walnut",
           "door": "doors/fusion_in_slide/Fusion-Slide-espresso-walnut.png",
           "kitchen": "kitchens/Espresso-Walnut-Fusion-Slide.jpg",
           "doorAlt": "doors/fusion_in_slide/Espresso-Walnut-Fusion-Slide.jpg",
           "finish": "espresso_walnut"
+        },
+        {
+          "id": "paint_ready",
+          "color": "Paint Ready",
+          "door": "doors/fusion_in_slide/Fusion-Slide-paint-ready.png",
+          "kitchen": "kitchens/Paint-Ready-Fusion-Slide_Kitchen.jpg",
+          "doorAlt": null,
+          "finish": "paint_ready"
         }
       ]
     },
@@ -187,6 +371,38 @@
           "kitchen": "kitchens/Flour-Slide_Kitchen.jpg",
           "doorAlt": "doors/shaker_slide/Flour-Slide_Kitchen-800x421.png",
           "finish": "flour"
+        },
+        {
+          "id": "oat",
+          "color": "Oat",
+          "door": "doors/shaker_slide/shaker-slide-oat.png",
+          "kitchen": "kitchens/Oat-Slide_Kitchen.jpg",
+          "doorAlt": null,
+          "finish": "oat"
+        },
+        {
+          "id": "cloudstone",
+          "color": "Cloudstone",
+          "door": "doors/shaker_slide/shaker-slide-cloudstone.png",
+          "kitchen": "kitchens/Cloudstone-Slide_Kitchen.jpg",
+          "doorAlt": null,
+          "finish": "cloudstone"
+        },
+        {
+          "id": "sage",
+          "color": "Sage",
+          "door": "doors/shaker_slide/shaker-slide-sage.png",
+          "kitchen": "kitchens/Sage-Slide_Kitchen.jpg",
+          "doorAlt": null,
+          "finish": "sage"
+        },
+        {
+          "id": "mist",
+          "color": "Mist",
+          "door": "doors/shaker_slide/shaker-slide-mist.png",
+          "kitchen": "kitchens/Mist-Slide_Kitchen.jpg",
+          "doorAlt": null,
+          "finish": "mist"
         },
         {
           "id": "storm",
@@ -205,17 +421,73 @@
           "finish": "graphite"
         },
         {
+          "id": "slate",
+          "color": "Slate",
+          "door": "doors/shaker_slide/shaker-slide-slate.png",
+          "kitchen": "kitchens/Slate-Slide_Kitchen.jpg",
+          "doorAlt": null,
+          "finish": "slate"
+        },
+        {
+          "id": "nimbus_oak",
+          "color": "Nimbus Oak",
+          "door": "doors/shaker_slide/shaker-slide-nimbus-oak.png",
+          "kitchen": "kitchens/Nimbus-Oak-Slide_Kitchen.jpg",
+          "doorAlt": null,
+          "finish": "nimbus_oak"
+        },
+        {
+          "id": "wheat_oak",
+          "color": "Wheat Oak",
+          "door": "doors/shaker_slide/shaker-slide-wheat-oak.png",
+          "kitchen": "kitchens/Wheat-Oak-Slide_Kitchen.jpg",
+          "doorAlt": null,
+          "finish": "wheat_oak"
+        },
+        {
+          "id": "sable_oak",
+          "color": "Sable Oak",
+          "door": "doors/shaker_slide/shaker-slide-sable-oak.png",
+          "kitchen": "kitchens/Sable-Oak-Slide_Kitchen.jpg",
+          "doorAlt": null,
+          "finish": "sable_oak"
+        },
+        {
+          "id": "cafe_walnut",
+          "color": "Cafe Walnut",
+          "door": "doors/shaker_slide/shaker-slide-cafe-walnut.png",
+          "kitchen": "kitchens/Cafe-Walnut-Slide_Kitchen.jpg",
+          "doorAlt": null,
+          "finish": "cafe_walnut"
+        },
+        {
+          "id": "latte_walnut",
+          "color": "Latte Walnut",
+          "door": "doors/shaker_slide/shaker-slide-latte-walnut.png",
+          "kitchen": "kitchens/Latte-Walnut-Slide_Kitchen.jpg",
+          "doorAlt": null,
+          "finish": "latte_walnut"
+        },
+        {
           "id": "espresso_walnut",
           "color": "Espresso Walnut",
           "door": "doors/shaker_slide/shaker-slide-espresso-walnut.png",
           "kitchen": "kitchens/Espresso-Walnut-Slide_Kitchen.jpg",
           "doorAlt": "doors/shaker_slide/Espresso-Walnut-Slide_Kitchen-800x421.jpg",
           "finish": "espresso_walnut"
+        },
+        {
+          "id": "paint_ready",
+          "color": "Paint Ready",
+          "door": "doors/shaker_slide/shaker-slide-paint-ready.png",
+          "kitchen": "kitchens/Paint-Ready-Slide_Kitchen.jpg",
+          "doorAlt": null,
+          "finish": "paint_ready"
         }
       ]
     },
     "slab": {
-      "name": "Slab Modern",
+      "name": "Slab",
       "options": [
         {
           "id": "flour",
@@ -224,6 +496,38 @@
           "kitchen": "kitchens/Flour-Slab_Kitchen.jpg",
           "doorAlt": "doors/slab/Flour-Slab_Kitchen-800x421.jpg",
           "finish": "flour"
+        },
+        {
+          "id": "oat",
+          "color": "Oat",
+          "door": "doors/slab/slab-oat.png",
+          "kitchen": "kitchens/Oat-Slab_Kitchen.jpg",
+          "doorAlt": null,
+          "finish": "oat"
+        },
+        {
+          "id": "cloudstone",
+          "color": "Cloudstone",
+          "door": "doors/slab/slab-cloudstone.png",
+          "kitchen": "kitchens/Cloudstone-Slab_Kitchen.jpg",
+          "doorAlt": null,
+          "finish": "cloudstone"
+        },
+        {
+          "id": "sage",
+          "color": "Sage",
+          "door": "doors/slab/slab-sage.png",
+          "kitchen": "kitchens/Sage-Slab_Kitchen.jpg",
+          "doorAlt": null,
+          "finish": "sage"
+        },
+        {
+          "id": "mist",
+          "color": "Mist",
+          "door": "doors/slab/slab-mist.png",
+          "kitchen": "kitchens/Mist-Slab_Kitchen.jpg",
+          "doorAlt": "doors/slab/Mist-Slab_Kitchen-800x421.jpg",
+          "finish": "mist"
         },
         {
           "id": "storm",
@@ -242,36 +546,12 @@
           "finish": "graphite"
         },
         {
-          "id": "mist",
-          "color": "Mist",
-          "door": "doors/slab/slab-mist.png",
-          "kitchen": "kitchens/Mist-Slab_Kitchen.jpg",
-          "doorAlt": "doors/slab/Mist-Slab_Kitchen-800x421.jpg",
-          "finish": "mist"
-        },
-        {
           "id": "slate",
           "color": "Slate",
           "door": "doors/slab/slab-slate.png",
           "kitchen": "kitchens/Slate-Slab_Kitchen.jpg",
           "doorAlt": "doors/slab/Slate-Slab_Kitchen-800x421.jpg",
           "finish": "slate"
-        },
-        {
-          "id": "espresso_walnut",
-          "color": "Espresso Walnut",
-          "door": "doors/slab/slab-espresso-walnut.png",
-          "kitchen": "kitchens/Espresso-Walnut-Slab.jpg",
-          "doorAlt": "doors/slab/Espresso-Walnut-Slab-800x421.jpg",
-          "finish": "espresso_walnut"
-        },
-        {
-          "id": "latte_walnut",
-          "color": "Latte Walnut",
-          "door": "doors/slab/slab-latte-walnut.png",
-          "kitchen": "kitchens/Latte-Walnut-Slab_Kitchen.jpg",
-          "doorAlt": "doors/slab/Latte-Walnut-Slab_Kitchen-800x421.jpg",
-          "finish": "latte_walnut"
         },
         {
           "id": "snow_gloss",
@@ -282,12 +562,44 @@
           "finish": "snow_gloss"
         },
         {
-          "id": "urban_teak",
-          "color": "Urban Teak",
-          "door": "doors/slab/slab-urban-teak.png",
-          "kitchen": "kitchens/Urban-Teak-Slab_Kitchen.jpg",
-          "doorAlt": "doors/slab/Urban-Teak-Slab_Kitchen-800x421.jpg",
-          "finish": "urban_teak"
+          "id": "nimbus_oak",
+          "color": "Nimbus Oak",
+          "door": "doors/slab/slab-nimbus-oak.png",
+          "kitchen": "kitchens/Nimbus-Oak-Slab_Kitchen.jpg",
+          "doorAlt": null,
+          "finish": "nimbus_oak"
+        },
+        {
+          "id": "wheat_oak",
+          "color": "Wheat Oak",
+          "door": "doors/slab/slab-wheat-oak.png",
+          "kitchen": "kitchens/Wheat-Oak-Slab.jpg",
+          "doorAlt": "doors/slab/Wheat-Oak-Slab-800x421.jpg",
+          "finish": "wheat_oak"
+        },
+        {
+          "id": "cafe_walnut",
+          "color": "Cafe Walnut",
+          "door": "doors/slab/slab-cafe-walnut.png",
+          "kitchen": "kitchens/Cafe-Walnut-Slab_Kitchen.jpg",
+          "doorAlt": null,
+          "finish": "cafe_walnut"
+        },
+        {
+          "id": "latte_walnut",
+          "color": "Latte Walnut",
+          "door": "doors/slab/slab-latte-walnut.png",
+          "kitchen": "kitchens/Latte-Walnut-Slab_Kitchen.jpg",
+          "doorAlt": "doors/slab/Latte-Walnut-Slab_Kitchen-800x421.jpg",
+          "finish": "latte_walnut"
+        },
+        {
+          "id": "espresso_walnut",
+          "color": "Espresso Walnut",
+          "door": "doors/slab/slab-espresso-walnut.png",
+          "kitchen": "kitchens/Espresso-Walnut-Slab.jpg",
+          "doorAlt": "doors/slab/Espresso-Walnut-Slab-800x421.jpg",
+          "finish": "espresso_walnut"
         },
         {
           "id": "platinum_teak",
@@ -298,17 +610,39 @@
           "finish": "platinum_teak"
         },
         {
-          "id": "wheat_oak",
-          "color": "Wheat Oak",
-          "door": "doors/slab/slab-wheat-oak.png",
-          "kitchen": "kitchens/Wheat-Oak-Slab.jpg",
-          "doorAlt": "doors/slab/Wheat-Oak-Slab-800x421.jpg",
-          "finish": "wheat_oak"
+          "id": "urban_teak",
+          "color": "Urban Teak",
+          "door": "doors/slab/slab-urban-teak.png",
+          "kitchen": "kitchens/Urban-Teak-Slab_Kitchen.jpg",
+          "doorAlt": "doors/slab/Urban-Teak-Slab_Kitchen-800x421.jpg",
+          "finish": "urban_teak"
+        },
+        {
+          "id": "paint_ready",
+          "color": "Paint Ready",
+          "door": "doors/slab/slab-paint-ready.png",
+          "kitchen": "kitchens/Paint-Ready-Slab_Kitchen.jpg",
+          "doorAlt": null,
+          "finish": "paint_ready"
         }
       ]
     }
   },
   "doorFinishes": {
+    "cafe_walnut": {
+      "name": "Cafe Walnut",
+      "color": "#9a7a59",
+      "texture": "/configurator/finishes/cafe_walnut.jpg",
+      "roughness": 0.62,
+      "textured": true
+    },
+    "cloudstone": {
+      "name": "Cloudstone",
+      "color": "#cec8bd",
+      "texture": "/configurator/finishes/cloudstone.jpg",
+      "roughness": 0.55,
+      "textured": false
+    },
     "espresso_walnut": {
       "name": "Espresso Walnut",
       "color": "#3d3530",
@@ -346,10 +680,24 @@
     },
     "nimbus_oak": {
       "name": "Nimbus Oak",
-      "color": "#afaaa2",
+      "color": "#9e9a8c",
       "texture": "/configurator/finishes/nimbus_oak.jpg",
       "roughness": 0.62,
       "textured": true
+    },
+    "oat": {
+      "name": "Oat",
+      "color": "#eeeadf",
+      "texture": "/configurator/finishes/oat.jpg",
+      "roughness": 0.55,
+      "textured": false
+    },
+    "paint_ready": {
+      "name": "Paint Ready",
+      "color": "#f7f8f5",
+      "texture": "/configurator/finishes/paint_ready.jpg",
+      "roughness": 0.55,
+      "textured": false
     },
     "platinum_teak": {
       "name": "Platinum Teak",
@@ -364,6 +712,13 @@
       "texture": "/configurator/finishes/sable_oak.jpg",
       "roughness": 0.62,
       "textured": true
+    },
+    "sage": {
+      "name": "Sage",
+      "color": "#b3b4a3",
+      "texture": "/configurator/finishes/sage.jpg",
+      "roughness": 0.55,
+      "textured": false
     },
     "slate": {
       "name": "Slate",
@@ -575,16 +930,16 @@
           "withDoor": "hardware/cottage/Cottage_RoseGold_with_knob.png",
           "sizeImages": [
             {
-              "size": "Knob",
-              "image": "hardware/cottage/Cottage_RoseGold__K.png"
+              "size": "Knob: 1 7/32\"",
+              "image": "hardware/cottage/Cottage_RoseGold_Size1 7-32 Inch Knob.png"
             },
             {
-              "size": "Pull: 96mm",
-              "image": "hardware/cottage/Cottage_RoseGold_96 .png"
+              "size": "Pull: 4 1/2\"",
+              "image": "hardware/cottage/Cottage_RoseGold_Size4 1-2 Inches.png"
             },
             {
-              "size": "Pull: 128mm",
-              "image": "hardware/cottage/Cottage_RoseGold_128-1.png"
+              "size": "Pull: 5 7/8\"",
+              "image": "hardware/cottage/Cottage_RoseGold_Size5 7-8 Inches.png"
             }
           ],
           "altImages": []
@@ -598,14 +953,20 @@
               "image": "hardware/cottage/Cottage__SatinNickel_Size1 7-32 Inch Knob .png"
             },
             {
-              "size": "Pull: 4 3/4\"",
-              "image": "hardware/cottage/Cottage__SatinNickel_Size4 3-4 Inches .png"
+              "size": "Pull: 4 1/2\"",
+              "image": "hardware/cottage/Cottage__SatinNickel_Size4 1-2 Inches.png"
             },
             {
-              "size": "Pull: 6 1/16\"",
-              "image": "hardware/cottage/Cottage__SatinNickel_Size6 1-6 Inches .png"
+              "size": "Pull: 5 7/8\"",
+              "image": "hardware/cottage/Cottage__SatinNickel_Size5 7-8 Inches.png"
             }
           ],
+          "altImages": []
+        },
+        "matte_black": {
+          "pull": "hardware/cottage/Cottage_MatteBlack.png",
+          "withDoor": "hardware/cottage/Cottage_MatteBlack_with_knob.png",
+          "sizeImages": [],
           "altImages": []
         },
         "chrome": {
@@ -617,12 +978,12 @@
               "image": "hardware/cottage/Cottage__Chrome_Size1 7-32 Inch Knob .png"
             },
             {
-              "size": "Pull: 4 3/4\"",
-              "image": "hardware/cottage/Cottage__Chrome_Size4 3-4 Inches.png"
+              "size": "Pull: 4 1/2\"",
+              "image": "hardware/cottage/Cottage__Chrome_Size4 1-2 Inches.png"
             },
             {
-              "size": "Pull: 6 1/16\"",
-              "image": "hardware/cottage/Cottage__Chrome_Size6 1-6 Inches .png"
+              "size": "Pull: 5 7/8\"",
+              "image": "hardware/cottage/Cottage__Chrome_Size5 7-8 Inches.png"
             }
           ],
           "altImages": []
@@ -800,25 +1161,31 @@
           "withDoor": "hardware/bar/BarPull_SatinNickel_with_tpull.png",
           "sizeImages": [
             {
-              "size": "Knob: Round",
-              "image": "hardware/bar/Satin-Nickle-Round-Knob .png"
+              "size": "Knob: 1 1/4\"",
+              "image": "hardware/bar/Bar_SatinNickel_Round-Knob_Size 1 1-4 Inch.png"
+            },
+            {
+              "size": "Knob: 2\" T-knob",
+              "image": "hardware/bar/Bar_SatinNickel_T-Knob_Size 2 Inch.png"
             },
             {
               "size": "Pull",
               "image": "hardware/bar/BarPull_SatinNickel_scale.png"
             }
           ],
-          "altImages": [
-            "hardware/bar/BarPull_t_SatinNickel.png"
-          ]
+          "altImages": []
         },
         "matte_black": {
           "pull": "hardware/bar/Bar-pulls-black .png",
-          "withDoor": "hardware/bar/Bar-matte-black-tpull.png",
+          "withDoor": null,
           "sizeImages": [
             {
-              "size": "Knob: Round",
-              "image": "hardware/bar/Bar-Black-Matte-Round-Knob-on-Shaker.png"
+              "size": "Knob: 1 1/4\"",
+              "image": "hardware/bar/Bar_MatteBlack_Round-Knob_Size 1 1-4 Inch.png"
+            },
+            {
+              "size": "Knob: 2\" T-knob",
+              "image": "hardware/bar/Bar_MatteBlack_T-Knob_Size 2 Inch.png"
             },
             {
               "size": "Pull: 4.5\"",
@@ -862,5 +1229,7 @@
       "roughness": 0.12
     }
   },
-  "missing": []
+  "missing": [
+    "hardware bar/matte_black: no on-door shot"
+  ]
 }

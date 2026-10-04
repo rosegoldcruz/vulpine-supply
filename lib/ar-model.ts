@@ -10,7 +10,8 @@ import { Document, NodeIO, type Material, type Node, getBounds } from '@gltf-tra
 import { ALL_EXTENSIONS, KHRTextureTransform, KHRDracoMeshCompression } from '@gltf-transform/extensions';
 import { mergeDocuments, prune, unpartition } from '@gltf-transform/functions';
 
-const DIR = path.join(process.cwd(), 'public', 'models', 'configurator');
+const PUBLIC = path.join(process.cwd(), 'public');
+const DIR = path.join(PUBLIC, 'models', 'configurator');
 const AR_EXCLUDE_RE =
   /^(room_|walls?_|floor|baseboard|window|backsplash|sofa|pillow|rug|coffeetable|books|plant|armchair|floorlamp|art\d|fruitbowl|cuttingboard|coffeemaker|utensil|island_stool|island_fruitbowl)/i;
 const FINISH_RE = /(^|_)(door|drawer|panel)(_|$)/i;
@@ -37,11 +38,19 @@ function getIO() {
 }
 
 const readJson = async (f: string) => JSON.parse(await fs.readFile(path.join(DIR, f), 'utf8'));
-const exists = (f: string) =>
+const fileExists = (abs: string) =>
   fs
-    .access(path.join(DIR, f))
+    .access(abs)
     .then(() => true)
     .catch(() => false);
+const exists = (f: string) => fileExists(path.join(DIR, f));
+let datasetPromise: Promise<any> | null = null;
+/** public/cabs_clean/dataset.json (swatch-sampled door finishes), read once. */
+const readDataset = () =>
+  (datasetPromise ||= fs
+    .readFile(path.join(PUBLIC, 'cabs_clean', 'dataset.json'), 'utf8')
+    .then((t) => JSON.parse(t))
+    .catch(() => null));
 
 function srgbToLinear(hex: string): [number, number, number] {
   const n = parseInt(hex.replace('#', ''), 16);
@@ -100,12 +109,19 @@ export async function buildArGlb(q: ArModelQuery): Promise<Uint8Array> {
   }
 
   // 3. finish + hardware materials
-  const fin = finishes?.finishes?.[q.color];
+  // DevGod's calibrated finishes.json first; colors it doesn't have yet (Oat, Sage, Cafe Walnut, …) fall back to the
+  // swatch-sampled finish in cabs_clean/dataset.json, like the client engine does.
+  let fin = finishes?.finishes?.[q.color];
+  if (!fin) {
+    const df = (await readDataset())?.doorFinishes?.[q.color];
+    if (df) fin = { color: df.color, roughness: df.roughness, ...(df.textured && df.texture ? { publicMap: df.texture } : {}) };
+  }
   const finishMat = doc.createMaterial('finish').setMetallicFactor(0).setRoughnessFactor(fin?.roughness ?? 0.45);
-  if (fin?.map && (await exists(fin.map))) {
+  const mapPath = fin?.map ? path.join(DIR, fin.map) : fin?.publicMap ? path.join(PUBLIC, fin.publicMap.replace(/^\/+/, '')) : null;
+  if (mapPath && (await fileExists(mapPath))) {
     const tex = doc
       .createTexture(q.color)
-      .setImage(new Uint8Array(await fs.readFile(path.join(DIR, fin.map))))
+      .setImage(new Uint8Array(await fs.readFile(mapPath)))
       .setMimeType('image/jpeg');
     finishMat.setBaseColorFactor([1, 1, 1, 1]).setBaseColorTexture(tex);
     if (Array.isArray(fin.repeat)) {

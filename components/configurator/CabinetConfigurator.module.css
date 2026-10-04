@@ -507,3 +507,12 @@
   color: #7a7168; text-decoration: underline; cursor: pointer;
 }
 .foxRestore:hover { color: #1c1a17; }
+
+/* product details (see ProductInfo.tsx) */
+.colorLine { font-size: 13px; line-height: 1.55; color: #55514d; margin-top: -4px; }
+.colorLine strong { color: var(--black); }
+.detailsBtn {
+  margin-top: 10px; display: inline-flex; align-items: center; gap: 6px; border: 1.5px solid var(--black); background: #fff;
+  color: var(--black); border-radius: 100px; padding: 7px 14px; font: 600 13px 'DM Sans', sans-serif; cursor: pointer;
+}
+.detailsBtn:hover { background: var(--black); color: var(--white); }

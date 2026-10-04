@@ -5,7 +5,7 @@
 import * as THREE from 'three';
 import { GLTFLoader } from 'three/examples/jsm/loaders/GLTFLoader.js';
 import { DRACOLoader } from 'three/examples/jsm/loaders/DRACOLoader.js';
-import { buildFoxClips, loopFor, FOX_FACE_PLUS_Z, type FoxMove } from './clips';
+import { buildFoxClips, fadeFor, loopFor, FOX_FACE_PLUS_Z, type FoxMove } from './clips';
 
 export const FOX_MODEL_URL = '/GLB/vulpi_fox.glb';
 
@@ -62,12 +62,12 @@ export class FoxStage {
     const fox = gltf.scene;
     fox.rotation.y = FOX_FACE_PLUS_Z - 0.5; // face the viewer, turned a little toward the page (screen left)
     this.scene.add(fox);
-    const clips = buildFoxClips(gltf.animations, fox);
+    const clips = buildFoxClips(gltf.animations);
     this.mixer = new THREE.AnimationMixer(fox);
     for (const [move, clip] of Object.entries(clips) as [FoxMove, THREE.AnimationClip][]) {
       const a = this.mixer.clipAction(clip);
       a.setLoop(loopFor(move), Infinity);
-      a.clampWhenFinished = true;
+      a.clampWhenFinished = false; // one-shots end at the rest pose; 'finished' fades back to idle
       this.actions[move] = a;
     }
     this.mixer.addEventListener('finished', () => this.play('idle'));
@@ -88,7 +88,7 @@ export class FoxStage {
   }
 
   /** Cross-fade to a move. One-shot moves (wave, point, celebrate) return to idle on their own. */
-  play(move: FoxMove, fade = 0.35) {
+  play(move: FoxMove, fade = fadeFor(move)) {
     const next = this.actions[move] ?? this.actions.idle;
     if (!next || !this.mixer) return;
     this.move = move;

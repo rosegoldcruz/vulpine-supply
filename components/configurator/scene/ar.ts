@@ -12,11 +12,11 @@ import { GLTFLoader } from 'three/examples/jsm/loaders/GLTFLoader.js';
 import { DRACOLoader } from 'three/examples/jsm/loaders/DRACOLoader.js';
 import { RoomEnvironment } from 'three/examples/jsm/environments/RoomEnvironment.js';
 import { clone as cloneSkinned } from 'three/examples/jsm/utils/SkeletonUtils.js';
-import { buildFoxClips, loopFor, FOX_FACE_PLUS_Z, type FoxMove } from '../../fox/clips';
+import { buildFoxClips, fadeFor, loopFor, FOX_FACE_PLUS_Z, type FoxMove } from '../../fox/clips';
 
 // Device detection lives in ./ar-detect (three-free, synchronous at hydration).
 
-/** Vulpi the fox (official model, == /workspace/fox/vulpine-fox.glb), stands next to the run in AR. 1.0 m tall, faces +X. */
+/** Vulpi the fox (re-rigged model, see docs/fox.md), stands next to the run in AR. Y-up, 1.0 m tall, faces +Z, feet at y=0. */
 export const FOX_URL = '/GLB/vulpi_fox.glb';
 const FOX_GAP_M = 0.35;
 
@@ -44,13 +44,13 @@ export async function loadFoxRig(): Promise<FoxRig | null> {
   const src = await foxPromise;
   if (!src) return null;
   const root = cloneSkinned(src.scene);
-  const clips = buildFoxClips(src.animations, root);
+  const clips = buildFoxClips(src.animations);
   const mixer = new THREE.AnimationMixer(root);
   const actions = new Map<FoxMove, THREE.AnimationAction>();
   for (const [move, clip] of Object.entries(clips) as [FoxMove, THREE.AnimationClip][]) {
     const a = mixer.clipAction(clip);
     a.setLoop(loopFor(move), Infinity);
-    a.clampWhenFinished = true;
+    a.clampWhenFinished = false; // one-shots end at the rest pose
     actions.set(move, a);
   }
   let current: THREE.AnimationAction | null = null;
@@ -58,12 +58,12 @@ export async function loadFoxRig(): Promise<FoxRig | null> {
     const next = actions.get(move) ?? actions.get('idle');
     if (!next) return;
     next.reset().play();
-    if (current && current !== next) current.crossFadeTo(next, 0.35, false);
+    if (current && current !== next) current.crossFadeTo(next, fadeFor(move), false);
     current = next;
   };
   mixer.addEventListener('finished', () => play('idle'));
   play('idle');
-  mixer.update(0.8); // settle into the relaxed idle pose (not the bind T-pose)
+  mixer.update(0.8); // a frame into the idle loop (between breaths); this is the pose the USDZ bake freezes
   return { root, mixer, play };
 }
 
@@ -76,18 +76,21 @@ export async function loadFox(): Promise<THREE.Object3D | null> {
 export function placeFox(fox: THREE.Object3D, run: THREE.Object3D) {
   run.updateMatrixWorld(true);
   const box = new THREE.Box3().setFromObject(run);
+  fox.position.set(0, 0, 0);
+  fox.rotation.set(0, FOX_FACE_PLUS_Z - 0.45, 0); // face the viewer, turned a little toward the run
   fox.updateMatrixWorld(true);
   fox.traverse((o) => {
     const sk = o as THREE.SkinnedMesh;
     if (sk.isSkinnedMesh) {
       sk.skeleton.update();
-      sk.computeBoundingBox(); // posed (idle) bounds, not the bind pose
+      sk.computeBoundingBox(); // posed (idle) bounds, not the rest pose
     }
   });
+  // posed + turned bounds at the origin (feet are at y=0, hips over the origin)
   const fb = new THREE.Box3().setFromObject(fox);
+  const c = fb.getCenter(new THREE.Vector3());
   const half = fb.getSize(new THREE.Vector3()).multiplyScalar(0.5);
-  fox.position.set(box.max.x + FOX_GAP_M + half.x, -fb.min.y, box.max.z - Math.max(0.4, half.z));
-  fox.rotation.y = FOX_FACE_PLUS_Z - 0.45; // face the viewer, turned a little toward the run
+  fox.position.set(box.max.x + FOX_GAP_M - fb.min.x, -fb.min.y, box.max.z - Math.max(0.4, half.z) - c.z);
   fox.traverse((o) => {
     if ((o as THREE.Mesh).isMesh) o.castShadow = true;
   });

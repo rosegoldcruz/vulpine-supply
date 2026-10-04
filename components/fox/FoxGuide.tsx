@@ -112,6 +112,8 @@ export const FoxGuide = forwardRef<FoxGuideHandle, FoxGuideProps>(function FoxGu
           stage.current = st;
           st.setReducedMotion(window.matchMedia('(prefers-reduced-motion: reduce)').matches);
           await st.load();
+          // QA hook (same ?debug=1 switch as the 3D view): window.__vulpi.play('point')
+          if (new URLSearchParams(window.location.search).get('debug') === '1') (window as any).__vulpi = { stage: st, play: (m: FoxMove) => st.play(m) };
           if (!cancelled) setLoaded(true);
         })
         .catch((e) => console.warn('[fox] 3D guide unavailable, showing poster', e));
@@ -222,7 +224,8 @@ export const FoxGuide = forwardRef<FoxGuideHandle, FoxGuideProps>(function FoxGu
       fresh(LINES.style[sel.style]);
     } else if (c.has('color')) {
       touched.current.finish = true;
-      fresh(LINES.finish[finishBucket(sel.color)]);
+      const bucket = finishBucket(sel.color);
+      fresh(bucket ? LINES.finish[bucket] : undefined);
     } else if (c.has('hw')) {
       touched.current.hardware = true;
       fresh(LINES.hardware[sel.hw]);

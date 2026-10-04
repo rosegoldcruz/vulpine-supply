@@ -2,7 +2,12 @@
 const nextConfig = {
   // /api/ar-model builds the Scene Viewer GLB from the configurator assets on disk
   outputFileTracingIncludes: {
-    '/api/ar-model/[name]': ['./public/models/configurator/**/*', './node_modules/draco3dgltf/**/*'],
+    '/api/ar-model/[name]': [
+      './public/models/configurator/**/*',
+      './public/cabs_clean/dataset.json',
+      './public/configurator/finishes/**/*',
+      './node_modules/draco3dgltf/**/*',
+    ],
   },
   serverExternalPackages: ['draco3dgltf'],
   async headers() {

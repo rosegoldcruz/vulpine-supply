@@ -11,7 +11,8 @@ Printable summary: `/configurator/summary?…` (same query string; `noindex`, ex
 | Door styles, colors, hardware, photos (`CONFIG_DATA` shape) | `public/cabs_clean/dataset.json` | `npm run build:cabs-dataset` |
 | DevGod's Blender exports | `public/models/configurator/` (`kitchen.glb`, `fronts_<style>.glb`, `hardware.glb`, `mounts.json`, `finishes.json`, `finishes/`) | `npm run sync:configurator-assets` (copies from `/workspace/vulpine-configurator/glb/`; wipes stale files, safe to re-run after every re-export) |
 | Draco decoder (self-hosted) | `public/draco/` | copied from `node_modules/three/examples/jsm/libs/draco/gltf` |
-| Fox for AR | `public/GLB/vulpi_fox.glb` (1.0 m tall, Draco + WebP) | — |
+| Fox for AR | `public/GLB/vulpi_fox.glb` (re-rigged, 1.0 m tall, Y-up, faces +Z, Draco + WebP; old file kept as `vulpi_fox_v1.glb`) | see `docs/fox.md` |
+| DuraBuild product copy (drawer + Why DuraBuild) | `components/configurator/product-info.ts` | hand-edited, see `docs/configurator-catalog.md` |
 
 Without `kitchen.glb` the engine builds a procedural kitchen (`scene/procedural.ts`), so the page always works.
 

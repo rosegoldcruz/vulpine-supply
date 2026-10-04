@@ -5,60 +5,38 @@ click/tap/key, walks them through **style → finish → hardware**, reacts to t
 short conversation that submits through the existing `/api/request-bid` intake. He never mentions prices. He promises a
 **custom quote** instead.
 
-Code: `components/fox/` (`clips.ts` animation recipes, `stage.ts` WebGL stage, `script.ts` lines, `voice.ts` audio hook,
+Code: `components/fox/` (`clips.ts` clip lookup, `stage.ts` WebGL stage, `script.ts` lines, `voice.ts` audio hook,
 `FoxGuide.tsx` guide + bubbles, `QuoteChat.tsx` quote conversation, `FoxGuide.module.css`). Mounted from
 `components/configurator/CabinetConfigurator.tsx`.
 
 ## Model
 
-- Official model: `/workspace/fox/vulpine-fox.glb`, byte-identical to `public/GLB/vulpi_fox.glb`, which is the file the site loads.
-- The file uses Draco + `EXT_texture_webp`, decoded with `/draco/`. It has 39 bones and stands **1.0 m tall**.
-- **He faces +X.** `FOX_FACE_PLUS_Z = -π/2` turns him to face +Z (the viewer). The corner stage and AR add a small extra turn
-  toward the page or the cabinet run.
+- Site model: `public/GLB/vulpi_fox.glb`, DevGod's re-rig (`vulpi_fox_rerig.glb`, Oct 4 2026; 0.92 MB, Draco +
+  `EXT_texture_webp`, decoded with `/draco/`). The previous file is kept as `public/GLB/vulpi_fox_v1.glb` (old 39-bone rig,
+  22 unnamed `NlaTrack*` clips) and is no longer loaded.
+- Y-up, **faces +Z**, feet at **y = 0**, **1.0 m tall**, hips over the origin. The rest pose is a relaxed stand (no T-pose).
+  `FOX_FACE_PLUS_Z = 0`; the corner stage turns him −0.5 rad (toward the page) and AR −0.45 rad (toward the cabinet run).
+- 58 bones with Mixamo names plus extras (tail, ears, eyes, jaw). three.js strips the `:`, so the loaded bones are
+  `mixamorigHips`, `mixamorigLeftHand`, …, and the clip tracks use the same sanitized names.
 - Poster image (shown while loading, or if WebGL is unavailable): `public/models/fox/vulpi-poster.webp`. It is a 264×336
-  transparent still of the idle pose, rendered from the model by difference matting.
+  transparent still of the idle pose, rendered from the model by difference matting (`shots-tool/fox-poster.mjs`).
 
-## Clip identification
+## Clips (`components/fox/clips.ts`)
 
-The 22 animations are unnamed (`NlaTrack`, `NlaTrack.001` … `NlaTrack.021`). Every clip starts and ends in the bind (T)
-pose. Many also keep the arms in T for most of the clip, so the usable moves are **time segments** of clips, sometimes with
-bone masks. Identified from side and front renders of each clip:
+The six moves are named glTF animations, looked up with `THREE.AnimationClip.findByName`. Every clip keys every bone on
+every frame, so nothing leaks between clips and no trimming, bone masks or root-motion stripping is needed.
 
-| index | duration | content |
-|---|---|---|
-| 0, 2, 6, 13, 14 | – | T-pose idles / weight shifts (arms stay in T) |
-| 1 | 10.8 s | dance / stretch |
-| 3 | 3.5 s | **celebrate**: arms up, hop |
-| 4 | 17.1 s | relaxed arms-down **idle** (good in 0.25–0.8 of the clip) |
-| 5 | 3.5 s | walk forward (root motion) |
-| 7 | 5.6 s | crouch / sneak |
-| 8 | 0.83 s | jog cycle, T arms |
-| 9 | 1.3 s | hop / dance |
-| 10 | 6.6 s | left-arm **wave** (0.37–0.62) |
-| 11 | 10.9 s | gesturing / shrug |
-| 12 | 9.1 s | turn + arm raise (point-ish) |
-| 15 | 10.8 s | head down, thinking / scratching |
-| 16 | 17.3 s | right arm extended forward |
-| 17 | 2.4 s | walk, T arms, root motion |
-| 18 | 7.2 s | **talk** gestures (0.45–0.85) |
-| 19 | 3.1 s | dramatic fall |
-| 20 | 3.7 s | **walk** with arm swing (passes through T), root motion 1.69 m |
-| 21 | 5.9 s | salute / look-out |
+| move | duration | loop | content |
+|---|---|---|---|
+| `idle` | 4.0 s | repeat | breathing, head drift, weight shift, tail sway, ear twitches, blinks |
+| `wave` | 2.8 s | once | right-arm wave, palm to camera |
+| `talk` | 3.2 s | repeat | nods, jaw, explaining hand gestures |
+| `point` | 2.6 s | once | right arm points to screen left (toward the page) |
+| `celebrate` | 2.2 s | once | crouch, small jump, fists up |
+| `walk` | 1.07 s | repeat | in-place walk cycle |
 
-### Moves used by the guide (`components/fox/clips.ts`)
-
-| move | source | segment (fraction of clip) | loop | recipe |
-|---|---|---|---|---|
-| `idle` | clip 4 | 0.30–0.74 | ping-pong | as is |
-| `talk` | clip 18 | 0.46–0.84 | ping-pong | as is |
-| `wave` | clip 10 | 0.37–0.64 | once | left-arm bones from the wave over the idle body |
-| `point` | clip 4 | 0.40–0.52 | once | right arm slerped 82 % toward bind, so the arm points straight out (screen-left in the corner) |
-| `walk` | clip 20 | 0.06–0.94 | repeat | leg bones from the walk, root motion removed (in place), upper body from idle |
-| `celebrate` | clip 3 | 0.16–0.86 | once | as is |
-
-One-shot moves return to `idle` automatically (mixer `finished`). `buildFoxClips(gltf.animations, root)` builds all six from
-the raw clips by index, so a re-export with the same track order keeps working. If the order changes, update the indices in
-`FOX_MOVES`.
+Crossfades are 0.3 s between clips and 0.2 s into `walk` (`fadeFor`). One-shot clips start and end at the rest pose; they
+run with `clampWhenFinished = false` and the mixer `finished` event fades back to `idle`.
 
 ## Behaviour
 
@@ -71,6 +49,9 @@ the raw clips by index, so a re-export with the same track order keeps working. 
   visit. Picking a style gets a style line plus a nudge to the finish (point). Picking a finish gets a finish reaction plus a
   nudge to hardware. Hardware style, hardware finish, knobs/pulls and the first switch to 3D each get one line. Once all three
   steps have been touched, he celebrates and offers *Get my custom quote* / *Keep exploring*.
+- **Finish reactions** use `finishBucket`: light (Flour, Oat, Cloudstone, Mist), gloss (Snow Gloss), dark (Graphite,
+  Slate, Espresso Walnut), wood (oaks, walnuts, teaks), mid (Storm). Sage and Paint Ready have no fitting line, so he skips
+  the finish reaction and goes straight to the hardware nudge.
 - Bubbles auto-hide about 9 s after the line ends, unless they carry buttons. Tapping the fox re-opens help.
 - **Quote:** both **Request a quote** links (the final CTA and the mobile sheet's *Quote*) open the chat when Vulpi is active.
   Ctrl-, cmd- and shift-clicks, and clicks while he is dismissed, still go to `/request-bid?configuration=…` as before.
@@ -134,8 +115,8 @@ or leave them text-only.
 | `quiet` | idle | Got it. I'll stay out of the way. Tap me if you want a hand. |
 | `style_shaker_classic` | talk | Shaker Classic. Recessed panel, clean frame. It has outlasted every trend for a reason. |
 | `style_shaker_slide` | talk | Shaker Slide. A slimmer frame, so it reads lighter. Classic, just a little more modern. |
-| `style_slab` | talk | Slab Modern. Flat and quiet. It lets the finish and the hardware do the talking. |
-| `style_fusion_shaker` | talk | Fusion Shaker. Shaker bones with a modern edge. Plays well with both worlds. |
+| `style_slab` | talk | Slab. Flat and quiet. It lets the finish and the hardware do the talking. |
+| `style_fusion_shaker` | talk | Fusion Classic. Shaker bones with a modern edge. Plays well with both worlds. |
 | `style_fusion_slide` | talk | Fusion Slide. Slim profile with a fresh detail. Nice choice for a contemporary space. |
 | `next_finish` | point | Next, the finish. Every swatch is a photo of a real door. |
 | `finish_light` | talk | Bright and timeless. Light doors make a kitchen feel bigger and they forgive almost any countertop. |

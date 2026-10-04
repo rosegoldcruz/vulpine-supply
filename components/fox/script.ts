@@ -23,8 +23,8 @@ export const LINES = {
   style: {
     shaker_classic: L('style_shaker_classic', 'Shaker Classic. Recessed panel, clean frame. It has outlasted every trend for a reason.'),
     shaker_slide: L('style_shaker_slide', 'Shaker Slide. A slimmer frame, so it reads lighter. Classic, just a little more modern.'),
-    slab: L('style_slab', 'Slab Modern. Flat and quiet. It lets the finish and the hardware do the talking.'),
-    fusion_shaker: L('style_fusion_shaker', 'Fusion Shaker. Shaker bones with a modern edge. Plays well with both worlds.'),
+    slab: L('style_slab', 'Slab. Flat and quiet. It lets the finish and the hardware do the talking.'),
+    fusion_shaker: L('style_fusion_shaker', 'Fusion Classic. Shaker bones with a modern edge. Plays well with both worlds.'),
     fusion_slide: L('style_fusion_slide', 'Fusion Slide. Slim profile with a fresh detail. Nice choice for a contemporary space.'),
   } as Record<string, FoxLine>,
   nextFinish: L('next_finish', 'Next, the finish. Every swatch is a photo of a real door.', 'point'),
@@ -72,11 +72,15 @@ export const LINES = {
   qError: L('q_error', 'Something went wrong on my end. Try again, or use the full request form.'),
 } as const;
 
-/** Bucket a door finish id into a reaction. */
-export function finishBucket(id: string): keyof typeof LINES.finish {
+/**
+ * Bucket a door finish id into a reaction. null = no finish line fits (Sage is a green, Paint Ready is primed),
+ * so he skips the reaction and just moves on to the hardware nudge.
+ */
+export function finishBucket(id: string): keyof typeof LINES.finish | null {
+  if (/sage|paint_ready/.test(id)) return null;
   if (/gloss/.test(id)) return 'gloss';
   if (/walnut|oak|teak/.test(id)) return 'wood';
-  if (/flour|mist|snow|white/.test(id)) return 'light';
+  if (/flour|oat|cloudstone|mist|snow|white/.test(id)) return 'light';
   if (/graphite|slate|espresso|black/.test(id)) return 'dark';
   return 'mid';
 }

@@ -42,5 +42,8 @@ for(const name of await readdir(directory)) if(name.endsWith('.glb')) {
   total+=size;count++;
 }
 const fox=await io.read(directory+'vulpi_fox.glb');
-assert.equal(fox.getRoot().listAnimations().length,22);
-console.log(JSON.stringify({verifiedSourceGLBs:count,totalSourceBytes:total,verifiedStageGLBs:manifest.files.length,foxAnimations:22,sourceAndFullStageIdentical:true,texturesUnchanged:true}));
+const foxClips=fox.getRoot().listAnimations().map(a=>a.getName()).sort();
+assert.deepEqual(foxClips,['celebrate','idle','point','talk','walk','wave']);
+const foxV1=await io.read(directory+'vulpi_fox_v1.glb');
+assert.equal(foxV1.getRoot().listAnimations().length,22);
+console.log(JSON.stringify({verifiedSourceGLBs:count,totalSourceBytes:total,verifiedStageGLBs:manifest.files.length,foxAnimations:foxClips,foxV1Animations:22,sourceAndFullStageIdentical:true,texturesUnchanged:true}));
