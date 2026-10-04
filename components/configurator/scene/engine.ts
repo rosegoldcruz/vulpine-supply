@@ -5,13 +5,17 @@
  *   public/models/configurator/kitchen.glb            door_*, drawer_*, panel_* take finish; pull_* + knob_* hardware; island_* toggleable
  *   public/models/configurator/fronts_<style_id>.glb  same mesh names/positions -> style change swaps meshes by name
  *   public/models/configurator/finishes.json (+ finishes/)  PBR finishes; preferred over our sampled swatch colors
+ *   public/models/configurator/hardware.glb + mounts.json   pull/knob models placed at each front's mount (see ./hardware)
+ * GLBs are Draco-compressed; the decoder is self-hosted in public/draco/.
  * When kitchen.glb is absent (or fails to load) the procedural kitchen in ./procedural is used.
  */
 import * as THREE from 'three';
 import { GLTFLoader } from 'three/examples/jsm/loaders/GLTFLoader.js';
+import { DRACOLoader } from 'three/examples/jsm/loaders/DRACOLoader.js';
 import { OrbitControls } from 'three/examples/jsm/controls/OrbitControls.js';
 import { RoomEnvironment } from 'three/examples/jsm/environments/RoomEnvironment.js';
 import { buildProceduralKitchen, placeHardware, type HardwareAnchor, type KitchenMaterials } from './procedural';
+import { HardwareLibrary, normalizeMounts, placeMountedHardware, type Mount } from './hardware';
 import type { DoorFinish, HardwareFinish } from '../data';
 
 const MODEL_BASE = '/models/configurator/';
@@ -26,6 +30,8 @@ interface Manifest {
   kitchen: string | null;
   fronts: Record<string, string>;
   finishesJson: string | null;
+  hardware: string | null;
+  mounts: string | null;
 }
 
 export interface FinishDef {
@@ -36,6 +42,11 @@ export interface FinishDef {
   roughness?: number;
   metalness?: number;
   repeat?: [number, number];
+  clearcoat?: number;
+  clearcoatRoughness?: number;
+  /** flat fallback when the map can't load */
+  averageColor?: string;
+  normalScale?: number;
 }
 
 export type EngineMode = 'loading' | 'procedural' | 'glb' | 'error';
@@ -70,11 +81,29 @@ export function normalizeFinishes(json: unknown): Record<string, FinishDef> {
       roughnessMap: resolveAsset(pick(e.roughnessMap, e.roughness_map, tex.roughness, tex.roughnessMap)),
       roughness: num(e.roughness, e.roughnessFactor),
       metalness: num(e.metalness, e.metallic, e.metalnessFactor),
+      clearcoat: num(e.clearcoat, e.clearcoatFactor),
+      clearcoatRoughness: num(e.clearcoatRoughness, e.clearcoat_roughness),
+      averageColor: pick(e.averageColor, e.average_color, e.baseColor),
+      normalScale: num(e.normalScale, e.normal_scale),
     };
     const rep = e.repeat ?? e.uvScale ?? e.scale;
     if (Array.isArray(rep) && rep.length === 2) def.repeat = [Number(rep[0]), Number(rep[1])];
     else if (typeof rep === 'number') def.repeat = [rep, rep];
     for (const k of [rawKey, e.id, e.key, e.slug, e.name].filter(Boolean)) out[normKey(String(k))] = def;
+  }
+  return out;
+}
+
+/** finishes.json -> hardwareFinishes (or mounts.json -> hardware): { <id>: { color, metalness, roughness } } */
+export function normalizeHardwareFinishes(json: unknown): Record<string, HardwareFinish> {
+  const out: Record<string, HardwareFinish> = {};
+  const root = (json && typeof json === 'object' ? json : {}) as Record<string, any>;
+  const src = root.hardwareFinishes ?? root.hardware;
+  if (!src || typeof src !== 'object' || Array.isArray(src)) return out;
+  for (const [k, v] of Object.entries(src as Record<string, any>)) {
+    if (v && typeof v === 'object' && typeof v.color === 'string') {
+      out[normKey(k)] = { name: String(v.name ?? k), color: v.color, metalness: Number(v.metalness ?? 1), roughness: Number(v.roughness ?? 0.35) };
+    }
   }
   return out;
 }
@@ -102,6 +131,7 @@ export interface EngineState {
   finishId: string;
   finish: DoorFinish | undefined;
   hwStyle: string;
+  hwFinishId: string;
   hwFinish: HardwareFinish | undefined;
   doorHardware: 'pull' | 'knob';
   showIsland: boolean;
@@ -123,8 +153,11 @@ export class ConfiguratorEngine {
   private content: THREE.Object3D | null = null;
   private anchors: HardwareAnchor[] = [];
   private hardwareObjs: THREE.Object3D[] = [];
-  private manifest: Manifest = { kitchen: null, fronts: {}, finishesJson: null };
+  private manifest: Manifest = { kitchen: null, fronts: {}, finishesJson: null, hardware: null, mounts: null };
   private glbFinishes: Record<string, FinishDef> = {};
+  private glbHwFinishes: Record<string, HardwareFinish> = {};
+  private hwLib = new HardwareLibrary(null);
+  private mounts: Mount[] = [];
   private glbKitchen: THREE.Object3D | null = null;
   private state: EngineState | null = null;
   private buildToken = 0;
@@ -143,6 +176,7 @@ export class ConfiguratorEngine {
     this.renderer.domElement.style.width = '100%';
     this.renderer.domElement.style.height = '100%';
     container.appendChild(this.renderer.domElement);
+    this.gltf.setDRACOLoader(new DRACOLoader().setDecoderPath('/draco/'));
 
     this.scene.background = new THREE.Color('#ece6df');
     const pmrem = new THREE.PMREMGenerator(this.renderer);
@@ -182,8 +216,9 @@ export class ConfiguratorEngine {
     this.scene.add(fill);
 
     this.mats = {
-      finish: new THREE.MeshStandardMaterial({ color: '#d3d1cf', roughness: 0.55 }),
-      finishRecess: new THREE.MeshStandardMaterial({ color: '#c4c2c0', roughness: 0.6 }),
+      // physical so snow_gloss can use clearcoat
+      finish: new THREE.MeshPhysicalMaterial({ color: '#d3d1cf', roughness: 0.55 }),
+      finishRecess: new THREE.MeshPhysicalMaterial({ color: '#c4c2c0', roughness: 0.6 }),
       carcass: new THREE.MeshStandardMaterial({ color: '#e7e2db', roughness: 0.8 }),
       interior: new THREE.MeshStandardMaterial({ color: '#1d1d1f', roughness: 0.35, metalness: 0.2 }),
       counter: new THREE.MeshStandardMaterial({ color: '#f4f2ef', roughness: 0.22 }),
@@ -208,6 +243,7 @@ export class ConfiguratorEngine {
   }
 
   private setMode(mode: EngineMode, detail?: string) {
+    if (mode !== this.mode || detail) console.info(`[configurator] 3D mode: ${mode}${detail ? ` (${detail})` : ''}`);
     this.mode = mode;
     this.onMode?.(mode, detail);
   }
@@ -223,9 +259,9 @@ export class ConfiguratorEngine {
     this.dirty = true;
   }
 
-  private loadTexture(url: string | undefined, srgb: boolean): Promise<THREE.Texture | null> {
+  private loadTexture(url: string | undefined, srgb: boolean, flipY = true): Promise<THREE.Texture | null> {
     if (!url) return Promise.resolve(null);
-    const key = `${url}|${srgb}`;
+    const key = `${url}|${srgb}|${flipY}`;
     if (!this.texCache.has(key)) {
       this.texCache.set(
         key,
@@ -233,6 +269,7 @@ export class ConfiguratorEngine {
           .loadAsync(url)
           .then((t) => {
             t.colorSpace = srgb ? THREE.SRGBColorSpace : THREE.NoColorSpace;
+            t.flipY = flipY;
             t.wrapS = t.wrapT = THREE.RepeatWrapping;
             t.anisotropy = Math.min(8, this.renderer.capabilities.getMaxAnisotropy());
             return t;
@@ -247,21 +284,42 @@ export class ConfiguratorEngine {
   async init(): Promise<void> {
     const manifest = await fetchJson<Partial<Manifest>>(`${MODEL_BASE}manifest.json`);
     if (manifest) {
-      this.manifest = { kitchen: manifest.kitchen ?? null, fronts: manifest.fronts ?? {}, finishesJson: manifest.finishesJson ?? null };
+      this.manifest = {
+        kitchen: manifest.kitchen ?? null,
+        fronts: manifest.fronts ?? {},
+        finishesJson: manifest.finishesJson ?? null,
+        hardware: manifest.hardware ?? null,
+        mounts: manifest.mounts ?? null,
+      };
     } else if (await exists(`${MODEL_BASE}kitchen.glb`)) {
       this.manifest.kitchen = `${MODEL_BASE}kitchen.glb`;
+      this.manifest.hardware = `${MODEL_BASE}hardware.glb`;
+      this.manifest.mounts = `${MODEL_BASE}mounts.json`;
     }
     const finishesUrl = this.manifest.finishesJson || `${MODEL_BASE}finishes.json`;
     const fj = await fetchJson<unknown>(finishesUrl);
-    if (fj) this.glbFinishes = normalizeFinishes(fj);
-    if (this.manifest.kitchen) {
-      try {
-        const g = await this.gltf.loadAsync(this.manifest.kitchen);
-        this.glbKitchen = g.scene;
-      } catch (e) {
+    if (fj) {
+      this.glbFinishes = normalizeFinishes(fj);
+      this.glbHwFinishes = normalizeHardwareFinishes(fj);
+    }
+    if (!this.manifest.kitchen) return;
+    const [kitchen, hardware, mountsJson] = await Promise.all([
+      this.gltf.loadAsync(this.manifest.kitchen).catch((e) => {
         console.warn('[configurator] kitchen.glb failed to load, using procedural kitchen', e);
-        this.glbKitchen = null;
-      }
+        return null;
+      }),
+      this.manifest.hardware ? this.gltf.loadAsync(this.manifest.hardware).catch(() => null) : Promise.resolve(null),
+      this.manifest.mounts ? fetchJson<unknown>(this.manifest.mounts) : Promise.resolve(null),
+    ]);
+    this.glbKitchen = kitchen?.scene ?? null;
+    this.hwLib = new HardwareLibrary(hardware?.scene ?? null);
+    this.mounts = normalizeMounts(mountsJson);
+    if (mountsJson && !Object.keys(this.glbHwFinishes).length) this.glbHwFinishes = normalizeHardwareFinishes(mountsJson);
+    if (this.glbKitchen) {
+      console.info(
+        `[configurator] GLB assets: kitchen.glb, ${Object.keys(this.manifest.fronts).length} fronts files, ` +
+          `hardware.glb nodes [${this.hwLib.names.join(', ') || 'none'}], ${this.mounts.length} mounts, ${Object.keys(this.glbFinishes).length} finish keys`,
+      );
     }
   }
 
@@ -286,11 +344,11 @@ export class ConfiguratorEngine {
       await this.buildGeometry(next.styleId, token);
       if (token !== this.buildToken) return;
     }
-    if (!prev || !this.hardwareObjs.length || prev.hwStyle !== next.hwStyle || prev.doorHardware !== next.doorHardware || prev.styleId !== next.styleId) {
+    if (!prev || prev.hwStyle !== next.hwStyle || prev.doorHardware !== next.doorHardware || prev.styleId !== next.styleId) {
       this.rebuildHardware(next);
     }
     await this.applyFinish(next.finishId, next.finish);
-    this.applyHardwareFinish(next.hwFinish);
+    this.applyHardwareFinish(next.hwFinishId, next.hwFinish);
     this.setIsland(next.showIsland);
     this.dirty = true;
   }
@@ -315,15 +373,25 @@ export class ConfiguratorEngine {
   }
 
   private framedGlb = false;
+  /** Frame the cabinetry (finish meshes), not the whole room shell, from the open +Z side. */
   private frameObject(obj: THREE.Object3D) {
-    const box = new THREE.Box3().setFromObject(obj);
+    obj.updateMatrixWorld(true);
+    const box = new THREE.Box3();
+    obj.traverse((o) => {
+      if ((o as THREE.Mesh).isMesh && o.name && FINISH_RE.test(o.name)) box.expandByObject(o);
+    });
+    if (box.isEmpty()) box.setFromObject(obj);
     if (box.isEmpty()) return;
     const size = box.getSize(new THREE.Vector3());
     const center = box.getCenter(new THREE.Vector3());
-    const dist = Math.max(size.x, size.y) / (2 * Math.tan((this.camera.fov * Math.PI) / 360)) + size.z;
-    this.controls.target.copy(center);
-    this.camera.position.set(center.x + size.x * 0.12, center.y + size.y * 0.25, center.z + dist * 1.05);
-    this.controls.maxDistance = dist * 3;
+    const vFov = (this.camera.fov * Math.PI) / 180;
+    const hFov = 2 * Math.atan(Math.tan(vFov / 2) * this.camera.aspect);
+    const radius = 0.5 * Math.hypot(size.x, size.y, size.z);
+    const dist = Math.max(radius / Math.sin(vFov / 2), radius / Math.sin(hFov / 2)) * 0.82;
+    const dir = new THREE.Vector3(0.12, 0.42, 1).normalize();
+    this.controls.target.copy(center).setY(Math.min(center.y, 1.0));
+    this.camera.position.copy(this.controls.target).addScaledVector(dir, dist);
+    this.controls.maxDistance = Math.max(dist * 2, 6);
     this.framedGlb = true;
   }
 
@@ -383,33 +451,65 @@ export class ConfiguratorEngine {
     walk(root, null);
   }
 
+  private mountedObjs: THREE.Object3D[] = [];
+
   private rebuildHardware(s: EngineState) {
-    if (this.glbKitchen) return; // GLB pulls are modeled; only their finish changes
-    for (const o of this.hardwareObjs) {
-      o.parent?.remove(o);
-      o.traverse((c) => (c as THREE.Mesh).geometry?.dispose());
+    const disposeAll = (list: THREE.Object3D[]) => {
+      for (const o of list) {
+        o.parent?.remove(o);
+        o.traverse((c) => {
+          const m = c as THREE.Mesh;
+          if (m.isMesh && !m.userData.sharedGeometry) m.geometry?.dispose();
+        });
+      }
+    };
+    if (this.glbKitchen) {
+      disposeAll(this.mountedObjs);
+      this.mountedObjs = [];
+      if (!this.mounts.length || !this.content) return; // no mounts.json: keep the modeled pulls, recolor only
+      const content = this.content;
+      // hide the kitchen's own modeled pulls/knobs; mounted instances replace them
+      for (const o of this.hardwareObjs) o.visible = false;
+      const island = content.getObjectByName('island');
+      const present = new Set<string>();
+      content.traverse((o) => o.name && present.add(o.name));
+      this.mountedObjs = placeMountedHardware({
+        mounts: this.mounts.filter((m) => present.has(m.front)),
+        lib: this.hwLib,
+        style: s.hwStyle,
+        doorKind: s.doorHardware,
+        material: this.mats.hardware,
+        parentFor: (front) => (front.startsWith('island_') && island ? island : content),
+      });
+      return;
     }
+    disposeAll(this.hardwareObjs);
     this.hardwareObjs = placeHardware(this.anchors, s.hwStyle, s.doorHardware, this.mats.hardware);
   }
 
   private async applyFinish(finishId: string, finish: DoorFinish | undefined) {
-    const mat = this.mats.finish as THREE.MeshStandardMaterial;
+    const mat = this.mats.finish as THREE.MeshPhysicalMaterial;
+    const glb = Boolean(this.glbKitchen);
     const def = this.glbFinishes[normKey(finishId)] || (finish ? this.glbFinishes[normKey(finish.name)] : undefined);
     if (def) {
+      // finishes.json textures follow the glTF UV convention (no flip); UVs are in metres, repeat = 1/tile size
       const [map, normalMap, roughnessMap] = await Promise.all([
-        this.loadTexture(def.map, true),
-        this.loadTexture(def.normalMap, false),
-        this.loadTexture(def.roughnessMap, false),
+        this.loadTexture(def.map, true, !glb),
+        this.loadTexture(def.normalMap, false, !glb),
+        this.loadTexture(def.roughnessMap, false, !glb),
       ]);
       if (this.state?.finishId !== finishId) return;
-      for (const t of [map, normalMap, roughnessMap]) if (t && def.repeat) t.repeat.set(def.repeat[0], def.repeat[1]);
-      mat.color.set(map ? '#ffffff' : def.color || finish?.color || '#cccccc');
-      if (map && def.color) mat.color.set(def.color);
+      for (const t of [map, normalMap, roughnessMap]) if (t) t.repeat.set(glb && def.repeat ? def.repeat[0] : 1, glb && def.repeat ? def.repeat[1] : 1);
+      if (map) mat.color.set(def.color || '#ffffff');
+      else mat.color.set(def.map ? def.averageColor || finish?.color || '#cccccc' : def.color || def.averageColor || finish?.color || '#cccccc');
       mat.map = map;
       mat.normalMap = normalMap;
+      mat.normalScale.setScalar(def.normalScale ?? 1);
       mat.roughnessMap = roughnessMap;
       mat.roughness = def.roughness ?? finish?.roughness ?? 0.55;
       mat.metalness = def.metalness ?? 0;
+      mat.clearcoat = def.clearcoat ?? 0;
+      mat.clearcoatRoughness = def.clearcoatRoughness ?? 0.05;
     } else {
       // sampled from the cabs_clean swatch (scripts/build-cabs-dataset.mjs)
       const map = finish?.textured ? await this.loadTexture(finish.texture, true) : null;
@@ -420,18 +520,21 @@ export class ConfiguratorEngine {
       mat.roughnessMap = null;
       mat.roughness = finish?.roughness ?? 0.55;
       mat.metalness = 0;
+      mat.clearcoat = 0;
     }
     mat.needsUpdate = true;
     // recessed panels: same finish, a touch darker so the profile reads at a distance
-    const rec = this.mats.finishRecess as THREE.MeshStandardMaterial;
+    const rec = this.mats.finishRecess as THREE.MeshPhysicalMaterial;
     rec.copy(mat);
     rec.color.copy(mat.color).multiplyScalar(0.86);
     rec.needsUpdate = true;
     this.dirty = true;
   }
 
-  private applyHardwareFinish(f: HardwareFinish | undefined) {
+  private applyHardwareFinish(id: string, fallback: HardwareFinish | undefined) {
     const mat = this.mats.hardware as THREE.MeshStandardMaterial;
+    // calibrated values from finishes.json when present, else dataset.json
+    const f = this.glbHwFinishes[normKey(id)] || fallback;
     if (!f) return;
     mat.color.set(f.color);
     mat.metalness = f.metalness;

@@ -52,12 +52,12 @@ export default function KitchenScene3D(props: Props) {
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
-  const { styleId, finishId, finish, hwStyle, hwFinish, doorHardware, showIsland } = props;
+  const { styleId, finishId, finish, hwStyle, hwFinishId, hwFinish, doorHardware, showIsland } = props;
   useEffect(() => {
     if (readyRef.current && engineRef.current) {
-      engineRef.current.update({ styleId, finishId, finish, hwStyle, hwFinish, doorHardware, showIsland });
+      engineRef.current.update({ styleId, finishId, finish, hwStyle, hwFinishId, hwFinish, doorHardware, showIsland });
     }
-  }, [styleId, finishId, finish, hwStyle, hwFinish, doorHardware, showIsland]);
+  }, [styleId, finishId, finish, hwStyle, hwFinishId, hwFinish, doorHardware, showIsland]);
 
   return (
     <div className={styles.scene3d}>

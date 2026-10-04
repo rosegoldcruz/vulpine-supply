@@ -1,0 +1,1296 @@
+{
+ "mounts": {
+  "door_A03_LS36": {
+   "position": [
+    -0.51924,
+    0.75336,
+    -2.04013
+   ],
+   "quaternion": [
+    0.270598,
+    0.270598,
+    0.653282,
+    0.653282
+   ],
+   "axis": [
+    0.0,
+    1.0,
+    0.0
+   ],
+   "normal": [
+    0.70711,
+    0.0,
+    0.70711
+   ],
+   "orientation": "vertical",
+   "hardware": "pull_bar",
+   "bar_length_m": 0.1524,
+   "center_to_center_m": 0.1143,
+   "pull": "pull_A03_LS36",
+   "front": "door_A03_LS36"
+  },
+  "door_A01_WEC2430": {
+   "position": [
+    -0.51924,
+    1.49454,
+    -2.47119
+   ],
+   "quaternion": [
+    0.270598,
+    0.270598,
+    0.653282,
+    0.653282
+   ],
+   "axis": [
+    0.0,
+    1.0,
+    0.0
+   ],
+   "normal": [
+    0.70711,
+    0.0,
+    0.70711
+   ],
+   "orientation": "vertical",
+   "hardware": "pull_bar",
+   "bar_length_m": 0.1524,
+   "center_to_center_m": 0.1143,
+   "pull": "pull_A01_WEC2430",
+   "front": "door_A01_WEC2430"
+  },
+  "door_A02_W1530": {
+   "position": [
+    -0.78865,
+    1.49454,
+    -2.20178
+   ],
+   "quaternion": [
+    0.270598,
+    0.270598,
+    0.653282,
+    0.653282
+   ],
+   "axis": [
+    0.0,
+    1.0,
+    0.0
+   ],
+   "normal": [
+    0.70711,
+    0.0,
+    0.70711
+   ],
+   "orientation": "vertical",
+   "hardware": "pull_bar",
+   "bar_length_m": 0.1524,
+   "center_to_center_m": 0.1143,
+   "pull": "pull_A02_W1530",
+   "front": "door_A02_W1530"
+  },
+  "door_B03_W1530": {
+   "position": [
+    0.10615,
+    1.49454,
+    -2.20178
+   ],
+   "quaternion": [
+    -0.270598,
+    -0.270598,
+    0.653282,
+    0.653282
+   ],
+   "axis": [
+    0.0,
+    1.0,
+    0.0
+   ],
+   "normal": [
+    -0.70711,
+    0.0,
+    0.70711
+   ],
+   "orientation": "vertical",
+   "hardware": "pull_bar",
+   "bar_length_m": 0.1524,
+   "center_to_center_m": 0.1143,
+   "pull": "pull_B03_W1530",
+   "front": "door_B03_W1530"
+  },
+  "door_A04_W2430_L": {
+   "position": [
+    -1.00467,
+    1.49454,
+    -1.98576
+   ],
+   "quaternion": [
+    0.270598,
+    0.270598,
+    0.653282,
+    0.653282
+   ],
+   "axis": [
+    0.0,
+    1.0,
+    0.0
+   ],
+   "normal": [
+    0.70711,
+    0.0,
+    0.70711
+   ],
+   "orientation": "vertical",
+   "hardware": "pull_bar",
+   "bar_length_m": 0.1524,
+   "center_to_center_m": 0.1143,
+   "pull": "pull_A04_W2430_L",
+   "front": "door_A04_W2430_L"
+  },
+  "door_A04_W2430_R": {
+   "position": [
+    -1.05181,
+    1.49454,
+    -1.93861
+   ],
+   "quaternion": [
+    0.270598,
+    0.270598,
+    0.653282,
+    0.653282
+   ],
+   "axis": [
+    0.0,
+    1.0,
+    0.0
+   ],
+   "normal": [
+    0.70711,
+    0.0,
+    0.70711
+   ],
+   "orientation": "vertical",
+   "hardware": "pull_bar",
+   "bar_length_m": 0.1524,
+   "center_to_center_m": 0.1143,
+   "pull": "pull_A04_W2430_R",
+   "front": "door_A04_W2430_R"
+  },
+  "door_A05_SB36_L": {
+   "position": [
+    -1.32796,
+    0.60414,
+    -1.23142
+   ],
+   "quaternion": [
+    0.270598,
+    0.270598,
+    0.653282,
+    0.653282
+   ],
+   "axis": [
+    0.0,
+    1.0,
+    0.0
+   ],
+   "normal": [
+    0.70711,
+    0.0,
+    0.70711
+   ],
+   "orientation": "vertical",
+   "hardware": "pull_bar",
+   "bar_length_m": 0.1524,
+   "center_to_center_m": 0.1143,
+   "pull": "pull_A05_SB36_L",
+   "front": "door_A05_SB36_L"
+  },
+  "door_A05_SB36_R": {
+   "position": [
+    -1.3751,
+    0.60414,
+    -1.18427
+   ],
+   "quaternion": [
+    0.270598,
+    0.270598,
+    0.653282,
+    0.653282
+   ],
+   "axis": [
+    0.0,
+    1.0,
+    0.0
+   ],
+   "normal": [
+    0.70711,
+    0.0,
+    0.70711
+   ],
+   "orientation": "vertical",
+   "hardware": "pull_bar",
+   "bar_length_m": 0.1524,
+   "center_to_center_m": 0.1143,
+   "pull": "pull_A05_SB36_R",
+   "front": "door_A05_SB36_R"
+  },
+  "drawer_A06_B15_1": {
+   "position": [
+    -1.80952,
+    0.80099,
+    -0.74985
+   ],
+   "quaternion": [
+    0.382683,
+    0.0,
+    0.92388,
+    0.0
+   ],
+   "axis": [
+    -0.70711,
+    0.0,
+    0.70711
+   ],
+   "normal": [
+    0.70711,
+    0.0,
+    0.70711
+   ],
+   "orientation": "horizontal",
+   "hardware": "pull_bar_8in",
+   "bar_length_m": 0.2032,
+   "center_to_center_m": 0.1651,
+   "pull": "pull_A06_B15_1",
+   "front": "drawer_A06_B15_1"
+  },
+  "door_A06_B15": {
+   "position": [
+    -1.69888,
+    0.60414,
+    -0.86049
+   ],
+   "quaternion": [
+    0.270598,
+    0.270598,
+    0.653282,
+    0.653282
+   ],
+   "axis": [
+    0.0,
+    1.0,
+    0.0
+   ],
+   "normal": [
+    0.70711,
+    0.0,
+    0.70711
+   ],
+   "orientation": "vertical",
+   "hardware": "pull_bar",
+   "bar_length_m": 0.1524,
+   "center_to_center_m": 0.1143,
+   "pull": "pull_A06_B15",
+   "front": "door_A06_B15"
+  },
+  "door_A07_W1530": {
+   "position": [
+    -1.91441,
+    1.49454,
+    -1.07601
+   ],
+   "quaternion": [
+    0.270598,
+    0.270598,
+    0.653282,
+    0.653282
+   ],
+   "axis": [
+    0.0,
+    1.0,
+    0.0
+   ],
+   "normal": [
+    0.70711,
+    0.0,
+    0.70711
+   ],
+   "orientation": "vertical",
+   "hardware": "pull_bar",
+   "bar_length_m": 0.1524,
+   "center_to_center_m": 0.1143,
+   "pull": "pull_A07_W1530",
+   "front": "door_A07_W1530"
+  },
+  "door_A08_W361524_L": {
+   "position": [
+    -2.25741,
+    1.87554,
+    -0.30196
+   ],
+   "quaternion": [
+    0.270598,
+    0.270598,
+    0.653282,
+    0.653282
+   ],
+   "axis": [
+    0.0,
+    1.0,
+    0.0
+   ],
+   "normal": [
+    0.70711,
+    0.0,
+    0.70711
+   ],
+   "orientation": "vertical",
+   "hardware": "pull_bar",
+   "bar_length_m": 0.1524,
+   "center_to_center_m": 0.1143,
+   "pull": "pull_A08_W361524_L",
+   "front": "door_A08_W361524_L"
+  },
+  "door_A08_W361524_R": {
+   "position": [
+    -2.30456,
+    1.87554,
+    -0.25482
+   ],
+   "quaternion": [
+    0.270598,
+    0.270598,
+    0.653282,
+    0.653282
+   ],
+   "axis": [
+    0.0,
+    1.0,
+    0.0
+   ],
+   "normal": [
+    0.70711,
+    0.0,
+    0.70711
+   ],
+   "orientation": "vertical",
+   "hardware": "pull_bar",
+   "bar_length_m": 0.1524,
+   "center_to_center_m": 0.1143,
+   "pull": "pull_A08_W361524_R",
+   "front": "door_A08_W361524_R"
+  },
+  "drawer_B04_B12_1": {
+   "position": [
+    0.02245,
+    0.80099,
+    -1.85442
+   ],
+   "quaternion": [
+    0.0,
+    -0.382683,
+    0.0,
+    0.92388
+   ],
+   "axis": [
+    0.70711,
+    0.0,
+    0.70711
+   ],
+   "normal": [
+    -0.70711,
+    0.0,
+    0.70711
+   ],
+   "orientation": "horizontal",
+   "hardware": "pull_bar",
+   "bar_length_m": 0.1524,
+   "center_to_center_m": 0.1143,
+   "pull": "pull_B04_B12_1",
+   "front": "drawer_B04_B12_1"
+  },
+  "door_B04_B12": {
+   "position": [
+    0.10615,
+    0.60414,
+    -1.77073
+   ],
+   "quaternion": [
+    -0.270598,
+    -0.270598,
+    0.653282,
+    0.653282
+   ],
+   "axis": [
+    0.0,
+    1.0,
+    0.0
+   ],
+   "normal": [
+    -0.70711,
+    0.0,
+    0.70711
+   ],
+   "orientation": "vertical",
+   "hardware": "pull_bar",
+   "bar_length_m": 0.1524,
+   "center_to_center_m": 0.1143,
+   "pull": "pull_B04_B12",
+   "front": "door_B04_B12"
+  },
+  "door_B05_W1230": {
+   "position": [
+    0.32167,
+    1.49454,
+    -1.98625
+   ],
+   "quaternion": [
+    -0.270598,
+    -0.270598,
+    0.653282,
+    0.653282
+   ],
+   "axis": [
+    0.0,
+    1.0,
+    0.0
+   ],
+   "normal": [
+    -0.70711,
+    0.0,
+    0.70711
+   ],
+   "orientation": "vertical",
+   "hardware": "pull_bar",
+   "bar_length_m": 0.1524,
+   "center_to_center_m": 0.1143,
+   "pull": "pull_B05_W1230",
+   "front": "door_B05_W1230"
+  },
+  "door_B06_W3015_L": {
+   "position": [
+    0.59157,
+    1.87554,
+    -1.71635
+   ],
+   "quaternion": [
+    -0.270598,
+    -0.270598,
+    0.653282,
+    0.653282
+   ],
+   "axis": [
+    0.0,
+    1.0,
+    0.0
+   ],
+   "normal": [
+    -0.70711,
+    0.0,
+    0.70711
+   ],
+   "orientation": "vertical",
+   "hardware": "pull_bar",
+   "bar_length_m": 0.1524,
+   "center_to_center_m": 0.1143,
+   "pull": "pull_B06_W3015_L",
+   "front": "door_B06_W3015_L"
+  },
+  "door_B06_W3015_R": {
+   "position": [
+    0.63872,
+    1.87554,
+    -1.66921
+   ],
+   "quaternion": [
+    -0.270598,
+    -0.270598,
+    0.653282,
+    0.653282
+   ],
+   "axis": [
+    0.0,
+    1.0,
+    0.0
+   ],
+   "normal": [
+    -0.70711,
+    0.0,
+    0.70711
+   ],
+   "orientation": "vertical",
+   "hardware": "pull_bar",
+   "bar_length_m": 0.1524,
+   "center_to_center_m": 0.1143,
+   "pull": "pull_B06_W3015_R",
+   "front": "door_B06_W3015_R"
+  },
+  "drawer_B07_DB18_1": {
+   "position": [
+    0.83067,
+    0.80099,
+    -1.0462
+   ],
+   "quaternion": [
+    0.0,
+    -0.382683,
+    0.0,
+    0.92388
+   ],
+   "axis": [
+    0.70711,
+    0.0,
+    0.70711
+   ],
+   "normal": [
+    -0.70711,
+    0.0,
+    0.70711
+   ],
+   "orientation": "horizontal",
+   "hardware": "pull_bar_8in",
+   "bar_length_m": 0.2032,
+   "center_to_center_m": 0.1651,
+   "pull": "pull_B07_DB18_1",
+   "front": "drawer_B07_DB18_1"
+  },
+  "drawer_B07_DB18_2": {
+   "position": [
+    0.83067,
+    0.68034,
+    -1.0462
+   ],
+   "quaternion": [
+    0.0,
+    -0.382683,
+    0.0,
+    0.92388
+   ],
+   "axis": [
+    0.70711,
+    0.0,
+    0.70711
+   ],
+   "normal": [
+    -0.70711,
+    0.0,
+    0.70711
+   ],
+   "orientation": "horizontal",
+   "hardware": "pull_bar_8in",
+   "bar_length_m": 0.2032,
+   "center_to_center_m": 0.1651,
+   "pull": "pull_B07_DB18_2",
+   "front": "drawer_B07_DB18_2"
+  },
+  "drawer_B07_DB18_3": {
+   "position": [
+    0.83067,
+    0.3683,
+    -1.0462
+   ],
+   "quaternion": [
+    0.0,
+    -0.382683,
+    0.0,
+    0.92388
+   ],
+   "axis": [
+    0.70711,
+    0.0,
+    0.70711
+   ],
+   "normal": [
+    -0.70711,
+    0.0,
+    0.70711
+   ],
+   "orientation": "horizontal",
+   "hardware": "pull_bar_8in",
+   "bar_length_m": 0.2032,
+   "center_to_center_m": 0.1651,
+   "pull": "pull_B07_DB18_3",
+   "front": "drawer_B07_DB18_3"
+  },
+  "door_B08_W1830": {
+   "position": [
+    0.90862,
+    1.49454,
+    -1.3993
+   ],
+   "quaternion": [
+    -0.270598,
+    -0.270598,
+    0.653282,
+    0.653282
+   ],
+   "axis": [
+    0.0,
+    1.0,
+    0.0
+   ],
+   "normal": [
+    -0.70711,
+    0.0,
+    0.70711
+   ],
+   "orientation": "vertical",
+   "hardware": "pull_bar",
+   "bar_length_m": 0.1524,
+   "center_to_center_m": 0.1143,
+   "pull": "pull_B08_W1830",
+   "front": "door_B08_W1830"
+  },
+  "island_drawer_I01_IB18_1": {
+   "position": [
+    -0.43105,
+    0.80099,
+    -0.61964
+   ],
+   "quaternion": [
+    -0.0,
+    -0.92388,
+    -0.0,
+    0.382683
+   ],
+   "axis": [
+    -0.70711,
+    0.0,
+    0.70711
+   ],
+   "normal": [
+    -0.70711,
+    0.0,
+    -0.70711
+   ],
+   "orientation": "horizontal",
+   "hardware": "pull_bar_8in",
+   "bar_length_m": 0.2032,
+   "center_to_center_m": 0.1651,
+   "pull": "island_pull_I01_IB18_1",
+   "front": "island_drawer_I01_IB18_1"
+  },
+  "island_door_I01_IB18": {
+   "position": [
+    -0.56863,
+    0.60414,
+    -0.48206
+   ],
+   "quaternion": [
+    -0.653282,
+    -0.653282,
+    0.270598,
+    0.270598
+   ],
+   "axis": [
+    0.0,
+    1.0,
+    0.0
+   ],
+   "normal": [
+    -0.70711,
+    0.0,
+    -0.70711
+   ],
+   "orientation": "vertical",
+   "hardware": "pull_bar",
+   "bar_length_m": 0.1524,
+   "center_to_center_m": 0.1143,
+   "pull": "island_pull_I01_IB18",
+   "front": "island_door_I01_IB18"
+  },
+  "island_door_I02_ISB36_L": {
+   "position": [
+    -0.89241,
+    0.60414,
+    -0.15828
+   ],
+   "quaternion": [
+    -0.653282,
+    -0.653282,
+    0.270598,
+    0.270598
+   ],
+   "axis": [
+    0.0,
+    1.0,
+    0.0
+   ],
+   "normal": [
+    -0.70711,
+    0.0,
+    -0.70711
+   ],
+   "orientation": "vertical",
+   "hardware": "pull_bar",
+   "bar_length_m": 0.1524,
+   "center_to_center_m": 0.1143,
+   "pull": "island_pull_I02_ISB36_L",
+   "front": "island_door_I02_ISB36_L"
+  },
+  "island_door_I02_ISB36_R": {
+   "position": [
+    -0.93956,
+    0.60414,
+    -0.11113
+   ],
+   "quaternion": [
+    -0.653282,
+    -0.653282,
+    0.270598,
+    0.270598
+   ],
+   "axis": [
+    0.0,
+    1.0,
+    0.0
+   ],
+   "normal": [
+    -0.70711,
+    0.0,
+    -0.70711
+   ],
+   "orientation": "vertical",
+   "hardware": "pull_bar",
+   "bar_length_m": 0.1524,
+   "center_to_center_m": 0.1143,
+   "pull": "island_pull_I02_ISB36_R",
+   "front": "island_door_I02_ISB36_R"
+  },
+  "island_drawer_I03_IDB18_1": {
+   "position": [
+    -1.40092,
+    0.80099,
+    0.35023
+   ],
+   "quaternion": [
+    -0.0,
+    -0.92388,
+    -0.0,
+    0.382683
+   ],
+   "axis": [
+    -0.70711,
+    0.0,
+    0.70711
+   ],
+   "normal": [
+    -0.70711,
+    0.0,
+    -0.70711
+   ],
+   "orientation": "horizontal",
+   "hardware": "pull_bar_8in",
+   "bar_length_m": 0.2032,
+   "center_to_center_m": 0.1651,
+   "pull": "island_pull_I03_IDB18_1",
+   "front": "island_drawer_I03_IDB18_1"
+  },
+  "island_drawer_I03_IDB18_2": {
+   "position": [
+    -1.40092,
+    0.68034,
+    0.35023
+   ],
+   "quaternion": [
+    -0.0,
+    -0.92388,
+    -0.0,
+    0.382683
+   ],
+   "axis": [
+    -0.70711,
+    0.0,
+    0.70711
+   ],
+   "normal": [
+    -0.70711,
+    0.0,
+    -0.70711
+   ],
+   "orientation": "horizontal",
+   "hardware": "pull_bar_8in",
+   "bar_length_m": 0.2032,
+   "center_to_center_m": 0.1651,
+   "pull": "island_pull_I03_IDB18_2",
+   "front": "island_drawer_I03_IDB18_2"
+  },
+  "island_drawer_I03_IDB18_3": {
+   "position": [
+    -1.40092,
+    0.3683,
+    0.35023
+   ],
+   "quaternion": [
+    -0.0,
+    -0.92388,
+    -0.0,
+    0.382683
+   ],
+   "axis": [
+    -0.70711,
+    0.0,
+    0.70711
+   ],
+   "normal": [
+    -0.70711,
+    0.0,
+    -0.70711
+   ],
+   "orientation": "horizontal",
+   "hardware": "pull_bar_8in",
+   "bar_length_m": 0.2032,
+   "center_to_center_m": 0.1651,
+   "pull": "island_pull_I03_IDB18_3",
+   "front": "island_drawer_I03_IDB18_3"
+  }
+ },
+ "fronts": {
+  "door_A03_LS36": {
+   "kind": "door",
+   "cabinet": "A03",
+   "cabinet_code": "LS36",
+   "wall": "A",
+   "size_m": [
+    0.2812,
+    0.7701
+   ],
+   "pull": "pull_A03_LS36"
+  },
+  "door_B02_LS36": {
+   "kind": "door",
+   "cabinet": "B02",
+   "cabinet_code": "LS36",
+   "wall": "B",
+   "size_m": [
+    0.3002,
+    0.7701
+   ],
+   "pull": "",
+   "shares_pull_with": "door_A03_LS36"
+  },
+  "door_A01_WEC2430": {
+   "kind": "door",
+   "cabinet": "A01",
+   "cabinet_code": "WEC2430",
+   "wall": "A",
+   "size_m": [
+    0.2812,
+    0.7574
+   ],
+   "pull": "pull_A01_WEC2430"
+  },
+  "door_B01_WEC2430": {
+   "kind": "door",
+   "cabinet": "B01",
+   "cabinet_code": "WEC2430",
+   "wall": "B",
+   "size_m": [
+    0.3002,
+    0.7574
+   ],
+   "pull": "",
+   "shares_pull_with": "door_A01_WEC2430"
+  },
+  "door_A02_W1530": {
+   "kind": "door",
+   "cabinet": "A02",
+   "cabinet_code": "W1530",
+   "wall": "A",
+   "size_m": [
+    0.3764,
+    0.7574
+   ],
+   "pull": "pull_A02_W1530"
+  },
+  "door_B03_W1530": {
+   "kind": "door",
+   "cabinet": "B03",
+   "cabinet_code": "W1530",
+   "wall": "B",
+   "size_m": [
+    0.3764,
+    0.7574
+   ],
+   "pull": "pull_B03_W1530"
+  },
+  "door_A04_W2430_L": {
+   "kind": "door",
+   "cabinet": "A04",
+   "cabinet_code": "W2430",
+   "wall": "A",
+   "size_m": [
+    0.3009,
+    0.7574
+   ],
+   "pull": "pull_A04_W2430_L"
+  },
+  "door_A04_W2430_R": {
+   "kind": "door",
+   "cabinet": "A04",
+   "cabinet_code": "W2430",
+   "wall": "A",
+   "size_m": [
+    0.3009,
+    0.7574
+   ],
+   "pull": "pull_A04_W2430_R"
+  },
+  "drawer_A05_SB36_false": {
+   "kind": "false_front",
+   "cabinet": "A05",
+   "cabinet_code": "SB36",
+   "wall": "A",
+   "size_m": [
+    0.9098,
+    0.146
+   ],
+   "pull": ""
+  },
+  "door_A05_SB36_L": {
+   "kind": "door",
+   "cabinet": "A05",
+   "cabinet_code": "SB36",
+   "wall": "A",
+   "size_m": [
+    0.4533,
+    0.6209
+   ],
+   "pull": "pull_A05_SB36_L"
+  },
+  "door_A05_SB36_R": {
+   "kind": "door",
+   "cabinet": "A05",
+   "cabinet_code": "SB36",
+   "wall": "A",
+   "size_m": [
+    0.4533,
+    0.6209
+   ],
+   "pull": "pull_A05_SB36_R"
+  },
+  "drawer_A06_B15_1": {
+   "kind": "drawer",
+   "cabinet": "A06",
+   "cabinet_code": "B15",
+   "wall": "A",
+   "size_m": [
+    0.3764,
+    0.146
+   ],
+   "pull": "pull_A06_B15_1"
+  },
+  "door_A06_B15": {
+   "kind": "door",
+   "cabinet": "A06",
+   "cabinet_code": "B15",
+   "wall": "A",
+   "size_m": [
+    0.3764,
+    0.6209
+   ],
+   "pull": "pull_A06_B15"
+  },
+  "door_A07_W1530": {
+   "kind": "door",
+   "cabinet": "A07",
+   "cabinet_code": "W1530",
+   "wall": "A",
+   "size_m": [
+    0.3764,
+    0.7574
+   ],
+   "pull": "pull_A07_W1530"
+  },
+  "door_A08_W361524_L": {
+   "kind": "door",
+   "cabinet": "A08",
+   "cabinet_code": "W361524",
+   "wall": "A",
+   "size_m": [
+    0.4533,
+    0.3764
+   ],
+   "pull": "pull_A08_W361524_L"
+  },
+  "door_A08_W361524_R": {
+   "kind": "door",
+   "cabinet": "A08",
+   "cabinet_code": "W361524",
+   "wall": "A",
+   "size_m": [
+    0.4533,
+    0.3764
+   ],
+   "pull": "pull_A08_W361524_R"
+  },
+  "drawer_B04_B12_1": {
+   "kind": "drawer",
+   "cabinet": "B04",
+   "cabinet_code": "B12",
+   "wall": "B",
+   "size_m": [
+    0.3002,
+    0.146
+   ],
+   "pull": "pull_B04_B12_1"
+  },
+  "door_B04_B12": {
+   "kind": "door",
+   "cabinet": "B04",
+   "cabinet_code": "B12",
+   "wall": "B",
+   "size_m": [
+    0.3002,
+    0.6209
+   ],
+   "pull": "pull_B04_B12"
+  },
+  "door_B05_W1230": {
+   "kind": "door",
+   "cabinet": "B05",
+   "cabinet_code": "W1230",
+   "wall": "B",
+   "size_m": [
+    0.3002,
+    0.7574
+   ],
+   "pull": "pull_B05_W1230"
+  },
+  "door_B06_W3015_L": {
+   "kind": "door",
+   "cabinet": "B06",
+   "cabinet_code": "W3015",
+   "wall": "B",
+   "size_m": [
+    0.3771,
+    0.3764
+   ],
+   "pull": "pull_B06_W3015_L"
+  },
+  "door_B06_W3015_R": {
+   "kind": "door",
+   "cabinet": "B06",
+   "cabinet_code": "W3015",
+   "wall": "B",
+   "size_m": [
+    0.3771,
+    0.3764
+   ],
+   "pull": "pull_B06_W3015_R"
+  },
+  "drawer_B07_DB18_1": {
+   "kind": "drawer",
+   "cabinet": "B07",
+   "cabinet_code": "DB18",
+   "wall": "B",
+   "size_m": [
+    0.4526,
+    0.146
+   ],
+   "pull": "pull_B07_DB18_1"
+  },
+  "drawer_B07_DB18_2": {
+   "kind": "drawer",
+   "cabinet": "B07",
+   "cabinet_code": "DB18",
+   "wall": "B",
+   "size_m": [
+    0.4526,
+    0.3089
+   ],
+   "pull": "pull_B07_DB18_2"
+  },
+  "drawer_B07_DB18_3": {
+   "kind": "drawer",
+   "cabinet": "B07",
+   "cabinet_code": "DB18",
+   "wall": "B",
+   "size_m": [
+    0.4526,
+    0.3089
+   ],
+   "pull": "pull_B07_DB18_3"
+  },
+  "door_B08_W1830": {
+   "kind": "door",
+   "cabinet": "B08",
+   "cabinet_code": "W1830",
+   "wall": "B",
+   "size_m": [
+    0.4526,
+    0.7574
+   ],
+   "pull": "pull_B08_W1830"
+  },
+  "island_drawer_I01_IB18_1": {
+   "kind": "drawer",
+   "cabinet": "I01",
+   "cabinet_code": "IB18",
+   "wall": "I",
+   "size_m": [
+    0.4526,
+    0.146
+   ],
+   "pull": "island_pull_I01_IB18_1"
+  },
+  "island_door_I01_IB18": {
+   "kind": "door",
+   "cabinet": "I01",
+   "cabinet_code": "IB18",
+   "wall": "I",
+   "size_m": [
+    0.4526,
+    0.6209
+   ],
+   "pull": "island_pull_I01_IB18"
+  },
+  "island_drawer_I02_ISB36_false": {
+   "kind": "false_front",
+   "cabinet": "I02",
+   "cabinet_code": "ISB36",
+   "wall": "I",
+   "size_m": [
+    0.9098,
+    0.146
+   ],
+   "pull": ""
+  },
+  "island_door_I02_ISB36_L": {
+   "kind": "door",
+   "cabinet": "I02",
+   "cabinet_code": "ISB36",
+   "wall": "I",
+   "size_m": [
+    0.4533,
+    0.6209
+   ],
+   "pull": "island_pull_I02_ISB36_L"
+  },
+  "island_door_I02_ISB36_R": {
+   "kind": "door",
+   "cabinet": "I02",
+   "cabinet_code": "ISB36",
+   "wall": "I",
+   "size_m": [
+    0.4533,
+    0.6209
+   ],
+   "pull": "island_pull_I02_ISB36_R"
+  },
+  "island_drawer_I03_IDB18_1": {
+   "kind": "drawer",
+   "cabinet": "I03",
+   "cabinet_code": "IDB18",
+   "wall": "I",
+   "size_m": [
+    0.4526,
+    0.146
+   ],
+   "pull": "island_pull_I03_IDB18_1"
+  },
+  "island_drawer_I03_IDB18_2": {
+   "kind": "drawer",
+   "cabinet": "I03",
+   "cabinet_code": "IDB18",
+   "wall": "I",
+   "size_m": [
+    0.4526,
+    0.3089
+   ],
+   "pull": "island_pull_I03_IDB18_2"
+  },
+  "island_drawer_I03_IDB18_3": {
+   "kind": "drawer",
+   "cabinet": "I03",
+   "cabinet_code": "IDB18",
+   "wall": "I",
+   "size_m": [
+    0.4526,
+    0.3089
+   ],
+   "pull": "island_pull_I03_IDB18_3"
+  },
+  "island_door_deco_back_IB18": {
+   "kind": "deco_panel",
+   "cabinet": "IB18",
+   "cabinet_code": "IB18",
+   "wall": "I",
+   "size_m": [
+    0.4533,
+    0.7747
+   ],
+   "pull": ""
+  },
+  "island_door_deco_back_ISB36": {
+   "kind": "deco_panel",
+   "cabinet": "ISB36",
+   "cabinet_code": "ISB36",
+   "wall": "I",
+   "size_m": [
+    0.9112,
+    0.7747
+   ],
+   "pull": ""
+  },
+  "island_door_deco_back_IDB18": {
+   "kind": "deco_panel",
+   "cabinet": "IDB18",
+   "cabinet_code": "IDB18",
+   "wall": "I",
+   "size_m": [
+    0.4533,
+    0.7747
+   ],
+   "pull": ""
+  },
+  "island_door_deco_end_R": {
+   "kind": "deco_panel",
+   "cabinet": "IEND_R",
+   "cabinet_code": "IEND_R",
+   "wall": "I",
+   "size_m": [
+    0.0191,
+    0.8763
+   ],
+   "pull": ""
+  },
+  "island_door_deco_end_L": {
+   "kind": "deco_panel",
+   "cabinet": "IEND_L",
+   "cabinet_code": "IEND_L",
+   "wall": "I",
+   "size_m": [
+    0.0191,
+    0.8763
+   ],
+   "pull": ""
+  }
+ },
+ "hardware": {
+  "satin_nickel": {
+   "color": "#c4c0b6",
+   "metalness": 1.0,
+   "roughness": 0.36
+  },
+  "matte_black": {
+   "color": "#141414",
+   "metalness": 0.0,
+   "roughness": 0.62
+  },
+  "chrome": {
+   "color": "#e6e7e9",
+   "metalness": 1.0,
+   "roughness": 0.06
+  },
+  "rose_gold": {
+   "color": "#e2b39c",
+   "metalness": 1.0,
+   "roughness": 0.3
+  }
+ },
+ "hardware_default": "matte_black",
+ "global_transform": "blender world -> rotate -135 deg about Z after centring on the room; then glTF Y-up",
+ "center_blender_m": [
+  1.95579993724823,
+  2.4384000301361084,
+  0.0
+ ]
+}

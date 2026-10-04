@@ -1,0 +1,14 @@
+{
+  "kitchen": "/models/configurator/kitchen.glb",
+  "fronts": {
+    "shaker_classic": "/models/configurator/fronts_shaker_classic.glb",
+    "shaker_slide": "/models/configurator/fronts_shaker_slide.glb",
+    "slab": "/models/configurator/fronts_slab.glb",
+    "fusion_shaker": "/models/configurator/fronts_fusion_shaker.glb",
+    "fusion_slide": "/models/configurator/fronts_fusion_slide.glb"
+  },
+  "hardware": "/models/configurator/hardware.glb",
+  "mounts": "/models/configurator/mounts.json",
+  "finishesJson": "/models/configurator/finishes.json",
+  "finishesDir": "/models/configurator/finishes/"
+}

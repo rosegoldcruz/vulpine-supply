@@ -124,7 +124,7 @@ function arcGeometry(chord: number, angleDeg: number, tube: number) {
 }
 
 /** Builds a pull (axis along x) or knob, sitting on z=0 and protruding toward +z. */
-export function buildHardware(style: string, kind: 'pull' | 'knob', mat: THREE.Material, name: string): THREE.Group {
+export function buildHardware(style: string, kind: 'pull' | 'knob', mat: THREE.Material, name: string, lengthScale = 1): THREE.Group {
   const g = new THREE.Group();
   g.name = name;
   const add = (geo: THREE.BufferGeometry, x = 0, y = 0, z = 0) => {
@@ -148,7 +148,7 @@ export function buildHardware(style: string, kind: 'pull' | 'knob', mat: THREE.M
     }
     return g;
   }
-  const L = PULL_CC[style] ?? 5;
+  const L = (PULL_CC[style] ?? 5) * lengthScale;
   switch (style) {
     case 'arch':
       add(arcGeometry(L, 110, 0.19));

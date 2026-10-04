@@ -203,6 +203,7 @@ export function CabinetConfigurator() {
                 finishId={currentColor.finish}
                 finish={doorFinish}
                 hwStyle={hwType}
+                hwFinishId={hwFinishKey}
                 hwFinish={CONFIG_DATA.hardwareFinishes[hwFinishKey]}
                 doorHardware={doorHardware}
                 showIsland={showIsland}

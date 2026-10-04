@@ -3,7 +3,8 @@
  * Copies DevGod's configurator 3D assets into public/models/configurator/.
  *
  *   source (default): /workspace/vulpine-configurator/glb/   (override: argv[2] or CONFIGURATOR_ASSETS_SRC)
- *   copies:           kitchen.glb, fronts_<style_id>.glb, finishes.json, finishes/ (recursive)
+ *   copies:           kitchen.glb, fronts_<style_id>.glb, hardware.glb, mounts.json, finishes.json, finishes/ (recursive)
+ *                     (README_glb.md, check*.png, _build/ and no_decoder/ are not copied)
  *
  * Writes public/models/configurator/manifest.json describing what is present so the
  * 3D viewer knows which files it can load. When the source is missing this is a no-op
@@ -28,12 +29,14 @@ const copied = [];
 const copy = (name) => {
   const from = path.join(SRC, name);
   if (!fs.existsSync(from)) return false;
-  fs.cpSync(from, path.join(DEST, name), { recursive: true });
+  const to = path.join(DEST, name);
+  if (fs.statSync(from).isDirectory()) fs.rmSync(to, { recursive: true, force: true });
+  fs.cpSync(from, to, { recursive: true });
   copied.push(name);
   return true;
 };
 
-const manifest = { kitchen: null, fronts: {}, finishesJson: null, finishesDir: null };
+const manifest = { kitchen: null, fronts: {}, hardware: null, mounts: null, finishesJson: null, finishesDir: null };
 if (copy('kitchen.glb')) manifest.kitchen = '/models/configurator/kitchen.glb';
 for (const id of STYLE_IDS) {
   if (copy(`fronts_${id}.glb`)) manifest.fronts[id] = `/models/configurator/fronts_${id}.glb`;
@@ -43,11 +46,13 @@ for (const f of fs.readdirSync(SRC)) {
   const m = f.match(/^fronts_(.+)\.glb$/);
   if (m && !manifest.fronts[m[1]] && copy(f)) manifest.fronts[m[1]] = `/models/configurator/${f}`;
 }
+if (copy('hardware.glb')) manifest.hardware = '/models/configurator/hardware.glb';
+if (copy('mounts.json')) manifest.mounts = '/models/configurator/mounts.json';
 if (copy('finishes.json')) manifest.finishesJson = '/models/configurator/finishes.json';
 if (copy('finishes')) manifest.finishesDir = '/models/configurator/finishes/';
 
 fs.writeFileSync(path.join(DEST, 'manifest.json'), `${JSON.stringify(manifest, null, 2)}\n`);
 console.log(`Synced ${copied.length} item(s) from ${SRC} -> ${path.relative(ROOT, DEST)}`);
 for (const c of copied) console.log(`  ${c}`);
-const missing = [!manifest.kitchen && 'kitchen.glb', ...STYLE_IDS.filter((id) => !manifest.fronts[id]).map((id) => `fronts_${id}.glb`), !manifest.finishesJson && 'finishes.json'].filter(Boolean);
+const missing = [!manifest.kitchen && 'kitchen.glb', ...STYLE_IDS.filter((id) => !manifest.fronts[id]).map((id) => `fronts_${id}.glb`), !manifest.hardware && 'hardware.glb', !manifest.mounts && 'mounts.json', !manifest.finishesJson && 'finishes.json'].filter(Boolean);
 if (missing.length) console.log(`  not found (procedural fallback used for these): ${missing.join(', ')}`);
