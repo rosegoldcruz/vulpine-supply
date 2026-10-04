@@ -9,6 +9,7 @@ const nextConfig = {
     // design summary PDF (@react-pdf -> pdfkit) loads its standard fonts with a dynamic require
     '/api/contact': ['./node_modules/pdfkit/js/standard-fonts/**/*', './node_modules/pdfkit/js/data/**/*'],
     '/api/request-bid': ['./node_modules/pdfkit/js/standard-fonts/**/*', './node_modules/pdfkit/js/data/**/*'],
+    '/api/design-summary': ['./node_modules/pdfkit/js/standard-fonts/**/*', './node_modules/pdfkit/js/data/**/*'],
   },
   serverExternalPackages: ['draco3dgltf'],
   async headers() {
