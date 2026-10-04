@@ -86,24 +86,29 @@ the normal lead message, they are forwarded to the same Telegram chat with `send
 photo uses `sendPhoto`, several use `sendMediaGroup`). This step is best-effort: a failure is logged and never fails the
 lead.
 
-## Voice (ElevenLabs, later)
+## Voice (ElevenLabs)
 
-Voice is **off by default** and entirely text-only until clips exist. To add a voice:
+All 42 lines have clips in `public/audio/fox/<line id>.mp3` (3.4 MB total), generated with ElevenLabs **Eleven v3**
+(`eleven_v3`, voice "construction fox" `wjmqZXrn8gXehtR3rCeK`, `mp3_44100_128`, stability 0.5 "Natural" (v3 only takes
+0 / 0.5 / 1), similarity 0.8). `public/audio/fox/manifest.json` lists them with their durations:
 
-1. Generate one clip per line id below (mp3 recommended) into `public/audio/fox/`.
-2. List the clips in `public/audio/fox/manifest.json`:
-   ```json
-   { "lines": { "hello": "hello.mp3", "style_slab": "style_slab.mp3" } }
-   ```
-   Missing ids just stay text-only.
-3. When the manifest has at least one clip, a speaker toggle appears next to the fox. The preference is stored in
-   `localStorage['vulpine-fox-muted']`.
+```json
+{ "lines": { "hello": "hello.mp3" }, "durations": { "hello": 6.69 } }
+```
 
-Playback is autoplay-safe. Nothing plays before the visitor has interacted with the page *and* turned the voice on, and a
-blocked `play()` falls back to text silently. While a clip plays, the talk animation runs for the clip's real duration;
-without a clip it uses a reading-time estimate. To make the voice opt-out instead of opt-in, flip `FOX_VOICE_DEFAULT_ON` in
-`components/fox/voice.ts`. Lines containing `{name}` (`q_phone`, `q_done`) are personalised. Record a generic take for those
-or leave them text-only.
+To regenerate: `ELEVENLABS_API_KEY=... npx tsx scripts/generate-fox-voice.ts` (existing clips are skipped, so a rerun only
+retries failures; `--force` redoes everything, `--only id1,id2` picks lines, `--model eleven_multilingual_v2` drops the tags).
+The script's `TAKES` are the spoken versions: the subtitle's exact words plus 1–2 v3 audio tags each (`[warmly]`,
+`[chuckles]`, `[excited]`, `[whispers]`, `[sighs]`...). The script refuses to run if a take's words drift from `script.ts`.
+Tags are never shown: the bubble and chat always use `LINES` text. `q_phone` and `q_done` greet the visitor by name on
+screen; their clips are name-free takes ("Nice to meet you. What is the best phone number…", "Done. Our team…").
+
+Voice is **off by default**. A speaker toggle appears next to the fox when the manifest has clips; the preference is stored
+in `localStorage['vulpine-fox-muted']`. Playback is autoplay-safe: nothing plays before the visitor has interacted with the
+page *and* turned the voice on, and a blocked `play()` falls back to text silently. While a clip plays, the talk animation
+runs for the clip's real duration (browser metadata, or the manifest's ffprobe duration until it arrives); without a clip it
+uses a reading-time estimate. To make the voice opt-out instead of opt-in, flip `FOX_VOICE_DEFAULT_ON` in
+`components/fox/voice.ts`.
 
 ### Line ids
 

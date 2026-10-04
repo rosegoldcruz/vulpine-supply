@@ -1,7 +1,8 @@
 /**
- * Voice hook for Vulpi (ElevenLabs clips later). Autoplay-safe: nothing plays until the visitor has
- * interacted with the page and turned the voice on; muted by default; preference is remembered.
- * Clips: public/audio/fox/manifest.json -> { "lines": { "<line id>": "<file>.mp3" } }. Missing manifest = text only.
+ * Voice hook for Vulpi (ElevenLabs clips, scripts/generate-fox-voice.ts). Autoplay-safe: nothing plays until the
+ * visitor has interacted with the page and turned the voice on; muted by default; preference is remembered.
+ * Clips: public/audio/fox/manifest.json -> { "lines": { "<line id>": "<file>.mp3" }, "durations": { "<line id>": secs } }.
+ * Missing manifest = text only. `say` resolves with the clip's real length so the talk animation matches the audio.
  */
 'use client';
 
@@ -16,6 +17,7 @@ export function useFoxVoice() {
   const [muted, setMuted] = useState(!FOX_VOICE_DEFAULT_ON);
   const [available, setAvailable] = useState(false);
   const clips = useRef<Record<string, string>>({});
+  const durations = useRef<Record<string, number>>({});
   const audio = useRef<HTMLAudioElement | null>(null);
   const unlocked = useRef(false);
 
@@ -27,6 +29,7 @@ export function useFoxVoice() {
       .then((m) => {
         const lines = (m?.lines ?? {}) as Record<string, string>;
         clips.current = Object.fromEntries(Object.entries(lines).map(([k, v]) => [k, v.startsWith('/') ? v : `/audio/fox/${v}`]));
+        durations.current = (m?.durations ?? {}) as Record<string, number>;
         setAvailable(Object.keys(clips.current).length > 0);
       })
       .catch(() => {});
@@ -59,7 +62,16 @@ export function useFoxVoice() {
       audio.current = a;
       try {
         await a.play();
-        return Number.isFinite(a.duration) ? a.duration : null;
+        // the browser's own duration once metadata is in; the manifest's (ffprobe) value until then
+        if (!Number.isFinite(a.duration) || a.duration <= 0) {
+          const known = durations.current[lineId];
+          if (known) return Math.max(0, known - a.currentTime);
+          await new Promise((r) => {
+            a.addEventListener('loadedmetadata', r, { once: true });
+            window.setTimeout(r, 1500);
+          });
+        }
+        return Number.isFinite(a.duration) && a.duration > 0 ? Math.max(0, a.duration - a.currentTime) : null;
       } catch {
         return null; // blocked or failed: stay text-only
       }
