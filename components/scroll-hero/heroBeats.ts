@@ -1,6 +1,8 @@
-export const beats = {structuralBase:{start:0,end:.04},floorsBuild:{start:.04,end:.28},facade:{start:.28,end:.34},hold:{start:.34,end:.36},intake:{start:.36,end:.65},rumble:{start:.65,end:.69},output:{start:.69,end:.97},release:{start:.97,end:1}} as const
+export const beats = {intake:{start:0,end:.56},rumble:{start:.56,end:.61},output:{start:.61,end:.97},release:{start:.97,end:1}} as const
 export type BeatName=keyof typeof beats
-export const stageBeats=[{start:0,end:0},{start:.04,end:.12},{start:.12,end:.23},{start:.23,end:.34}]
+// Construction uses its own load-time clock, independent of scrolling.
+export const constructionDuration = 2.5
+export const stageBeats=[{start:0,end:0},{start:0,end:1/3},{start:1/3,end:2/3},{start:2/3,end:1}]
 export const clamp01=(v:number)=>Math.max(0,Math.min(1,v))
 export const easeOutCubic=(t:number)=>1-(1-t)**3
 export const smoothstep=(a:number,b:number,t:number)=>{const x=clamp01((t-a)/(b-a));return x*x*(3-2*x)}
