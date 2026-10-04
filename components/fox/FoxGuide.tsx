@@ -38,8 +38,11 @@ export interface FoxGuideProps {
 }
 
 export interface FoxGuideHandle {
-  /** Opens the conversational quote capture. Returns false when Vulpi is dismissed/unavailable (caller falls back to /request-bid). */
-  openQuote: () => boolean;
+  /**
+   * Opens the conversational quote capture, optionally with photos already attached (e.g. an AR snapshot) and a note
+   * added to the request. Returns false when Vulpi is dismissed/unavailable (caller falls back to /request-bid).
+   */
+  openQuote: (opts?: { photos?: File[]; note?: string }) => boolean;
   restore: () => void;
 }
 
@@ -62,6 +65,8 @@ export const FoxGuide = forwardRef<FoxGuideHandle, FoxGuideProps>(function FoxGu
   const [talking, setTalking] = useState(false);
   const [chatOpen, setChatOpen] = useState(false);
   const [chatLog, setChatLog] = useState<ChatMsg[]>([]);
+  const [attachments, setAttachments] = useState<File[]>([]);
+  const [quoteNote, setQuoteNote] = useState('');
   const [reduced, setReduced] = useState(false);
   const voice = useFoxVoice();
 
@@ -295,8 +300,14 @@ export const FoxGuide = forwardRef<FoxGuideHandle, FoxGuideProps>(function FoxGu
     [voice.say],
   );
 
-  const openQuote = useCallback(() => {
+  const openQuote = useCallback((opts?: { photos?: File[]; note?: string }) => {
     if (dismissed || !ready) return false;
+    if (opts?.photos?.length) setAttachments((a) => [...a, ...opts.photos!.filter((f) => !a.includes(f))]);
+    if (opts?.note) setQuoteNote(opts.note);
+    if (opts?.photos?.length) {
+      const n = opts.photos.length;
+      window.setTimeout(() => setChatLog((log) => [...log, { from: 'me', text: `📷 ${n === 1 ? 'Snapshot' : `${n} snapshots`} from View in your space attached` }]), chatLog.length ? 0 : 1300);
+    }
     awakeRef.current = true;
     setAwake(true);
     setBubble(null);
@@ -363,7 +374,8 @@ export const FoxGuide = forwardRef<FoxGuideHandle, FoxGuideProps>(function FoxGu
             setChatOpen(false);
             move('idle');
           }}
-          quoteMessage={props.quoteMessage}
+          quoteMessage={quoteNote ? `${props.quoteMessage}\n${quoteNote}` : props.quoteMessage}
+          attachments={attachments}
           designRef={props.designRef}
           designLabel={props.designLabel}
           summaryHref={props.summaryHref}

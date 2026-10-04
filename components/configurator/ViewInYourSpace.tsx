@@ -1,116 +1,68 @@
 'use client';
 
+/**
+ * "View in your space": opens the in-page camera AR studio (ArStudio) on phones, a QR code on desktops.
+ * Nothing hands off to another app: no AR Quick Look, no Scene Viewer. Android phones with WebXR can switch to a
+ * true-scale (6DoF) session from inside the studio; that session also runs in this page.
+ */
 import { useEffect, useRef, useState } from 'react';
+import dynamic from 'next/dynamic';
+import type { Group } from 'three';
 import type { ConfiguratorEngine } from './scene/engine';
 import type { XrPhase, XrSessionHandle } from './scene/ar';
-import { detectArPath, initialArPath, sceneViewerIntent, type ArPath } from './scene/ar-detect';
-
-type ArModule = typeof import('./scene/ar');
+import { arPath, hasWebXrAr, requestArPermissions, type ArPath } from './scene/ar-detect';
+import type { CabinetLook } from './scene/ar-cabinets';
+import type { DesignChips } from './ArStudio';
 import { cn } from '@/lib/utils';
 import styles from './CabinetConfigurator.module.css';
 
+const ArStudio = dynamic(() => import('./ArStudio'), { ssr: false });
+type ArModule = typeof import('./scene/ar');
+
 interface Props {
   engine: ConfiguratorEngine | null;
-  /** switch the preview to 3D (the AR model is built from the live 3D scene) */
+  /** switch the preview to 3D (the AR cabinets borrow the 3D engine's live materials + hardware) */
   ensure3d: () => void;
-  /** stable key of the current configuration (USDZ cache) */
-  configKey: string;
   /** e.g. "Shaker Classic · Flour · Arch Matte Black" */
   title: string;
+  look: CabinetLook;
+  chips: DesignChips;
+  onQuote: (photo: File, note: string) => void;
   /** autostart hint from ?ar=1 (opened from the desktop QR code) */
   arrivedForAr?: boolean;
 }
 
 const PHASE_TEXT: Record<XrPhase, string> = {
-  starting: 'Starting AR…',
+  starting: 'Starting true-scale AR…',
   scanning: 'Move your phone slowly to find the floor',
   aim: 'Tap to place your cabinets',
   placed: 'Drag to rotate · tap the floor to move',
   ended: '',
 };
 
-export function ViewInYourSpace({ engine, ensure3d, configKey, title, arrivedForAr }: Props) {
-  // device path is known synchronously at hydration (UA + touch); Android upgrades to WebXR once checked
+export function ViewInYourSpace({ engine, ensure3d, title, look, chips, onQuote, arrivedForAr }: Props) {
   const [path, setPath] = useState<ArPath | null>(null);
-  const pathRef = useRef<ArPath | null>(null);
-  const xrCheck = useRef<Promise<ArPath> | null>(null);
-  const arMod = useRef<ArModule | null>(null);
-  const [pending, setPending] = useState(false);
-  const [busy, setBusy] = useState<string | null>(null);
-  const [error, setError] = useState<string | null>(null);
-  const [notice, setNotice] = useState<string | null>(null);
+  const [webxr, setWebxr] = useState(false);
+  const [session, setSession] = useState<{ stream: Promise<MediaStream | null>; motion: Promise<string> } | null>(null);
   const [qrOpen, setQrOpen] = useState(false);
+  const [notice, setNotice] = useState<string | null>(null);
   const [phase, setPhase] = useState<XrPhase | null>(null);
-  const [usdzReady, setUsdzReady] = useState(false);
   const overlayRef = useRef<HTMLDivElement>(null);
   const controlsRef = useRef<HTMLDivElement>(null);
-  const sessionRef = useRef<XrSessionHandle | null>(null);
-  const usdzCache = useRef<{ key: string; blob: Blob } | null>(null);
-  const usdzJob = useRef<{ key: string; p: Promise<Blob | null> } | null>(null);
-
-  const setArPath = (p: ArPath) => {
-    pathRef.current = p;
-    setPath(p);
-  };
+  const xrRef = useRef<XrSessionHandle | null>(null);
+  const arMod = useRef<ArModule | null>(null);
 
   useEffect(() => {
-    setArPath(initialArPath());
-    xrCheck.current = detectArPath().then((p) => {
-      setArPath(p);
-      return p;
+    setPath(arPath());
+    hasWebXrAr().then((ok) => {
+      setWebxr(ok);
+      // requestSession must run inside the tap: have the module ready
+      if (ok) import('./scene/ar').then((m) => (arMod.current = m));
     });
-    if (new URLSearchParams(window.location.search).get('ar') === 'noviewer') setNotice(NO_AR_TEXT);
-    return () => sessionRef.current?.end();
+    return () => xrRef.current?.end();
   }, []);
 
-  // load the AR module early on phones so taps can act synchronously (Quick Look needs the user gesture)
-  useEffect(() => {
-    if (path && path !== 'desktop' && path !== 'mobile-unsupported' && !arMod.current) import('./scene/ar').then((m) => (arMod.current = m));
-  }, [path]);
-
-  // arriving from the QR code: get the 3D scene ready so a single tap starts AR
-  useEffect(() => {
-    if (arrivedForAr && (path === 'quicklook' || path === 'webxr')) {
-      ensure3d();
-      setPending(true);
-    }
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [arrivedForAr, path]);
-
-  // iOS: pre-generate the USDZ for the current design whenever it settles, so one tap opens Quick Look
-  const prepareUsdz = (key: string): Promise<Blob | null> => {
-    if (usdzCache.current?.key === key) return Promise.resolve(usdzCache.current.blob);
-    if (usdzJob.current?.key === key) return usdzJob.current.p;
-    const p = (async () => {
-      if (!engine) return null;
-      const ar = arMod.current ?? (arMod.current = await import('./scene/ar'));
-      const run = engine.buildArModel();
-      if (!run) throw new Error('nothing to export');
-      const blob = await ar.exportUsdz(run);
-      if (usdzJob.current?.key === key) usdzCache.current = { key, blob };
-      return blob;
-    })();
-    usdzJob.current = { key, p };
-    return p;
-  };
-  useEffect(() => {
-    if (path !== 'quicklook' || !engine) return;
-    setUsdzReady(usdzCache.current?.key === configKey);
-    const t = window.setTimeout(() => {
-      prepareUsdz(configKey)
-        .then((b) => b && usdzCache.current?.key === configKey && setUsdzReady(true))
-        .catch((e) => console.warn('[configurator] USDZ pre-generation failed', e));
-    }, 900);
-    return () => window.clearTimeout(t);
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [path, engine, configKey]);
-
-  // warm the fox on WebXR devices
-  useEffect(() => {
-    if (engine && path === 'webxr') import('./scene/ar').then((m) => m.loadFox());
-  }, [engine, path]);
-
-  // tapping Exit / Reset in the dom-overlay must not also place the model
+  // tapping Exit / Reset in the WebXR dom-overlay must not also place the model
   useEffect(() => {
     const el = controlsRef.current;
     if (!el) return;
@@ -119,111 +71,56 @@ export function ViewInYourSpace({ engine, ensure3d, configKey, title, arrivedFor
     return () => el.removeEventListener('beforexrselect', stop);
   }, []);
 
-  const startWebXR = async () => {
-    if (!engine || !overlayRef.current) return;
+  const open = () => {
+    setNotice(null);
+    setQrOpen(false);
+    // both prompts from inside the tap (iOS needs the gesture for motion access)
+    setSession(requestArPermissions());
+    ensure3d();
+  };
+
+  const onClick = () => {
+    if (path === 'desktop') return setQrOpen(true);
+    if (path === 'unsupported' || path === null) return setNotice(NO_AR_TEXT);
+    open();
+  };
+
+  const trueScale = async (group: Group, onEnd: () => void) => {
+    const mod = arMod.current;
+    if (!mod || !overlayRef.current) throw new Error('WebXR not ready');
     overlayRef.current.classList.add(styles.xrOverlayActive);
     setPhase('starting');
     try {
-      const { startWebXR } = arMod.current ?? (await import('./scene/ar'));
-      sessionRef.current = await startWebXR({
-        buildRun: () => engine.buildArModel(),
+      xrRef.current = await mod.startWebXR({
+        buildRun: () => group,
         overlay: overlayRef.current,
+        withFox: false,
         onPhase: (p) => {
           setPhase(p === 'ended' ? null : p);
           if (p === 'ended') {
             overlayRef.current?.classList.remove(styles.xrOverlayActive);
-            sessionRef.current = null;
+            xrRef.current = null;
+            onEnd();
           }
         },
       });
     } catch (e) {
-      console.warn('[configurator] WebXR AR failed, trying Scene Viewer', e);
       overlayRef.current?.classList.remove(styles.xrOverlayActive);
       setPhase(null);
-      openSceneViewer();
+      throw e;
     }
   };
 
-  const openSceneViewer = () => {
-    const origin = window.location.origin;
-    const glb = `${origin}/api/ar-model/vulpine-design.glb?${configKey}`;
-    const back = new URL(window.location.href);
-    back.searchParams.set('ar', 'noviewer');
-    setBusy('Opening AR…');
-    window.setTimeout(() => setBusy(null), 2500);
-    const a = document.createElement('a');
-    a.href = sceneViewerIntent(glb, title, back.toString());
-    a.rel = 'noopener';
-    document.body.appendChild(a);
-    a.click();
-    a.remove();
-  };
-
-  const openQuickLookNow = (blob: Blob) => {
-    arMod.current!.openQuickLook(blob, title);
-  };
-
-  const onClick = async () => {
-    setError(null);
-    setNotice(null);
-    let p = pathRef.current;
-    if (p === 'sceneviewer' && xrCheck.current) p = await xrCheck.current; // Android: WebXR answer is usually back already
-    if (p === 'desktop') return setQrOpen(true);
-    if (p === 'mobile-unsupported' || p === null) return setNotice(NO_AR_TEXT);
-    if (p === 'sceneviewer') return openSceneViewer();
-    if (p === 'quicklook') {
-      const cached = usdzCache.current?.key === configKey ? usdzCache.current.blob : null;
-      if (cached && arMod.current) return openQuickLookNow(cached); // still inside the tap
-      if (!engine) {
-        ensure3d();
-        setPending(true);
-        return;
-      }
-      // not pre-generated yet: build now, then ask for one more tap (Quick Look must open from a gesture)
-      setBusy('Preparing your AR model…');
-      try {
-        const blob = await prepareUsdz(configKey);
-        if (!blob) throw new Error('no model');
-        setUsdzReady(true);
-        setPending(true);
-      } catch (e) {
-        console.warn('[configurator] USDZ export failed', e);
-        setError('Could not prepare the AR model on this device.');
-      } finally {
-        setBusy(null);
-      }
-      return;
-    }
-    // webxr
-    if (!engine) {
-      ensure3d();
-      setPending(true);
-      return;
-    }
-    setPending(false);
-    startWebXR();
-  };
-
-  const preparingIos = path === 'quicklook' && pending && (!engine || !usdzReady);
-  const label = busy
-    ? busy
-    : preparingIos
-      ? 'Preparing AR…'
-      : pending && !engine
-        ? 'Preparing 3D…'
-        : pending && engine
-          ? 'Tap to view in your space'
-          : 'View in your space';
+  const label = arrivedForAr && path === 'camera' && !session ? 'Tap to view in your space' : 'View in your space';
 
   return (
     <>
       <button
         type="button"
-        className={cn(styles.arBtn, pending && engine && !preparingIos && styles.arBtnReady)}
+        className={cn(styles.arBtn, arrivedForAr && path === 'camera' && !session && styles.arBtnReady)}
         onClick={onClick}
-        disabled={Boolean(busy)}
         data-ar-path={path ?? ''}
-        aria-describedby={error || notice ? 'ar-error' : undefined}
+        aria-describedby={notice ? 'ar-error' : undefined}
       >
         <svg width="18" height="18" viewBox="0 0 24 24" aria-hidden="true" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinejoin="round">
           <path d="M12 2.8 20 7.4v9.2l-8 4.6-8-4.6V7.4z" />
@@ -231,43 +128,53 @@ export function ViewInYourSpace({ engine, ensure3d, configKey, title, arrivedFor
         </svg>
         <span>{label}</span>
       </button>
-      {(error || notice) && (
+      {notice && (
         <p id="ar-error" className={styles.arError} role="alert">
-          {error || notice}{' '}
-          {path === 'desktop' ? (
-            <button type="button" className={styles.linkBtn} onClick={() => setQrOpen(true)}>
-              Show QR code
-            </button>
-          ) : (
-            <button type="button" className={styles.linkBtn} onClick={() => navigator.clipboard?.writeText(window.location.href)}>
-              Copy link
-            </button>
-          )}
+          {notice}{' '}
+          <button type="button" className={styles.linkBtn} onClick={() => navigator.clipboard?.writeText(window.location.href)}>
+            Copy link
+          </button>
         </p>
       )}
 
-      {/* WebXR dom-overlay root: transparent full-screen layer over the camera feed */}
+      {session && (
+        <ArStudio
+          engine={engine}
+          look={look}
+          chips={chips}
+          caption={title}
+          stream={session.stream}
+          motion={session.motion}
+          onClose={() => setSession(null)}
+          onQuote={(photo, note) => {
+            setSession(null);
+            onQuote(photo, note);
+          }}
+          trueScale={webxr ? trueScale : undefined}
+        />
+      )}
+
+      {/* WebXR dom-overlay root (true-scale mode): transparent full-screen layer over the camera feed */}
       <div ref={overlayRef} className={styles.xrOverlay} aria-live="polite">
         <div className={styles.xrHint}>{phase ? PHASE_TEXT[phase] : ''}</div>
         <div ref={controlsRef} className={styles.xrControls}>
           {phase === 'placed' && (
-            <button type="button" className={styles.xrBtn} onClick={() => sessionRef.current?.resetRotation()}>
+            <button type="button" className={styles.xrBtn} onClick={() => xrRef.current?.resetRotation()}>
               Reset rotation
             </button>
           )}
-          <button type="button" className={cn(styles.xrBtn, styles.xrBtnPrimary)} onClick={() => sessionRef.current?.end()}>
-            Exit AR
+          <button type="button" className={cn(styles.xrBtn, styles.xrBtnPrimary)} onClick={() => xrRef.current?.end()}>
+            Back to camera view
           </button>
         </div>
       </div>
 
-      {qrOpen && <ArQrDialog onClose={() => setQrOpen(false)} />}
+      {qrOpen && <ArQrDialog onClose={() => setQrOpen(false)} onWebcam={open} />}
     </>
   );
 }
 
-const NO_AR_TEXT =
-  "AR isn't available in this browser. On iPhone or iPad, open this page in Safari. On Android, use Chrome with Google Play Services for AR installed.";
+const NO_AR_TEXT = "This browser can't open the camera here. On iPhone or iPad use Safari; on Android use Chrome.";
 
 function arUrl() {
   const u = new URL(window.location.href);
@@ -276,10 +183,11 @@ function arUrl() {
   return u.toString();
 }
 
-function ArQrDialog({ onClose }: { onClose: () => void }) {
+function ArQrDialog({ onClose, onWebcam }: { onClose: () => void; onWebcam: () => void }) {
   const [src, setSrc] = useState<string | null>(null);
   const closeRef = useRef<HTMLButtonElement>(null);
   const url = useRef(arUrl()).current;
+  const hasCamera = typeof navigator !== 'undefined' && typeof navigator.mediaDevices?.getUserMedia === 'function';
 
   useEffect(() => {
     import('qrcode').then((QR) =>
@@ -298,14 +206,19 @@ function ArQrDialog({ onClose }: { onClose: () => void }) {
           View it in your space
         </h2>
         <p className={styles.muted}>
-          Scan with your phone camera to open this exact design. iPhone and iPad open it in AR Quick Look; Android phones with
-          Chrome place it on your floor with WebXR, at true size.
+          Scan with your phone camera to open this exact design. Your phone&apos;s camera shows a real cabinet in this door
+          style, finish and hardware on your wall or floor, right in the browser.
         </p>
         <div className={styles.qrBox}>
           {src ? <img src={src} alt="QR code linking to this cabinet design in AR" width={220} height={220} /> : <span className={styles.muted}>Generating…</span>}
         </div>
         <p className={styles.qrUrl}>{url}</p>
         <div className={styles.modalActions}>
+          {hasCamera && (
+            <button type="button" className="btn-secondary" onClick={onWebcam}>
+              Use this computer&apos;s camera
+            </button>
+          )}
           <button type="button" className="btn-secondary" onClick={() => navigator.clipboard?.writeText(url)}>
             Copy link
           </button>

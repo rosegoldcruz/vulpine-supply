@@ -43,6 +43,15 @@ const PRESET_ASPECT = 16 / 9;
 const MAX_VFOV = 60;
 /** portrait screens keep this share of a preset's 16:9 width (a slight side crop reads better than a tiny kitchen) */
 const PORTRAIT_WIDTH = 0.9;
+/**
+ * Presets start this much farther out than DevGod's camera_presets.json (same target + direction, longer distance), so
+ * the whole subject reads with room around it and pinch / scroll can still zoom both ways. Phones (portrait) get more.
+ */
+const PRESET_PULLBACK = 1.3;
+const PRESET_PULLBACK_PORTRAIT = 1.5;
+/** OrbitControls zoom-out limit: this many times the (pulled-back) overview distance, at least MIN_MAX_DISTANCE m */
+const MAX_DISTANCE_FACTOR = 3;
+const MIN_MAX_DISTANCE = 30;
 
 interface Manifest {
   kitchen: string | null;
@@ -187,6 +196,19 @@ async function exists(url: string): Promise<boolean> {
   }
 }
 
+/** What the AR cabinet builder borrows from the engine (see arKit()). */
+export interface ArKit {
+  mats: KitchenMaterials;
+  /** DevGod's GLB assets are in use (finish textures expect metre UVs) */
+  glb: boolean;
+  /** catalog pull / knob from hardware.glb in its shared frame (null = build a procedural one) */
+  hardware: (
+    style: string,
+    kind: 'pull' | 'knob',
+    opts?: { sizeClass?: 'small' | 'large'; targetIn?: number; knobShape?: KnobShape },
+  ) => THREE.Object3D | null;
+}
+
 export interface EngineState {
   styleId: string;
   finishId: string;
@@ -277,7 +299,7 @@ export class ConfiguratorEngine {
     pmrem.dispose();
     this.scene.environmentIntensity = 0.35;
 
-    this.camera = new THREE.PerspectiveCamera(38, 16 / 10, 0.05, 90);
+    this.camera = new THREE.PerspectiveCamera(38, 16 / 10, 0.05, 220);
     this.camera.position.copy(HOME_POS);
     this.controls = new OrbitControls(this.camera, this.renderer.domElement);
     this.controls.target.copy(HOME_TARGET);
@@ -285,7 +307,7 @@ export class ConfiguratorEngine {
     this.controls.dampingFactor = 0.08;
     this.controls.zoomToCursor = true;
     this.controls.minDistance = 0.5;
-    this.controls.maxDistance = 9;
+    this.controls.maxDistance = MIN_MAX_DISTANCE;
     this.controls.maxPolarAngle = Math.PI * 0.53;
     this.controls.minAzimuthAngle = -Math.PI * 0.42;
     this.controls.maxAzimuthAngle = Math.PI * 0.42;
@@ -643,7 +665,7 @@ export class ConfiguratorEngine {
       this.fov16 = def.fov;
       this.camera.fov = v.fov;
       this.camera.updateProjectionMatrix();
-      this.controls.maxDistance = Math.max(v.dist * 1.6, 6);
+      this.controls.maxDistance = Math.max(v.dist * MAX_DISTANCE_FACTOR, MIN_MAX_DISTANCE);
       this.framedGlb = true;
       return;
     }
@@ -651,7 +673,7 @@ export class ConfiguratorEngine {
     if (!v) return;
     this.controls.target.copy(v.target);
     this.camera.position.copy(v.pos);
-    this.controls.maxDistance = Math.max(v.dist * 2, 6);
+    this.controls.maxDistance = Math.max(v.dist * MAX_DISTANCE_FACTOR, MIN_MAX_DISTANCE);
     this.framedGlb = true;
   }
 
@@ -670,11 +692,12 @@ export class ConfiguratorEngine {
     return { fov: THREE.MathUtils.radToDeg(2 * Math.atan(t)), dolly };
   }
 
-  /** A camera_presets.json view fitted to the current aspect ratio. */
+  /** A camera_presets.json view fitted to the current aspect ratio, pulled back (PRESET_PULLBACK) along its view line. */
   private fitPreset(def: PresetDef) {
     const { fov, dolly } = this.fitFov(def.fov);
     const dir = def.pos.clone().sub(def.target);
-    const dist = dir.length() * dolly;
+    const pullback = this.camera.aspect < 1 ? PRESET_PULLBACK_PORTRAIT : PRESET_PULLBACK;
+    const dist = dir.length() * dolly * pullback;
     return { pos: def.target.clone().addScaledVector(dir.normalize(), dist), target: def.target.clone(), fov, dist };
   }
 
@@ -929,6 +952,40 @@ export class ConfiguratorEngine {
     for (const c of group.children) c.position.add(shift);
     group.updateMatrixWorld(true);
     return group;
+  }
+
+  /**
+   * Live materials + catalog hardware for the in-page AR cabinets (scene/ar-cabinets). The materials are the engine's own
+   * instances, so a finish / hardware-finish change shows in AR as soon as update() has applied it.
+   */
+  arKit(): ArKit {
+    const lib = this.hwLib;
+    return {
+      mats: this.mats,
+      glb: Boolean(this.glbKitchen),
+      hardware: (style, kind, opts = {}) => {
+        const cand =
+          kind === 'knob'
+            ? (opts.knobShape === 't' ? lib.tKnob(style) : null) || lib.pick(style, 'knob', 1.25)
+            : (opts.sizeClass ? lib.bySizeClass(style, opts.sizeClass) : null) || lib.pick(style, 'pull', opts.targetIn ?? 5);
+        if (!cand) return null;
+        const obj = cand.node.clone(true);
+        // hardware.glb shared frame: origin on the front face, +X along the bar, +Z out of the front
+        obj.position.set(0, 0, 0);
+        obj.quaternion.identity();
+        obj.scale.set(1, 1, 1);
+        obj.traverse((c) => {
+          const m = c as THREE.Mesh;
+          if (m.isMesh) {
+            m.material = this.mats.hardware;
+            m.castShadow = true;
+            m.userData.sharedGeometry = true;
+          }
+        });
+        obj.userData.hardwareNode = cand.node.name;
+        return obj;
+      },
+    };
   }
 
   private setContent(obj: THREE.Object3D) {

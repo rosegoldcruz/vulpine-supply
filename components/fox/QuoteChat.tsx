@@ -29,6 +29,8 @@ interface Props {
   designLabel: string;
   summaryHref: string;
   fullFormHref: string;
+  /** photos handed in from outside (the AR snapshot); merged into the photo step once each */
+  attachments?: File[];
 }
 
 /** Downscale to <=1600px JPEG so uploads stay small; falls back to the original file. */
@@ -70,6 +72,13 @@ export function QuoteChat(p: Props) {
     return () => window.clearTimeout(t);
   }, [step]);
   useEffect(() => () => photos.forEach((ph) => URL.revokeObjectURL(ph.url)), []); // eslint-disable-line react-hooks/exhaustive-deps
+  useEffect(() => {
+    if (!p.attachments?.length) return;
+    setPhotos((list) => {
+      const fresh = p.attachments!.filter((f) => !list.some((ph) => ph.file === f)).slice(0, Math.max(0, MAX_PHOTOS - list.length));
+      return fresh.length ? [...list, ...fresh.map((file) => ({ file, url: URL.createObjectURL(file) }))] : list;
+    });
+  }, [p.attachments]);
   useEffect(() => {
     const onKey = (e: KeyboardEvent) => e.key === 'Escape' && p.onClose();
     window.addEventListener('keydown', onKey);

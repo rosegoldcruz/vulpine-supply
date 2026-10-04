@@ -1,14 +1,13 @@
 /**
- * Which "View in your space" path a device gets. Tiny and three-free so it runs (synchronously) as soon as the page
- * hydrates, never waiting on the 3D bundle.
+ * Which "View in your space" experience a device gets. Tiny and three-free so it runs (synchronously) as soon as the
+ * page hydrates.
  *
- *   quicklook          iPhone / iPad (incl. iPadOS that reports as "Macintosh"): AR Quick Look with a USDZ
- *   webxr              Android Chrome with ARCore: immersive-ar WebXR session (the live configured model)
- *   sceneviewer        Android without WebXR AR: Google Scene Viewer intent with a server-built GLB of the design
- *   mobile-unsupported a phone/tablet with no AR path: explain (never the desktop QR)
- *   desktop            genuinely non-touch desktop/laptop: QR code to open the design on a phone
+ *   camera       phone / tablet with a camera API (iPhone Safari, Android Chrome...): the in-page camera AR studio
+ *   desktop      non-touch desktop / laptop: QR code to open the design on a phone (or try the webcam)
+ *   unsupported  a phone without camera access (insecure context, very old browser): explain
+ * WebXR immersive-ar (Android + ARCore) is an extra, in-page true-scale mode inside the studio (see hasWebXrAr).
  */
-export type ArPath = 'quicklook' | 'webxr' | 'sceneviewer' | 'mobile-unsupported' | 'desktop';
+export type ArPath = 'camera' | 'desktop' | 'unsupported';
 
 export interface DeviceInfo {
   ios: boolean;
@@ -16,12 +15,11 @@ export interface DeviceInfo {
   /** primary input is touch (no fine pointer at all) */
   touchOnly: boolean;
   mobile: boolean;
-  /** <a rel="ar"> is supported, or an iOS browser that hands rel=ar to Quick Look */
-  quickLook: boolean;
+  camera: boolean;
 }
 
 export function deviceInfo(): DeviceInfo {
-  if (typeof navigator === 'undefined') return { ios: false, android: false, touchOnly: false, mobile: false, quickLook: false };
+  if (typeof navigator === 'undefined') return { ios: false, android: false, touchOnly: false, mobile: false, camera: false };
   const ua = navigator.userAgent || '';
   const touchPoints = navigator.maxTouchPoints || 0;
   const mq = (q: string) => (typeof matchMedia === 'function' ? matchMedia(q).matches : false);
@@ -30,50 +28,41 @@ export function deviceInfo(): DeviceInfo {
   const android = /Android/i.test(ua);
   const touchOnly = (touchPoints > 0 || mq('(any-pointer: coarse)')) && !mq('(any-pointer: fine)');
   const uaMobile = Boolean((navigator as any).userAgentData?.mobile) || /Mobi|Tablet|Silk|Kindle|Opera Mini|IEMobile/i.test(ua);
-  let relAr = false;
-  try {
-    relAr = Boolean(document.createElement('a').relList?.supports?.('ar'));
-  } catch {
-    /* relList.supports throws on some engines */
-  }
-  // Chrome/Edge/Firefox/Google app on iOS run in WKWebView, where relList doesn't report 'ar' but Quick Look still opens
-  const iosOtherBrowser = ios && /CriOS\/|EdgiOS\/|FxiOS\/|GSA\/|DuckDuckGo\//.test(ua);
-  return { ios, android, touchOnly, mobile: ios || android || uaMobile || touchOnly, quickLook: ios && (relAr || iosOtherBrowser) };
+  const camera = typeof window !== 'undefined' && window.isSecureContext !== false && typeof navigator.mediaDevices?.getUserMedia === 'function';
+  return { ios, android, touchOnly, mobile: ios || android || uaMobile || touchOnly, camera };
 }
 
-/** Immediate answer from the UA/touch signals; Android starts as 'sceneviewer' until WebXR support is known. */
-export function initialArPath(d = deviceInfo()): ArPath {
-  if (d.ios) return d.quickLook ? 'quicklook' : 'mobile-unsupported';
-  if (d.android) return 'sceneviewer';
-  if (d.mobile) return 'mobile-unsupported';
-  return 'desktop';
+export function arPath(d = deviceInfo()): ArPath {
+  if (!d.mobile) return 'desktop';
+  return d.camera ? 'camera' : 'unsupported';
 }
 
-/** Full answer: Android upgrades to WebXR when immersive-ar is supported. */
-export async function detectArPath(): Promise<ArPath> {
-  const d = deviceInfo();
-  const base = initialArPath(d);
-  if (base === 'desktop' || base === 'quicklook') return base;
+/** Android Chrome with ARCore: WebXR immersive-ar is available (true-scale, 6DoF, still in the page). */
+export async function hasWebXrAr(): Promise<boolean> {
   const xr = (navigator as any).xr;
-  if (xr?.isSessionSupported) {
-    try {
-      if (await xr.isSessionSupported('immersive-ar')) return 'webxr';
-    } catch {
-      /* blocked by permissions policy / insecure context */
-    }
+  if (!xr?.isSessionSupported) return false;
+  try {
+    return Boolean(await xr.isSessionSupported('immersive-ar'));
+  } catch {
+    return false; // blocked by permissions policy / insecure context
   }
-  return base;
 }
 
 /**
- * Scene Viewer intent (ARCore). `ar_preferred` falls back to Scene Viewer's 3D viewer when ARCore is missing;
- * if the Google app isn't installed Chrome opens `fallbackUrl` instead.
+ * Starts the camera + (iOS) motion permission prompts. Call directly from the tap: iOS only shows the
+ * DeviceOrientation prompt inside a user gesture.
  */
-export function sceneViewerIntent(glbUrl: string, title: string, fallbackUrl: string): string {
-  const params = new URLSearchParams({ file: glbUrl, mode: 'ar_preferred', resizable: 'false', title });
-  return (
-    `intent://arvr.google.com/scene-viewer/1.0?${params.toString()}` +
-    `#Intent;scheme=https;package=com.google.android.googlequicksearchbox;action=android.intent.action.VIEW;` +
-    `S.browser_fallback_url=${encodeURIComponent(fallbackUrl)};end;`
-  );
+export function requestArPermissions(): { stream: Promise<MediaStream | null>; motion: Promise<string> } {
+  const DOE = (typeof window !== 'undefined' ? (window as any).DeviceOrientationEvent : undefined) as { requestPermission?: () => Promise<string> } | undefined;
+  const motion: Promise<string> =
+    typeof DOE?.requestPermission === 'function' ? DOE.requestPermission().catch(() => 'denied') : Promise.resolve(DOE ? 'granted' : 'unsupported');
+  const stream: Promise<MediaStream | null> = navigator.mediaDevices
+    ? navigator.mediaDevices
+        .getUserMedia({ video: { facingMode: { ideal: 'environment' }, width: { ideal: 1920 }, height: { ideal: 1080 } }, audio: false })
+        .catch((e) => {
+          console.warn('[ar] camera unavailable', e);
+          return null;
+        })
+    : Promise.resolve(null);
+  return { stream, motion };
 }

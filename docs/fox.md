@@ -61,7 +61,8 @@ run with `clampWhenFinished = false` and the mixer `finished` event fades back t
   (idle, or a frame of the gesture), and bubble and chat animations are off.
 - **Mobile (≤700 px):** he is smaller (84×108). He sits above the bottom sheet, because `CabinetConfigurator` publishes the
   sheet's live height as `--config-sheet-h` and the guide is positioned from it. That way he moves up when the sheet opens
-  and never covers it. The chat spans the width above him.
+  and never covers it. The speech bubble sits **under** him (tail pointing up), compact (≤270 px wide, 13 px text, small
+  buttons), so it doesn't cover the photo / 3D stage; it stays above the bottom sheet. The chat spans the width above him.
 - Hidden when printing. Inside a WebXR session the DOM overlay does not include him.
 
 ## Quote conversation (`QuoteChat.tsx`)
@@ -157,7 +158,17 @@ uses a reading-time estimate. To make the voice opt-out instead of opt-in, flip 
 | `q_done` | celebrate | Done, {name}. Our team will review your design and reach out with a custom quote. Thanks for designing with us. |
 | `q_error` | talk | Something went wrong on my end. Try again, or use the full request form. |
 
-## In AR (Android WebXR)
+- **Quote from AR:** `openQuote({ photos, note })` (ref API) opens the quote chat with files pre-attached (merged into the
+  photo step, max 5) and a note appended to the message; the chat shows "📷 Snapshot from View in your space attached".
+  The AR studio's **Get a quote with this** uses it.
+
+## In AR
+
+The in-page camera AR studio (the default since 2026-10-04) does not show Vulpi, so he never blocks the view. The
+WebXR true-scale mode started from the studio also runs without him (`withFox: false`). The older path below is kept in
+code for the full-kitchen WebXR session but is no longer reachable from the button; the USDZ / Quick Look handoff was removed.
+
+### Legacy full-kitchen WebXR
 
 `components/configurator/scene/ar.ts` loads the same model through `loadFoxRig()` (a SkeletonUtils clone + `AnimationMixer`
 + `buildFoxClips`). He stands to the right of the cabinet run, facing the viewer and turned slightly toward the run

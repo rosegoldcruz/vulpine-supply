@@ -1,11 +1,9 @@
 /**
- * "View in your space".
- *   Android / Chrome (ARCore):  WebXR immersive-ar + hit-test. Tap places the run on the floor at true scale,
- *                               one-finger drag rotates it, tapping elsewhere on the floor moves it.
- *   iOS / iPadOS (Safari, and every iOS browser since they all use WebKit): the current configuration is
- *                               exported to USDZ in the browser (three USDZExporter) and opened in AR Quick Look.
- *   Anything else:              the UI shows a QR code for the same configured URL (see ArDialog).
- * Models are meters, Y-up; the cabinet run comes from ConfiguratorEngine.buildArModel().
+ * WebXR side of "View in your space" (the camera studio itself is ./ar-camera + ArStudio.tsx).
+ *   Android / Chrome (ARCore): optional true-scale mode from the studio: WebXR immersive-ar + hit-test, in the page.
+ *   Tap places the cabinets on the floor at true scale, one-finger drag rotates them, tapping elsewhere moves them.
+ * Also: the fox rig used by the 3D views, and a USDZ exporter kept for QA (the site no longer opens AR Quick Look).
+ * Models are meters, Y-up.
  */
 import * as THREE from 'three';
 import { GLTFLoader } from 'three/examples/jsm/loaders/GLTFLoader.js';
@@ -166,9 +164,7 @@ function bakeSkinned(root: THREE.Object3D): THREE.Group {
   return out;
 }
 
-// ---------------------------------------------------------------- iOS: USDZ + AR Quick Look
-
-let lastUsdzUrl: string | null = null;
+// ---------------------------------------------------------------- USDZ export (QA / offline use; the site no longer opens Quick Look)
 
 export async function exportUsdz(run: THREE.Group, withFox = true): Promise<Blob> {
   const { USDZExporter } = await import('three/examples/jsm/exporters/USDZExporter.js');
@@ -191,22 +187,6 @@ export async function exportUsdz(run: THREE.Group, withFox = true): Promise<Blob
     ar: { anchoring: { type: 'plane' }, planeAnchoring: { alignment: 'horizontal' } },
   } as any);
   return new Blob([data as unknown as ArrayBuffer], { type: 'model/vnd.usdz+zip' });
-}
-
-/** Opens AR Quick Look; allowsContentScaling=0 keeps it at true scale. */
-export function openQuickLook(blob: Blob, title?: string) {
-  if (lastUsdzUrl) URL.revokeObjectURL(lastUsdzUrl);
-  lastUsdzUrl = URL.createObjectURL(blob);
-  const a = document.createElement('a');
-  a.rel = 'ar';
-  const params = new URLSearchParams({ allowsContentScaling: '0' });
-  if (title) params.set('checkoutTitle', title);
-  a.href = `${lastUsdzUrl}#${params.toString()}`;
-  a.appendChild(document.createElement('img')); // Quick Look requires an <img> child
-  a.style.display = 'none';
-  document.body.appendChild(a);
-  a.click();
-  window.setTimeout(() => a.remove(), 2000);
 }
 
 // ---------------------------------------------------------------- Android: WebXR immersive-ar

@@ -10,6 +10,7 @@ import { CONFIG_DATA, FINISH_COLORS, FINISH_NAMES, cabsUrl } from './data';
 import styles from './CabinetConfigurator.module.css';
 import type { ConfiguratorEngine } from './scene/engine';
 import { ViewInYourSpace } from './ViewInYourSpace';
+import type { DesignChips } from './ArStudio';
 import { CompareFinishes } from './CompareFinishes';
 import { ProductInfoDrawer, WhyDuraBuild, colorLine } from './ProductInfo';
 import { SNAPSHOT_KEY, T_KNOB_STYLES, configQuery, designRef, doorHardwareLabel, type ConfigSelection } from './summary';
@@ -248,6 +249,32 @@ export function CabinetConfigurator() {
   } on doors${view === '3d' ? (showIsland ? ', with island' : ', without island') : ''}`;
   const arTitle = `${currentStyle.name} · ${currentColor.color} · ${currentHw.name} ${FINISH_NAMES[hwFinishKey] || ''}`.trim();
 
+  // in-page AR studio: same picks as the configurator, as compact chips
+  const arLook = useMemo(() => ({ styleId: style, hwStyle: hwType, doorHardware, knobShape: effectiveKnob }), [style, hwType, doorHardware, effectiveKnob]);
+  const arChips: DesignChips = {
+    styles: STYLE_KEYS.map((id) => ({ id, name: CONFIG_DATA.doorStyles[id].name })),
+    style,
+    onStyle: handleStyleChange,
+    colors: currentStyle.options.map((o) => ({ id: o.id, name: o.color, img: cabsUrl(o.door) })),
+    color: currentColor.id,
+    onColor: (id) => pickColor(id),
+    hws: HW_KEYS.map((id) => ({ id, name: CONFIG_DATA.hardware[id].name })),
+    hw: hwType,
+    onHw: handleHwTypeChange,
+    doorOptions,
+    doorOption,
+    onDoorOption: (id) => pickDoorOption(id as 'pull' | 'knob' | 'tknob'),
+    finishes: Object.keys(currentHw.finishes).map((f) => ({ id: f, name: FINISH_NAMES[f] || f, color: FINISH_COLORS[f] || '#666' })),
+    finish: hwFinishKey,
+    onFinish: setHwFinish,
+  };
+  /** "Get a quote with this" from AR: Vulpi's quote chat with the snapshot already attached (brought back if dismissed). */
+  const onArQuote = (photo: File, note: string) => {
+    if (foxRef.current?.openQuote({ photos: [photo], note })) return;
+    foxRef.current?.restore();
+    window.setTimeout(() => foxRef.current?.openQuote({ photos: [photo], note }), 400);
+  };
+
   const pickColor = (id: string) => {
     if (id === currentColor.id) return;
     flash();
@@ -294,7 +321,7 @@ export function CabinetConfigurator() {
               <button type="button" className={cn(styles.ghostBtn, compareOpen && styles.ghostBtnActive)} aria-expanded={compareOpen} aria-controls="compare-panel" onClick={() => setCompareOpen((v) => !v)}>
                 Compare finishes
               </button>
-              <ViewInYourSpace engine={engine} ensure3d={ensure3d} configKey={configKey} title={arTitle} arrivedForAr={arrivedForAr} />
+              <ViewInYourSpace engine={engine} ensure3d={ensure3d} title={arTitle} look={arLook} chips={arChips} onQuote={onArQuote} arrivedForAr={arrivedForAr} />
             </div>
           </div>
 
