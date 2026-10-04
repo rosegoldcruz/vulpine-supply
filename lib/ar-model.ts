@@ -10,8 +10,10 @@ import { Document, NodeIO, type Material, type Node, getBounds } from '@gltf-tra
 import { ALL_EXTENSIONS, KHRTextureTransform, KHRDracoMeshCompression } from '@gltf-transform/extensions';
 import { mergeDocuments, prune, unpartition } from '@gltf-transform/functions';
 
-const PUBLIC = path.join(process.cwd(), 'public');
-const DIR = path.join(PUBLIC, 'models', 'configurator');
+const DIR = path.join(process.cwd(), 'public', 'models', 'configurator');
+// Keep these as literal paths: a dynamic join under public/ makes the file tracer bundle all of public/ (520 MB).
+const DATASET_JSON = path.join(process.cwd(), 'public', 'cabs_clean', 'dataset.json');
+const FINISHES_DIR = path.join(process.cwd(), 'public', 'configurator', 'finishes');
 const AR_EXCLUDE_RE =
   /^(room_|walls?_|floor|baseboard|window|backsplash|sofa|pillow|rug|coffeetable|books|plant|armchair|floorlamp|art\d|fruitbowl|cuttingboard|coffeemaker|utensil|island_stool|island_fruitbowl)/i;
 const FINISH_RE = /(^|_)(door|drawer|panel)(_|$)/i;
@@ -48,7 +50,7 @@ let datasetPromise: Promise<any> | null = null;
 /** public/cabs_clean/dataset.json (swatch-sampled door finishes), read once. */
 const readDataset = () =>
   (datasetPromise ||= fs
-    .readFile(path.join(PUBLIC, 'cabs_clean', 'dataset.json'), 'utf8')
+    .readFile(DATASET_JSON, 'utf8')
     .then((t) => JSON.parse(t))
     .catch(() => null));
 
@@ -117,7 +119,7 @@ export async function buildArGlb(q: ArModelQuery): Promise<Uint8Array> {
     if (df) fin = { color: df.color, roughness: df.roughness, ...(df.textured && df.texture ? { publicMap: df.texture } : {}) };
   }
   const finishMat = doc.createMaterial('finish').setMetallicFactor(0).setRoughnessFactor(fin?.roughness ?? 0.45);
-  const mapPath = fin?.map ? path.join(DIR, fin.map) : fin?.publicMap ? path.join(PUBLIC, fin.publicMap.replace(/^\/+/, '')) : null;
+  const mapPath = fin?.map ? path.join(DIR, fin.map) : fin?.publicMap ? path.join(FINISHES_DIR, path.basename(fin.publicMap)) : null;
   if (mapPath && (await fileExists(mapPath))) {
     const tex = doc
       .createTexture(q.color)
