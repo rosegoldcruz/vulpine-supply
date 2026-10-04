@@ -54,3 +54,5 @@ temp/
 *.pfx
 *.secret
 *.secrets
+.vercel
+.env*

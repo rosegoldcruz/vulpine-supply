@@ -16,18 +16,22 @@
     "optimize:materials": "node scripts/optimize-material-images.mjs"
   },
   "dependencies": {
+    "@react-three/drei": "^10.7.9",
+    "@react-three/fiber": "^9.8.1",
     "drizzle-orm": "^0.45.2",
     "gsap": "^3.12.5",
     "next": "^15.3.3",
     "next-sitemap": "^4.2.3",
     "postgres": "^3.4.9",
     "react": "^19.1.0",
-    "react-dom": "^19.1.0"
+    "react-dom": "^19.1.0",
+    "three": "^0.180.0"
   },
   "devDependencies": {
     "@types/node": "^22.15.31",
     "@types/react": "^19.1.6",
     "@types/react-dom": "^19.1.6",
+    "@types/three": "^0.180.0",
     "drizzle-kit": "^0.31.10",
     "sharp": "^0.33.5",
     "tsx": "^4.23.12",

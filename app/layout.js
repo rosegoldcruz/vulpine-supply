@@ -1,3 +1,4 @@
+import '../components/scroll-hero/hero.css';
 import './globals.css';
 import Script from 'next/script';
 import AnalyticsTracker from '../components/AnalyticsTracker';
