@@ -1,0 +1,52 @@
+[
+  {
+    "id": 2,
+    "sourceBytes": 199516,
+    "optimizedBytes": 21548
+  },
+  {
+    "id": 3,
+    "sourceBytes": 1740980,
+    "optimizedBytes": 103952
+  },
+  {
+    "id": 4,
+    "sourceBytes": 357720,
+    "optimizedBytes": 16788
+  },
+  {
+    "id": 5,
+    "sourceBytes": 47048,
+    "optimizedBytes": 10888
+  },
+  {
+    "id": 7,
+    "sourceBytes": 37880,
+    "optimizedBytes": 9240
+  },
+  {
+    "id": 9,
+    "sourceBytes": 2976120,
+    "optimizedBytes": 322712
+  },
+  {
+    "id": 10,
+    "sourceBytes": 610160,
+    "optimizedBytes": 82744
+  },
+  {
+    "id": 11,
+    "sourceBytes": 442272,
+    "optimizedBytes": 51304
+  },
+  {
+    "id": 14,
+    "sourceBytes": 2648392,
+    "optimizedBytes": 232704
+  },
+  {
+    "id": 15,
+    "sourceBytes": 2808972,
+    "optimizedBytes": 264844
+  }
+]
