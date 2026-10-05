@@ -13,7 +13,8 @@ import { ViewInYourSpace } from './ViewInYourSpace';
 import type { DesignChips } from './ArStudio';
 import { CompareFinishes } from './CompareFinishes';
 import { ProductInfoDrawer, WhyDuraBuild, colorLine } from './ProductInfo';
-import { SNAPSHOT_KEY, T_KNOB_STYLES, configQuery, designRef, doorHardwareLabel, type ConfigSelection } from './summary';
+import { SNAPSHOT_KEY, configQuery, designRef, type ConfigSelection } from './summary';
+import { DEFAULT_LAYOUT, fetchLayouts, isLayoutId, type KitchenLayout } from './layouts';
 import { FoxGuide, FOX_DISMISSED_KEY, FOX_EVENT, type FoxGuideHandle, type FoxSelection } from '@/components/fox/FoxGuide';
 
 const KitchenScene3D = dynamic(() => import('./KitchenScene3D'), {
@@ -50,8 +51,8 @@ export function CabinetConfigurator() {
   const [hwType, setHwType] = useState(DEFAULT_HW);
   const [hwFinish, setHwFinish] = useState('matte_black');
   const [hwPreview, setHwPreview] = useState<string | null>(null);
-  const [doorHardware, setDoorHardware] = useState<'pull' | 'knob'>('pull');
-  const [knobShape, setKnobShape] = useState<'round' | 't'>('round');
+  const [layout, setLayout] = useState(DEFAULT_LAYOUT);
+  const [layouts, setLayouts] = useState<KitchenLayout[]>([]);
   const [view, setView] = useState<View>('photo');
   const [showIsland, setShowIsland] = useState(true);
   const [isLoading, setIsLoading] = useState(false);
@@ -97,23 +98,18 @@ export function CabinetConfigurator() {
   const currentHw = CONFIG_DATA.hardware[hwType];
   const hwFinishKey = currentHw.finishes[hwFinish] ? hwFinish : Object.keys(currentHw.finishes)[0];
   const currentHwFinish = currentHw.finishes[hwFinishKey];
-  // Bar offers a 2" T-knob next to its round knob; other styles have a single knob
-  const hasTKnob = T_KNOB_STYLES.has(hwType);
-  const effectiveKnob: 'round' | 't' = hasTKnob && doorHardware === 'knob' && knobShape === 't' ? 't' : 'round';
-  const doorOptions: { id: 'pull' | 'knob' | 'tknob'; label: string }[] = hasTKnob
-    ? [
-        { id: 'pull', label: 'Pulls on doors' },
-        { id: 'knob', label: 'Round knobs' },
-        { id: 'tknob', label: 'T-knobs' },
-      ]
-    : [
-        { id: 'pull', label: 'Pulls on doors' },
-        { id: 'knob', label: 'Knobs on doors' },
-      ];
-  const doorOption = doorHardware === 'pull' ? 'pull' : effectiveKnob === 't' ? 'tknob' : 'knob';
-  const pickDoorOption = (id: 'pull' | 'knob' | 'tknob') => {
-    setDoorHardware(id === 'pull' ? 'pull' : 'knob');
-    if (id !== 'pull') setKnobShape(id === 'tknob' ? 't' : 'round');
+  // starting kitchens: only the layouts whose files are deployed (public/models/configurator/kitchens/index.json)
+  useEffect(() => {
+    let live = true;
+    fetchLayouts().then((l) => live && setLayouts(l));
+    return () => {
+      live = false;
+    };
+  }, []);
+  const currentLayout = layouts.find((l) => l.id === layout) ?? null;
+  const pickLayout = (id: string) => {
+    setLayout(id);
+    setView('3d');
   };
   const doorFinish = CONFIG_DATA.doorFinishes[currentColor.finish];
   const hasRender = Boolean(currentColor.kitchen) && brokenRender !== currentColor.kitchen;
@@ -133,15 +129,15 @@ export function CabinetConfigurator() {
     const f = q.get('finish');
     if (f && FINISH_NAMES[f]) setHwFinish(f);
     if (q.get('view') === '3d') setView('3d');
-    if (q.get('doors') === 'knob') setDoorHardware('knob');
-    if (q.get('knob') === 't') setKnobShape('t');
+    const l = q.get('layout');
+    if (l && isLayoutId(l)) setLayout(l);
     if (q.get('island') === '0') setShowIsland(false);
     if (q.get('ar') === '1') setArrivedForAr(true);
   }, []);
 
   const selection: ConfigSelection = useMemo(
-    () => ({ style, color: currentColor.id, hw: hwType, finish: hwFinishKey, doors: doorHardware, knob: effectiveKnob, island: showIsland }),
-    [style, currentColor.id, hwType, hwFinishKey, doorHardware, effectiveKnob, showIsland],
+    () => ({ style, color: currentColor.id, hw: hwType, finish: hwFinishKey, island: showIsland, ...(layout !== DEFAULT_LAYOUT ? { layout } : {}) }),
+    [style, currentColor.id, hwType, hwFinishKey, showIsland, layout],
   );
   const configKey = configQuery(selection).toString();
 
@@ -221,9 +217,9 @@ export function CabinetConfigurator() {
   };
 
   const hwGallery = useMemo(() => {
+    // pulls only: the chosen pull goes on every door and drawer front
     const items: { label: string; image: string }[] = [{ label: 'Pull', image: currentHwFinish.pull }];
-    if (currentHwFinish.withDoor) items.push({ label: 'Pull + knob set', image: currentHwFinish.withDoor });
-    for (const s of currentHwFinish.sizeImages) items.push({ label: s.size, image: s.image });
+    for (const s of currentHwFinish.sizeImages) if (!/knob/i.test(s.size)) items.push({ label: s.size, image: s.image });
     return items;
   }, [currentHwFinish]);
   const hwMainImage = hwPreview && hwGallery.some((g) => g.image === hwPreview) ? hwPreview : currentHwFinish.pull;
@@ -234,23 +230,23 @@ export function CabinetConfigurator() {
       `Door style: ${currentStyle.name}`,
       `Color: ${currentColor.color}`,
       `Hardware: ${currentHw.name} - ${FINISH_NAMES[hwFinishKey] || hwFinishKey}`,
-      `Doors use: ${doorHardwareLabel(selection)}`,
+      ...(layout !== DEFAULT_LAYOUT && currentLayout ? [`Starting kitchen: ${currentLayout.name}`] : []),
       `Design summary: https://vulpinehomes.com/visualizer/summary?${configKey}`,
     ].join('\n');
-  }, [currentStyle.name, currentColor.color, currentHw.name, hwFinishKey, selection, configKey]);
+  }, [currentStyle.name, currentColor.color, currentHw.name, hwFinishKey, configKey, layout, currentLayout]);
   const quoteHref = `/request-bid?${new URLSearchParams({ configuration: quoteSummary, config: configKey }).toString()}`;
   const foxSelection: FoxSelection = useMemo(
-    () => ({ style, color: currentColor.id, hw: hwType, finish: hwFinishKey, doors: doorHardware, view }),
-    [style, currentColor.id, hwType, hwFinishKey, doorHardware, view],
+    () => ({ style, color: currentColor.id, hw: hwType, finish: hwFinishKey, view }),
+    [style, currentColor.id, hwType, hwFinishKey, view],
   );
 
-  const description = `${currentStyle.name} doors in ${currentColor.color}, ${currentHw.name} hardware in ${FINISH_NAMES[hwFinishKey] || hwFinishKey}, ${
-    doorHardwareLabel(selection)
-  } on doors${view === '3d' ? (showIsland ? ', with island' : ', without island') : ''}`;
+  const description = `${currentStyle.name} doors in ${currentColor.color}, ${currentHw.name} pulls in ${FINISH_NAMES[hwFinishKey] || hwFinishKey}${
+    view === '3d' ? `${currentLayout ? `, ${currentLayout.name}` : ''}${showIsland ? ', with island' : ', without island'}` : ''
+  }`;
   const arTitle = `${currentStyle.name} · ${currentColor.color} · ${currentHw.name} ${FINISH_NAMES[hwFinishKey] || ''}`.trim();
 
   // in-page AR studio: same picks as the configurator, as compact chips
-  const arLook = useMemo(() => ({ styleId: style, hwStyle: hwType, doorHardware, knobShape: effectiveKnob }), [style, hwType, doorHardware, effectiveKnob]);
+  const arLook = useMemo(() => ({ styleId: style, hwStyle: hwType }), [style, hwType]);
   const arChips: DesignChips = {
     styles: STYLE_KEYS.map((id) => ({ id, name: CONFIG_DATA.doorStyles[id].name })),
     style,
@@ -261,9 +257,6 @@ export function CabinetConfigurator() {
     hws: HW_KEYS.map((id) => ({ id, name: CONFIG_DATA.hardware[id].name })),
     hw: hwType,
     onHw: handleHwTypeChange,
-    doorOptions,
-    doorOption,
-    onDoorOption: (id) => pickDoorOption(id as 'pull' | 'knob' | 'tknob'),
     finishes: Object.keys(currentHw.finishes).map((f) => ({ id: f, name: FINISH_NAMES[f] || f, color: FINISH_COLORS[f] || '#666' })),
     finish: hwFinishKey,
     onFinish: setHwFinish,
@@ -296,6 +289,32 @@ export function CabinetConfigurator() {
       <div className={styles.grid}>
         {/* LEFT: Visualizer */}
         <div className={styles.visualCol}>
+          {layouts.length > 1 && (
+            <div className={styles.layoutPicker}>
+              <p className={styles.eyebrow} id="layout-label">
+                Start with a kitchen
+              </p>
+              <div className={styles.layoutCards} role="radiogroup" aria-labelledby="layout-label" onKeyDown={radioKeys}>
+                {layouts.map((l) => (
+                  <button
+                    key={l.id}
+                    type="button"
+                    className={cn(styles.layoutCard, layout === l.id && styles.layoutCardActive)}
+                    {...radio(layout === l.id)}
+                    onClick={() => pickLayout(l.id)}
+                  >
+                    <span className={styles.layoutThumb}>
+                      {l.thumb && (
+                        // eslint-disable-next-line @next/next/no-img-element
+                        <img src={l.thumb} alt="" loading="lazy" width={512} height={384} />
+                      )}
+                    </span>
+                    <span className={styles.layoutName}>{l.name}</span>
+                  </button>
+                ))}
+              </div>
+            </div>
+          )}
           <div className={styles.viewBar}>
             <div className={styles.segmented} role="tablist" aria-label="Preview mode">
               {(['photo', '3d'] as View[]).map((v) => (
@@ -312,7 +331,7 @@ export function CabinetConfigurator() {
               ))}
             </div>
             <div className={styles.viewActions}>
-              {view === '3d' && (
+              {view === '3d' && currentLayout?.hasIsland !== false && (
                 <label className={styles.toggle}>
                   <input type="checkbox" checked={showIsland} onChange={(e) => setShowIsland(e.target.checked)} />
                   <span>Island</span>
@@ -382,6 +401,9 @@ export function CabinetConfigurator() {
               </>
             ) : (
               <KitchenScene3D
+                key={layout}
+                layoutBase={currentLayout?.base}
+                layoutName={currentLayout?.name}
                 description={description}
                 onEngine={onEngine}
                 styleId={style}
@@ -390,8 +412,6 @@ export function CabinetConfigurator() {
                 hwStyle={hwType}
                 hwFinishId={hwFinishKey}
                 hwFinish={CONFIG_DATA.hardwareFinishes[hwFinishKey]}
-                doorHardware={doorHardware}
-                knobShape={effectiveKnob}
                 showIsland={showIsland}
               />
             )}
@@ -646,23 +666,6 @@ export function CabinetConfigurator() {
               </div>
             </div>
 
-            <div className={styles.panel}>
-              <p className={styles.eyebrow}>On the doors</p>
-              <div className={styles.chips} role="radiogroup" aria-label="Door hardware" onKeyDown={radioKeys}>
-                {doorOptions.map((o) => (
-                  <button
-                    key={o.id}
-                    type="button"
-                    className={cn(styles.chip, doorOption === o.id && styles.chipActive)}
-                    onClick={() => pickDoorOption(o.id)}
-                    {...radio(doorOption === o.id)}
-                  >
-                    {o.label}
-                  </button>
-                ))}
-              </div>
-              <p className={styles.muted}>Drawers always get pulls. Shown in the 3D view.</p>
-            </div>
           </div>
         </div>
 
@@ -752,11 +755,6 @@ export function CabinetConfigurator() {
                 {HW_KEYS.map((id) => (
                   <button key={id} type="button" className={cn(styles.chip, hwType === id && styles.chipActive)} {...radio(hwType === id)} onClick={() => handleHwTypeChange(id)}>
                     {CONFIG_DATA.hardware[id].name}
-                  </button>
-                ))}
-                {doorOptions.map((o) => (
-                  <button key={o.id} type="button" className={cn(styles.chip, styles.chipSubtle, doorOption === o.id && styles.chipActive)} aria-pressed={doorOption === o.id} onClick={() => pickDoorOption(o.id)}>
-                    {o.label}
                   </button>
                 ))}
               </div>

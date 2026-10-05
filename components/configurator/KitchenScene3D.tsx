@@ -11,6 +11,9 @@ interface Props extends EngineState {
   onModeChange?: (mode: EngineMode, detail?: string) => void;
   /** called with the engine once the first configuration has rendered, and with null on unmount */
   onEngine?: (engine: ConfiguratorEngine | null) => void;
+  /** folder of the starting kitchen's manifest.json (see ../layouts); default = the flat U-shape files */
+  layoutBase?: string;
+  layoutName?: string;
 }
 
 /** short = label on phones, so all five fit in one row */
@@ -44,7 +47,7 @@ export default function KitchenScene3D(props: Props) {
       try {
         const { ConfiguratorEngine } = await import('./scene/engine');
         if (cancelled || !hostRef.current) return;
-        engine = new ConfiguratorEngine(hostRef.current);
+        engine = new ConfiguratorEngine(hostRef.current, { base: props.layoutBase });
         engine.onMode = (mode, detail) => {
           setStatus({ mode, detail });
           onModeChange?.(mode, detail);
@@ -78,12 +81,12 @@ export default function KitchenScene3D(props: Props) {
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
-  const { styleId, finishId, finish, hwStyle, hwFinishId, hwFinish, doorHardware, knobShape, showIsland } = props;
+  const { styleId, finishId, finish, hwStyle, hwFinishId, hwFinish, showIsland } = props;
   useEffect(() => {
     if (readyRef.current && engineRef.current) {
-      engineRef.current.update({ styleId, finishId, finish, hwStyle, hwFinishId, hwFinish, doorHardware, knobShape, showIsland });
+      engineRef.current.update({ styleId, finishId, finish, hwStyle, hwFinishId, hwFinish, showIsland });
     }
-  }, [styleId, finishId, finish, hwStyle, hwFinishId, hwFinish, doorHardware, knobShape, showIsland]);
+  }, [styleId, finishId, finish, hwStyle, hwFinishId, hwFinish, showIsland]);
 
   useEffect(() => {
     if (!showIsland && preset === 'island') {

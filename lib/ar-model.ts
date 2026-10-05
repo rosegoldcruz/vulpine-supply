@@ -207,6 +207,6 @@ export function parseArQuery(sp: URLSearchParams): ArModelQuery | null {
   const hw = id('hw', 'arch');
   const finish = id('finish', 'matte_black');
   if (!style || !color || !hw || !finish) return null;
-  const doors = sp.get('doors') === 'knob' ? 'knob' : 'pull';
-  return { style, color, hw, finish, doors, knob: doors === 'knob' && sp.get('knob') === 't' ? 't' : 'round', island: sp.get('island') !== '0' };
+  // pulls on every front (the visualizer has no knob option; old doors=/knob= params are ignored)
+  return { style, color, hw, finish, doors: 'pull', knob: 'round', island: sp.get('island') !== '0' };
 }

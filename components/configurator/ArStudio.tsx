@@ -23,9 +23,6 @@ export interface DesignChips {
   hws: { id: string; name: string }[];
   hw: string;
   onHw: (id: string) => void;
-  doorOptions: { id: string; label: string }[];
-  doorOption: string;
-  onDoorOption: (id: string) => void;
   finishes: { id: string; name: string; color: string }[];
   finish: string;
   onFinish: (id: string) => void;
@@ -105,7 +102,7 @@ export function ArStudio(p: Props) {
   }, []);
 
   // live materials / hardware from the 3D engine
-  const lookKey = `${p.look.styleId}|${p.look.hwStyle}|${p.look.doorHardware}|${p.look.knobShape}`;
+  const lookKey = `${p.look.styleId}|${p.look.hwStyle}`;
   useEffect(() => {
     const ar = arRef.current;
     if (!ar || !p.engine) return;
@@ -246,11 +243,7 @@ export function ArStudio(p: Props) {
     const c = p.chips;
     if (tab === 'style') return c.styles.map((x) => ({ id: x.id, label: x.name, on: x.id === c.style, pick: () => c.onStyle(x.id) }));
     if (tab === 'color') return c.colors.map((x) => ({ id: x.id, label: x.name, img: x.img, on: x.id === c.color, pick: () => c.onColor(x.id) }));
-    if (tab === 'hardware')
-      return [
-        ...c.hws.map((x) => ({ id: x.id, label: x.name, on: x.id === c.hw, pick: () => c.onHw(x.id) })),
-        ...c.doorOptions.map((x) => ({ id: `door_${x.id}`, label: x.label, on: x.id === c.doorOption, subtle: true, pick: () => c.onDoorOption(x.id) })),
-      ];
+    if (tab === 'hardware') return c.hws.map((x) => ({ id: x.id, label: x.name, on: x.id === c.hw, pick: () => c.onHw(x.id) }));
     return c.finishes.map((x) => ({ id: x.id, label: x.name, dot: x.color, on: x.id === c.finish, pick: () => c.onFinish(x.id) }));
   }, [p.chips, tab]);
 

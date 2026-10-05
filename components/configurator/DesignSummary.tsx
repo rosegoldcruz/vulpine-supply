@@ -2,7 +2,8 @@
 
 import { useEffect, useState } from 'react';
 import { CONFIG_DATA, FINISH_COLORS, FINISH_NAMES, cabsUrl } from './data';
-import { SNAPSHOT_KEY, configQuery, designRef, doorHardwareLabel, parseConfig, type ConfigSelection } from './summary';
+import { SNAPSHOT_KEY, configQuery, designRef, parseConfig, pullSizes, type ConfigSelection } from './summary';
+import { layoutName } from './layouts';
 import styles from './DesignSummary.module.css';
 
 const SITE = 'https://vulpinehomes.com';
@@ -46,12 +47,12 @@ export function DesignSummary() {
     `Door style: ${style.name}`,
     `Color: ${color.color}`,
     `Hardware: ${hw.name} - ${finishName}`,
-    `Doors use: ${doorHardwareLabel(sel)}`,
+    ...(sel.layout ? [`Starting kitchen: ${layoutName(sel.layout)}`] : []),
     `Design summary: ${SITE}/visualizer/summary?${q}`,
   ].join('\n');
   const quoteHref = `/request-bid?${new URLSearchParams({ configuration: quoteText, config: q }).toString()}`;
   const hero = snapshot || (color.kitchen ? cabsUrl(color.kitchen) : null);
-  const sizes = hwImgs.sizeImages.map((s) => s.size);
+  const sizes = pullSizes(sel.hw, hwImgs.sizeImages);
 
   return (
     <div className={styles.page}>
@@ -147,17 +148,15 @@ export function DesignSummary() {
                 <span className={styles.note}>{hw.description}</span>
               </td>
             </tr>
-            <tr>
-              <th scope="row">Doors</th>
-              <td>{doorHardwareLabel(sel).replace(/^./, (c) => c.toUpperCase())}</td>
-            </tr>
-            <tr>
-              <th scope="row">Drawers</th>
-              <td>Pulls (centered)</td>
-            </tr>
+            {sel.layout && (
+              <tr>
+                <th scope="row">Starting kitchen</th>
+                <td>{layoutName(sel.layout)}</td>
+              </tr>
+            )}
             {sizes.length > 0 && (
               <tr>
-                <th scope="row">Available sizes</th>
+                <th scope="row">Pull sizes</th>
                 <td>{sizes.join(' · ')}</td>
               </tr>
             )}
@@ -170,7 +169,7 @@ export function DesignSummary() {
             <p className={styles.url}>{designUrl}</p>
             <p className={styles.small}>
               Send this summary with your quote request; we confirm sizes, quantities and lead time with you. Colors on screen and in print
-              can vary from the physical door; ask for a sample door before ordering.
+              can vary from the physical door; ask for a sample door before ordering. DuraBuild doors are built in the USA.
             </p>
           </div>
           {qr && (

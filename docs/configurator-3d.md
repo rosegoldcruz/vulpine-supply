@@ -43,9 +43,9 @@ mode, and the pulls baked into `kitchen.glb` (correct only for Shaker Classic) a
 4. `pull_generic_*` / `knob_generic`, then legacy `pull_bar` / `knob_round`;
 5. procedural shape.
 Door placement without exact positions follows `anchor` + `anchor_dir` (pull end at the anchor); drawers are centered.
-- **Bar T-knob:** `knob_bar_t` (2" T-knob) is outside the `knob_<style>` rule, so it is requested by name: when the shopper
-  picks "T-knobs" (Bar only, `?doors=knob&knob=t`) each door uses `by_style.bar.knob_t` (fallback: `hardware_catalog.bar.knobs.t`)
-  at the round knob's `knob_position`. Other styles show "Knobs on doors" only.
+- **Pulls only:** the visualizer no longer offers knobs or a doors-vs-drawers choice; every door and drawer gets the
+  chosen pull (`engine.ts` always resolves `'pull'`). The `knob_*` resolution above stays in `hardware.ts` for the catalog
+  GLB but is not reachable from the UI. Old links with `doors=knob` / `knob=t` still open; those parameters are ignored.
 - **Cottage** pulls are `pull_cottage_4_5in` / `pull_cottage_5_875in` (4-1/2", 5-7/8"); the old `_4_75in` / `_6_0625in`
   names still resolve to them (`LEGACY_NAMES` in `hardware.ts`). Each placed instance records its source node in
   `userData.hardwareNode` (handy with `?debug=1`).
@@ -74,10 +74,32 @@ Door placement without exact positions follows `anchor` + `anchor_dir` (pull end
   (re-fetch hits the HTTP cache). Finish textures are kept for the 3 most recent finishes, older ones disposed.
   Rendering is on-demand (only when the camera moves or the scene changes).
 
+## Starting kitchens (layout picker: `layouts.ts`, `scripts/sync-configurator-assets.mjs`)
+DevGod exports one folder per starting kitchen: `glb/kitchens/<id>/` (same schema as the flat U v2 files:
+`kitchen.glb`, `fronts_*.glb`, `mounts.json`, `camera_presets.json`, optional `hardware.glb` / `finishes/`, a 512 px
+`thumb.png`) plus `glb/kitchens/index.json` listing them. Ids: `u_v2`, `l_living`, `one_wall_island`, `big_l_island`,
+`one_wall`.
+
+- `npm run sync:configurator-assets` reads `index.json` and copies **only the kitchens whose folder exists**
+  to `public/models/configurator/kitchens/<id>/`, with a per-kitchen `manifest.json`. A kitchen without its own
+  `hardware.glb` uses the shared one; finishes stay shared (`/models/configurator/finishes`) unless the folder has its own.
+  `u_v2` is byte-identical to the flat files, so it maps to the flat base `/models/configurator/` and only its thumbnail is
+  copied: **the flat U v2 files stay the default**. `has_island` (or a node scan of `kitchen.glb`) hides the Island toggle
+  for kitchens without one. The homeowner names in `layouts.ts` win over the export's names. Output:
+  `public/models/configurator/kitchens/index.json` `{ default: 'u_v2', kitchens: [{ id, name, base, thumb, hasIsland }] }`.
+- **Stopgap:** until `kitchens/l_living/` lands (being rebuilt with the current doors and hardware), the sync builds
+  `l_living` from `glb/v1/` (`kitchen_v1.glb` → `kitchen.glb`). It has no camera presets of its own, so the computed views
+  apply, and its thumbnail is a 512×384 still from our 3D view. Once DevGod's folder exists it replaces the stopgap.
+- `fetchLayouts()` loads the index; the "Start with a kitchen" cards (thumbnail + name) show only when there are 2+
+  kitchens. Picking one sets `?layout=`, switches to 3D and remounts the scene with that base
+  (`new Engine(container, { base })`). Camera presets come only from the kitchen's own `camera_presets.json`.
+- The summary page, PDF and quote text show "Starting kitchen" when a non-default layout is chosen.
+
 ## Save / share / summary / quote
-- The URL is the design: `?style=&color=&hw=&finish=[&doors=knob[&knob=t]][&island=0][&view=3d]`.
+- The URL is the design: `?style=&color=&hw=&finish=[&layout=<kitchen id>][&island=0][&view=3d]` (`layout` is only
+  written when it is not the default `u_v2`).
   "Copy link to my design" copies it (Web Share sheet on phones that support it).
-- "Design summary" opens `/configurator/summary` with a reference code (`VH-…`), door + hardware images,
+- "Design summary" opens `/visualizer/summary` with a reference code (`VH-…`), door + hardware images,
   details table, a QR code back to the design and "Print / Save as PDF" (print stylesheet hides the toolbar).
   When opened from the 3D view a still of the current camera is handed over via `sessionStorage`.
 - "Request a quote" (configurator and summary) pre-fills `/request-bid` with the selection and the summary link.
@@ -111,7 +133,7 @@ from an assumed ~67° long-side phone camera FOV, corrected for the cover crop.
 material, 4.5″ toe kick on floor units, the real fronts from `buildFront` in the current door style (Fusion styles get
 slab drawer fronts, as in the kitchen), and the catalog hardware piece (`engine.arKit().hardware(style, kind, …)`, cloned
 from the engine's hardware GLB library with the shared finish material; procedural fallback): pulls centred on the stile
-(2″ in on slab), knobs 3″ from the corner; knob/pull door options follow the configurator. Origin = bottom-centre of the
+(2″ in on slab); every front gets a pull. Origin = bottom-centre of the
 back face, front = +Z. SKU and size are shown in a tag (`W3030 · 30″ W × 30″ H × 12″ D`).
 
 **Placement.** *On wall* (default): the cabinet hangs upright on a virtual wall plane 1.6 m in front of the phone, facing
@@ -130,8 +152,8 @@ about the vertical. **Lock** turns gestures off. On release, a cabinet within ~6
 (wall-hung / floor) snaps edge-to-edge (wall cabinets align their tops). An orange outline marks the selection when there
 are 2+ cabinets.
 
-**Bottom bar.** The configurator's own chips in compact form (Style · Color with swatch images · Hardware incl.
-knob/pull door options · Finish) change the configurator state, and the AR cabinets rebuild live. Actions: **＋ Add
+**Bottom bar.** The configurator's own chips in compact form (Style · Color with swatch images · Hardware ·
+Finish) change the configurator state, and the AR cabinets rebuild live. Actions: **＋ Add
 another** (picker, then placed beside the selected one: same kind → side by side, base under a wall cabinet → 54″
 below), **Change** (swap the selected cabinet's type/size), **Remove** (2+ cabinets), **Snapshot** and **Get a quote
 with this** (full width, orange).

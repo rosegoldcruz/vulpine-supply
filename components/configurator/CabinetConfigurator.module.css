@@ -17,6 +17,20 @@
 .visualCol, .controlsCol, .hwDetail { display: flex; flex-direction: column; gap: 20px; min-width: 0; }
 .controlsCol { position: sticky; top: 88px; }
 
+/* starting-kitchen picker (one card per deployed layout) */
+.layoutPicker { display: flex; flex-direction: column; gap: 10px; }
+.layoutCards { display: grid; grid-template-columns: repeat(auto-fill, minmax(150px, 1fr)); gap: 10px; }
+.layoutCard {
+  display: flex; flex-direction: column; gap: 0; padding: 0; overflow: hidden; text-align: left; cursor: pointer;
+  background: #fff; border: 1.5px solid rgba(200, 196, 190, 0.7); border-radius: 14px; color: var(--black);
+  font: inherit; transition: border-color 0.2s, transform 0.15s, box-shadow 0.2s;
+}
+.layoutCard:hover { border-color: var(--black); transform: translateY(-1px); }
+.layoutCardActive, .layoutCardActive:hover { border-color: var(--orange); box-shadow: 0 0 0 2px var(--orange); }
+.layoutThumb { display: block; aspect-ratio: 4 / 3; background: #efebe6; }
+.layoutThumb img { display: block; width: 100%; height: 100%; object-fit: cover; }
+.layoutName { padding: 9px 12px 11px; font-size: 13px; font-weight: 700; line-height: 1.3; }
+
 /* view switch */
 .viewBar { display: flex; align-items: center; justify-content: space-between; gap: 12px; flex-wrap: wrap; }
 .segmented {
@@ -463,6 +477,10 @@
 .chipDot { display: inline-block; width: 12px; height: 12px; border-radius: 50%; margin-right: 6px; vertical-align: -1px; border: 1px solid rgba(17, 17, 17, 0.2); }
 
 @media (max-width: 700px) {
+  .layoutCards { display: flex; overflow-x: auto; scrollbar-width: none; scroll-snap-type: x mandatory; }
+  .layoutCards::-webkit-scrollbar { display: none; }
+  .layoutCard { flex: 0 0 150px; scroll-snap-align: start; }
+  .layoutName { font-size: 12px; padding: 7px 10px 9px; }
   .root { padding-bottom: 120px; }
   .sheet {
     display: block; position: fixed; left: 0; right: 0; bottom: 0; z-index: 900;
