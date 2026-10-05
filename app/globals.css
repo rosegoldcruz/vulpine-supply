@@ -222,7 +222,7 @@ section {
   display: flex;
   width: max-content;
   white-space: nowrap;
-  animation: ticker 4.5s linear infinite;
+  animation: ticker 7s linear infinite;
 }
 .ticker-item {
   font-size: 13px;
