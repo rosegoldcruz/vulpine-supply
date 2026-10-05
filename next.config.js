@@ -11,7 +11,7 @@ const nextConfig = {
     '/api/request-bid': ['./node_modules/pdfkit/js/standard-fonts/**/*', './node_modules/pdfkit/js/data/**/*'],
     '/api/design-summary': ['./node_modules/pdfkit/js/standard-fonts/**/*', './node_modules/pdfkit/js/data/**/*'],
   },
-  serverExternalPackages: ['draco3dgltf'],
+  serverExternalPackages: ['draco3dgltf', '@gltf-transform/functions'],
   async redirects() {
     return [{ source: '/configurator/:path*', destination: '/visualizer/:path*', permanent: true }];
   },
