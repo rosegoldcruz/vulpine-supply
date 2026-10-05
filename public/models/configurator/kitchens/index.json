@@ -1,0 +1,19 @@
+{
+  "default": "u_v2",
+  "kitchens": [
+    {
+      "id": "u_v2",
+      "name": "U-shape with island",
+      "base": "/models/configurator/",
+      "thumb": "/models/configurator/kitchens/u_v2/thumb.png",
+      "hasIsland": true
+    },
+    {
+      "id": "l_living",
+      "name": "L-shape with living room",
+      "base": "/models/configurator/kitchens/l_living/",
+      "thumb": "/models/configurator/kitchens/l_living/thumb.jpg",
+      "hasIsland": true
+    }
+  ]
+}
