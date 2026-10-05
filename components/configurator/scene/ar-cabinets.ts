@@ -7,7 +7,6 @@
  */
 import * as THREE from 'three';
 import type { ArKit } from './engine';
-import type { KnobShape } from './hardware';
 import { FRONT_PROFILES, FRONT_T, GAP, IN, SLAB_DRAWER_STYLES, buildFront, buildHardware } from './procedural';
 
 export type CabinetGroup = 'wall' | 'base' | 'tall' | 'vanity';
@@ -46,8 +45,6 @@ export interface CabinetSpec {
 export interface CabinetLook {
   styleId: string;
   hwStyle: string;
-  doorHardware: 'pull' | 'knob';
-  knobShape?: KnobShape;
 }
 
 const fmtIn = (n: number) => `${Number.isInteger(n) ? n : n.toFixed(1)}″`;
@@ -184,23 +181,18 @@ export function buildCabinet(spec: CabinetSpec, look: CabinetLook, kit: ArKit): 
       root.add(front);
       const faceZ = (boxD + FRONT_T) * IN;
       if (r.kind === 'drawer') {
-        const hw = hardwareFor(kit, look, 'pull', w >= 24 ? 'large' : 'small');
+        const hw = hardwareFor(kit, look, w >= 24 ? 'large' : 'small');
         hw.position.set(((fx0 + fx1) / 2) * IN, ((fy0 + fy1) / 2) * IN, faceZ);
         root.add(hw);
       } else if (isDoor) {
-        const knob = look.doorHardware === 'knob';
-        const hw = hardwareFor(kit, look, knob ? 'knob' : 'pull', 'small');
+        const hw = hardwareFor(kit, look, 'small');
         const hingeLeft = cols === 1 ? true : i === 0;
         // framed styles centre the pull on the stile; slab keeps it 2" in from the edge
         const inset = frameIn > 0 ? frameIn / 2 : 2;
         const hx = hingeLeft ? fx1 - inset : fx0 + inset;
-        let hy: number;
-        if (knob) hy = r.upper ? fy0 + 3 : fy1 - 3;
-        else {
-          hw.rotation.z = Math.PI / 2; // vertical pull
-          const len = new THREE.Box3().setFromObject(hw).getSize(new THREE.Vector3()).y / IN;
-          hy = r.upper ? fy0 + 2.5 + len / 2 : fy1 - 2.5 - len / 2;
-        }
+        hw.rotation.z = Math.PI / 2; // vertical pull
+        const len = new THREE.Box3().setFromObject(hw).getSize(new THREE.Vector3()).y / IN;
+        const hy = r.upper ? fy0 + 2.5 + len / 2 : fy1 - 2.5 - len / 2;
         hw.position.set(hx * IN, hy * IN, faceZ);
         root.add(hw);
       }
@@ -214,10 +206,11 @@ export function buildCabinet(spec: CabinetSpec, look: CabinetLook, kit: ArKit): 
   return root;
 }
 
-function hardwareFor(kit: ArKit, look: CabinetLook, kind: 'pull' | 'knob', sizeClass: 'small' | 'large'): THREE.Object3D {
-  const real = kit.hardware(look.hwStyle, kind, { sizeClass, targetIn: sizeClass === 'large' ? 7 : 5, knobShape: look.knobShape });
+/** The chosen pull, on every door and drawer front. */
+function hardwareFor(kit: ArKit, look: CabinetLook, sizeClass: 'small' | 'large'): THREE.Object3D {
+  const real = kit.hardware(look.hwStyle, { sizeClass, targetIn: sizeClass === 'large' ? 7 : 5 });
   if (real) return real;
-  return buildHardware(look.hwStyle, kind, kit.mats.hardware, `${kind}_${look.hwStyle}`, sizeClass === 'large' ? 1.35 : 1);
+  return buildHardware(look.hwStyle, 'pull', kit.mats.hardware, `pull_${look.hwStyle}`, sizeClass === 'large' ? 1.35 : 1);
 }
 
 /** Frees a cabinet's own geometry (materials and catalog hardware geometry are shared with the engine). */

@@ -23,7 +23,6 @@ export interface FoxSelection {
   color: string;
   hw: string;
   finish: string;
-  doors: 'pull' | 'knob';
   view: 'photo' | '3d';
 }
 
@@ -237,9 +236,6 @@ export const FoxGuide = forwardRef<FoxGuideHandle, FoxGuideProps>(function FoxGu
     } else if (c.has('finish')) {
       touched.current.hardware = true;
       fresh(LINES.hwFinish[sel.finish]);
-    } else if (c.has('doors')) {
-      touched.current.hardware = true;
-      fresh(sel.doors === 'knob' ? LINES.knobs : LINES.pulls);
     } else if (c.has('view') && sel.view === '3d') {
       fresh(LINES.view3d);
     }

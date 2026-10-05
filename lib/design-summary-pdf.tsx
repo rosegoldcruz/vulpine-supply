@@ -6,7 +6,8 @@ import React from 'react';
 import { Document, Font, Image, Link, Page, StyleSheet, Text, View, renderToBuffer } from '@react-pdf/renderer';
 import QRCode from 'qrcode';
 import { CONFIG_DATA, FINISH_COLORS, FINISH_NAMES } from '@/components/configurator/data';
-import { configQuery, designRef, doorHardwareLabel, type ConfigSelection } from '@/components/configurator/summary';
+import { configQuery, designRef, pullSizes, type ConfigSelection } from '@/components/configurator/summary';
+import { layoutName } from '@/components/configurator/layouts';
 
 export const SITE = 'https://vulpinehomes.com';
 const ORANGE = '#ee7200';
@@ -25,7 +26,8 @@ export interface DesignDetails {
   hardwareDescription: string;
   finishName: string;
   finishColor: string;
-  doorsLabel: string;
+  /** starting kitchen name when not the default U-shape */
+  layoutName: string | null;
   sizes: string[];
   doorImage: string;
   pullImage: string;
@@ -39,7 +41,6 @@ export function designDetails(sel: ConfigSelection): DesignDetails {
   const hw = CONFIG_DATA.hardware[sel.hw];
   const hwImgs = hw.finishes[sel.finish] || Object.values(hw.finishes)[0];
   const query = configQuery(sel).toString();
-  const label = doorHardwareLabel(sel);
   return {
     ref: designRef(sel),
     query,
@@ -51,8 +52,8 @@ export function designDetails(sel: ConfigSelection): DesignDetails {
     hardwareDescription: hw.description,
     finishName: FINISH_NAMES[sel.finish] || sel.finish,
     finishColor: FINISH_COLORS[sel.finish] || '#666666',
-    doorsLabel: label.replace(/^./, (c) => c.toUpperCase()),
-    sizes: hwImgs.sizeImages.map((s) => s.size),
+    layoutName: sel.layout ? layoutName(sel.layout) : null,
+    sizes: pullSizes(sel.hw, hwImgs.sizeImages),
     doorImage: `cabs_clean/${color.door}`,
     pullImage: `cabs_clean/${hwImgs.pull}`,
     kitchenImage: color.kitchen ? `cabs_clean/${color.kitchen}` : null,
@@ -154,10 +155,9 @@ function SummaryDoc(p: { d: DesignDetails; date: string; preparedFor?: string; h
         {d.hardwareDescription ? <Text style={s.note}>{d.hardwareDescription}</Text> : null}
       </>,
     ],
-    ['Doors', d.doorsLabel],
-    ['Drawers', 'Pulls (centered)'],
   ];
-  if (d.sizes.length) rows.push(['Available sizes', d.sizes.join(' · ')]);
+  if (d.layoutName) rows.push(['Starting kitchen', d.layoutName]);
+  if (d.sizes.length) rows.push(['Pull sizes', d.sizes.join(' · ')]);
   return (
     <Document title={`Vulpine cabinet design summary ${d.ref}`} author="Vulpine Homes" subject="Cabinet design summary" creator="vulpinehomes.com">
       <Page size="LETTER" style={s.page}>
@@ -232,7 +232,7 @@ function SummaryDoc(p: { d: DesignDetails; date: string; preparedFor?: string; h
             </Link>
             <Text style={s.small}>
               Send this summary with your quote request; we confirm sizes, quantities and lead time with you. Colors on screen and in print can vary
-              from the physical door; ask for a sample door before ordering.
+              from the physical door; ask for a sample door before ordering. DuraBuild doors are built in the USA.
             </Text>
           </View>
           <Image style={s.qr} src={p.qr} />

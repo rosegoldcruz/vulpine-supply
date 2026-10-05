@@ -156,10 +156,6 @@ export function ProductInfoDrawer({ open, onClose, styleId, colorId, hwId, hwFin
                   <dt>Pulls</dt>
                   <dd>{hInfo.pulls.map((p) => (p.spread ? `${p.length} (${p.spread} spread)` : p.length)).join(' · ')}</dd>
                 </div>
-                <div>
-                  <dt>Knob{hInfo.knobs.length > 1 ? 's' : ''}</dt>
-                  <dd>{hInfo.knobs.join(' · ')}</dd>
-                </div>
                 {hInfo.projection && (
                   <div>
                     <dt>Projection</dt>
