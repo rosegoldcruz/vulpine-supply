@@ -112,8 +112,8 @@ const LAYOUT_IDS = ['u_v2', 'l_living', 'one_wall_island', 'big_l_island', 'one_
 const LAYOUT_NAMES = {
   u_v2: 'U-shape with island',
   l_living: 'L-shape with living room',
-  one_wall_island: 'One wall + island',
-  big_l_island: 'Big L + island',
+  one_wall_island: 'One wall with island',
+  big_l_island: 'Big L with island',
   one_wall: 'One wall',
 };
 const KSRC = path.join(SRC, 'kitchens');
