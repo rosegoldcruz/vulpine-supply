@@ -12,8 +12,8 @@ export const DEFAULT_LAYOUT = 'u_v2';
 export const LAYOUTS: { id: string; name: string }[] = [
   { id: 'u_v2', name: 'U-shape with island' },
   { id: 'l_living', name: 'L-shape with living room' },
-  { id: 'one_wall_island', name: 'One wall + island' },
-  { id: 'big_l_island', name: 'Big L + island' },
+  { id: 'one_wall_island', name: 'One wall with island' },
+  { id: 'big_l_island', name: 'Big L with island' },
   { id: 'one_wall', name: 'One wall' },
 ];
 

@@ -1,0 +1,87 @@
+{
+ "overview iso": {
+  "blender_view": "overview",
+  "position": [
+   -0.061,
+   12.697,
+   18.788
+  ],
+  "target": [
+   -0.061,
+   1.316,
+   -0.153
+  ],
+  "fov_vertical_deg_16x9": 16.46,
+  "fov_horizontal_deg": 28.84,
+  "lens_mm_36mm_sensor": 70.0,
+  "distance_m": 22.098
+ },
+ "uppers": {
+  "blender_view": "uppers",
+  "position": [
+   2.605,
+   3.517,
+   5.493
+  ],
+  "target": [
+   -1.729,
+   1.575,
+   -1.72
+  ],
+  "fov_vertical_deg_16x9": 37.3,
+  "fov_horizontal_deg": 61.93,
+  "lens_mm_36mm_sensor": 30.0,
+  "distance_m": 8.636
+ },
+ "island": {
+  "blender_view": "island",
+  "position": [
+   -3.01,
+   3.707,
+   -6.076
+  ],
+  "target": [
+   -0.166,
+   0.711,
+   0.022
+  ],
+  "fov_vertical_deg_16x9": 28.41,
+  "fov_horizontal_deg": 48.46,
+  "lens_mm_36mm_sensor": 40.0,
+  "distance_m": 7.366
+ },
+ "close-up door": {
+  "blender_view": "door_closeup",
+  "position": [
+   1.556,
+   2.153,
+   0.179
+  ],
+  "target": [
+   -0.579,
+   1.905,
+   -2.654
+  ],
+  "fov_vertical_deg_16x9": 22.9,
+  "fov_horizontal_deg": 39.6,
+  "lens_mm_36mm_sensor": 50.0,
+  "distance_m": 3.556
+ },
+ "(extra) sink wall": {
+  "blender_view": "sink_wall",
+  "position": [
+   -2.791,
+   3.073,
+   2.989
+  ],
+  "target": [
+   1.935,
+   1.473,
+   -2.079
+  ],
+  "fov_vertical_deg_16x9": 37.3,
+  "fov_horizontal_deg": 61.93,
+  "lens_mm_36mm_sensor": 30.0,
+  "distance_m": 7.112
+ }
+}

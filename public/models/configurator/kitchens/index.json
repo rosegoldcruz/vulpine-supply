@@ -14,6 +14,27 @@
       "base": "/models/configurator/kitchens/l_living/",
       "thumb": "/models/configurator/kitchens/l_living/thumb.jpg",
       "hasIsland": true
+    },
+    {
+      "id": "one_wall_island",
+      "name": "One wall with island",
+      "base": "/models/configurator/kitchens/one_wall_island/",
+      "thumb": "/models/configurator/kitchens/one_wall_island/thumb.png",
+      "hasIsland": true
+    },
+    {
+      "id": "big_l_island",
+      "name": "Big L with island",
+      "base": "/models/configurator/kitchens/big_l_island/",
+      "thumb": "/models/configurator/kitchens/big_l_island/thumb.png",
+      "hasIsland": true
+    },
+    {
+      "id": "one_wall",
+      "name": "One wall",
+      "base": "/models/configurator/kitchens/one_wall/",
+      "thumb": "/models/configurator/kitchens/one_wall/thumb.png",
+      "hasIsland": false
     }
   ]
 }

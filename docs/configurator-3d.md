@@ -77,8 +77,8 @@ Door placement without exact positions follows `anchor` + `anchor_dir` (pull end
 ## Starting kitchens (layout picker: `layouts.ts`, `scripts/sync-configurator-assets.mjs`)
 DevGod exports one folder per starting kitchen: `glb/kitchens/<id>/` (same schema as the flat U v2 files:
 `kitchen.glb`, `fronts_*.glb`, `mounts.json`, `camera_presets.json`, optional `hardware.glb` / `finishes/`, a 512 px
-`thumb.png`) plus `glb/kitchens/index.json` listing them. Ids: `u_v2`, `l_living`, `one_wall_island`, `big_l_island`,
-`one_wall`.
+`thumb.png`) plus `glb/kitchens/index.json` listing them. Ids / homeowner names: `u_v2` (U-shape with island), `l_living` (L-shape with living room),
+`one_wall_island` (One wall with island), `big_l_island` (Big L with island), `one_wall` (One wall).
 
 - `npm run sync:configurator-assets` reads `index.json` and copies **only the kitchens whose folder exists**
   to `public/models/configurator/kitchens/<id>/`, with a per-kitchen `manifest.json`. A kitchen without its own

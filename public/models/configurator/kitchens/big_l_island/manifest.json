@@ -1,0 +1,15 @@
+{
+  "kitchen": "/models/configurator/kitchens/big_l_island/kitchen.glb",
+  "fronts": {
+    "fusion_shaker": "/models/configurator/kitchens/big_l_island/fronts_fusion_shaker.glb",
+    "fusion_slide": "/models/configurator/kitchens/big_l_island/fronts_fusion_slide.glb",
+    "shaker_classic": "/models/configurator/kitchens/big_l_island/fronts_shaker_classic.glb",
+    "shaker_slide": "/models/configurator/kitchens/big_l_island/fronts_shaker_slide.glb",
+    "slab": "/models/configurator/kitchens/big_l_island/fronts_slab.glb"
+  },
+  "hardware": "/models/configurator/hardware.glb",
+  "mounts": "/models/configurator/kitchens/big_l_island/mounts.json",
+  "finishesJson": null,
+  "finishesDir": null,
+  "cameraPresets": "/models/configurator/kitchens/big_l_island/camera_presets.json"
+}
