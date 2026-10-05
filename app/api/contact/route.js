@@ -1,12 +1,20 @@
 import { trackAnalyticsEvent } from '../../../lib/analytics';
-import { formatBidRequestTelegramMessage, sendTelegramMessage } from '../../../lib/telegram';
+import { formatBidRequestTelegramMessage, sendTelegramMessage, sendTelegramPhotos } from '../../../lib/telegram';
 import { SMS_CONSENT_TEXT } from '../../../lib/sms-consent';
+import { after } from 'next/server';
+import { extractConfigQuery, processConfiguratorLead } from '../../../lib/configurator-lead';
 
 export const runtime = 'nodejs';
+// the GoHighLevel hand-off (PDF render, uploads, emails) runs after the response via after()
+export const maxDuration = 60;
 
 const SOURCE = 'vulpinehomes.com';
 const DEFAULT_STATUS = 'new';
 const MAX_STRING_LENGTH = 2000;
+// optional project photos (multipart field "photos"), forwarded best-effort to Telegram
+const MAX_PHOTOS = 5;
+const MAX_PHOTO_BYTES = 8 * 1024 * 1024;
+const PHOTOS = Symbol('photos');
 
 const TEXT_FIELDS = [
   'name',
@@ -79,7 +87,16 @@ async function readRequestBody(request) {
     contentType.includes('multipart/form-data')
   ) {
     const formData = await request.formData();
-    return Object.fromEntries(formData.entries());
+    const raw = {};
+    const photos = [];
+    for (const [key, value] of formData.entries()) {
+      if (typeof value === 'string') raw[key] = value;
+      else if (key === 'photos' && photos.length < MAX_PHOTOS && value.size > 0 && value.size <= MAX_PHOTO_BYTES && /^image\//.test(value.type)) {
+        photos.push(value);
+      }
+    }
+    if (photos.length) Object.defineProperty(raw, PHOTOS, { value: photos, enumerable: false });
+    return raw;
   }
 
   return request.json().catch(() => ({}));
@@ -262,7 +279,71 @@ export async function POST(request) {
 
     const bidRequestPayload = buildBidRequestPayload(raw || {}, payload, request);
 
-    await sendTelegramMessage(formatBidRequestTelegramMessage(bidRequestPayload));
+    try {
+      await sendTelegramMessage(formatBidRequestTelegramMessage(bidRequestPayload));
+    } catch (error) {
+      console.error('Bid Telegram notification failed:', error);
+    }
+
+    const photos = raw?.[PHOTOS];
+    if (photos?.length) {
+      try {
+        await sendTelegramPhotos(photos, `Photos from ${payload.name} (${photos.length})`);
+      } catch (error) {
+        console.error('Bid photo forwarding failed:', error);
+      }
+    }
+
+    // Configurator quotes -> GoHighLevel (contact, PDF, customer + owner emails, opportunity).
+    // Runs after the response is sent; any GHL failure is logged and never reaches the customer.
+    const configQuery = extractConfigQuery({
+      config: cleanString(raw?.config || raw?.configuration_query, 1000),
+      message: payload.message,
+      pageUrl: payload.page_url,
+      projectType: payload.project_type,
+    });
+    let ghl = 'skipped';
+    if (configQuery !== null) {
+      ghl = 'queued';
+      const photoData = [];
+      for (const photo of photos || []) {
+        try {
+          photoData.push({ name: photo.name || 'photo.jpg', type: photo.type || 'image/jpeg', data: await photo.arrayBuffer() });
+        } catch (error) {
+          console.error('Bid photo read failed:', error);
+        }
+      }
+      const origin = new URL(request.url).origin;
+      const leadInput = {
+        name: payload.name,
+        email: payload.email,
+        phone: payload.phone,
+        address: firstString(raw, ['address', 'street_address']) || payload.project_location,
+        message: payload.message,
+        source: bidRequestPayload.source,
+        pageUrl: payload.page_url,
+        smsConsent: payload.smsConsent,
+        config: configQuery,
+        photos: photoData,
+        utm: {
+          utm_source: payload.utm_source,
+          utm_medium: payload.utm_medium,
+          utm_campaign: payload.utm_campaign,
+          utm_content: payload.utm_content,
+          utm_term: payload.utm_term,
+        },
+        // clearly marked test submissions get a 'test' tag so they are easy to find and clean up
+        extraTags: /^test\b/i.test(payload.name) ? ['test'] : [],
+      };
+      const cookie = request.headers.get('cookie') || '';
+      after(async () => {
+        try {
+          await processConfiguratorLead(leadInput, { origin, cookie });
+        } catch (error) {
+          console.error('Configurator GHL hand-off crashed:', error);
+        }
+      });
+    }
 
     try {
       await trackAnalyticsEvent({
@@ -284,6 +365,7 @@ export async function POST(request) {
       ok: true,
       result,
       intakeConfigured: missingConfig.length === 0,
+      ghl,
     });
   } catch (error) {
     console.error('Contact intake submission failed:', error);

@@ -1,6 +1,7 @@
 import { GET as contactGet, POST as contactPost } from '../contact/route';
 
 export const runtime = 'nodejs';
+export const maxDuration = 60;
 
 export async function GET(request) {
 	return contactGet(request);

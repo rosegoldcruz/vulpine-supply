@@ -16,7 +16,9 @@ const PAGE_HTML_BEFORE_SUPPLY = `
     <li><a href="#turns">Property Turns</a></li>
     <li><a href="#mf-split">Multifamily</a></li>
     <li><a href="#contractors">Contractors</a></li>
+    <li><a href="/visualizer">Visualizer</a></li>
   </ul>
+  <a href="/visualizer" class="mobile-visualizer">Visualizer</a>
   <a href="#contact" class="nav-cta">Request a Bid</a>
 </nav>
 
@@ -176,6 +178,7 @@ const PAGE_HTML_BEFORE_SUPPLY = `
     <li><a href="#turns">Property Turns</a></li>
     <li><a href="#mf-split">Multifamily</a></li>
     <li><a href="#contractors">Contractors</a></li>
+    <li><a href="/visualizer">Visualizer</a></li>
     <li><a href="#contact">Request a Bid</a></li>
     <li><a href="/terms">Terms</a></li>
     <li><a href="/privacy">Privacy</a></li>

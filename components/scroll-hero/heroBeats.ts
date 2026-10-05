@@ -22,5 +22,5 @@ export const itemProgress = (p: number, index: number, total: number, output = f
 }
 export const floorPlanPaths=Array.from({length:10},(_,i)=>`/GLB/${i>=7?'web/':''}floor_plan_${i+1}.glb`)
 
-export const revisedMaterialIds = [2,3,4,5,7,9,10,11,14,15]
-export const materialPaths = Array.from({length:16},(_,i)=>`/GLB/${revisedMaterialIds.includes(i+1)?'materials-v2/':''}mat${i+1}.glb`)
+export const revisedMaterialIds = [2,4,5,7,9,10,11,14,15]
+export const materialPaths = Array.from({length:16},(_,i)=>i+1).filter(id=>id!==3).map(id=>`/GLB/${revisedMaterialIds.includes(id)?'materials-v2/':''}mat${id}.glb`)

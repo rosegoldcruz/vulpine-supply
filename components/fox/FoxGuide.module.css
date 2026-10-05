@@ -1,0 +1,152 @@
+/* Vulpi, the configurator guide. Fixed to the bottom-right corner; on phones it sits above the bottom sheet
+   (CabinetConfigurator publishes the sheet height as --config-sheet-h). */
+.root {
+  --fox-w: 132px;
+  --fox-h: 168px;
+  position: fixed;
+  right: 18px;
+  bottom: calc(var(--config-sheet-h, 0px) + 14px);
+  z-index: 950;
+  display: flex;
+  flex-direction: column;
+  align-items: flex-end;
+  gap: 8px;
+  pointer-events: none;
+  font-family: 'DM Sans', sans-serif;
+  color: #1c1a17;
+}
+.root > * { pointer-events: auto; }
+
+.foxWrap { position: relative; width: var(--fox-w); height: var(--fox-h); }
+.fox {
+  width: 100%; height: 100%; padding: 0; border: 0; background: transparent; cursor: pointer;
+  border-radius: 50% 50% 18px 18px;
+  background-image: url('/models/fox/vulpi-poster.webp');
+  background-size: contain; background-position: center bottom; background-repeat: no-repeat;
+  filter: drop-shadow(0 10px 14px rgba(40, 28, 16, 0.22));
+  transition: transform 0.25s ease;
+}
+.fox:hover { transform: translateY(-2px); }
+.fox:focus-visible { outline: 2px solid #c06b3e; outline-offset: 3px; }
+.foxLoaded { background-image: none; }
+.canvasHost { display: block; width: 100%; height: 100%; }
+.foxTalking { transform: none; }
+
+.tools { position: absolute; top: 2px; right: 0; display: flex; gap: 4px; opacity: 0.55; transition: opacity 0.2s; }
+.foxWrap:hover .tools, .tools:focus-within { opacity: 1; }
+.tool {
+  width: 26px; height: 26px; border-radius: 50%; border: 1px solid rgba(28, 26, 23, 0.15);
+  background: rgba(255, 252, 248, 0.92); color: #3d372f; font-size: 15px; line-height: 1; cursor: pointer;
+  display: grid; place-items: center; padding: 0;
+}
+.tool:focus-visible { outline: 2px solid #c06b3e; outline-offset: 2px; }
+
+/* speech bubble */
+.bubble {
+  position: relative;
+  width: min(300px, calc(100vw - 36px));
+  margin-right: 40px;
+  padding: 14px 32px 14px 16px;
+  background: #fffcf8;
+  border: 1px solid rgba(28, 26, 23, 0.1);
+  border-radius: 16px 16px 4px 16px;
+  box-shadow: 0 14px 34px rgba(40, 28, 16, 0.16);
+  animation: pop 0.22s ease-out;
+}
+.bubble::after {
+  content: ''; position: absolute; right: 18px; bottom: -8px; width: 16px; height: 16px; background: #fffcf8;
+  border-right: 1px solid rgba(28, 26, 23, 0.1); border-bottom: 1px solid rgba(28, 26, 23, 0.1);
+  transform: rotate(45deg); border-bottom-right-radius: 3px;
+}
+@keyframes pop { from { opacity: 0; transform: translateY(6px) scale(0.98); } to { opacity: 1; transform: none; } }
+.bubbleText { margin: 0; font-size: 14.5px; line-height: 1.45; }
+.bubbleClose {
+  position: absolute; top: 6px; right: 8px; border: 0; background: none; font-size: 18px; line-height: 1; color: #8a8178;
+  cursor: pointer; padding: 4px;
+}
+.bubbleActions { display: flex; flex-wrap: wrap; gap: 8px; margin-top: 12px; }
+.bubbleBtn {
+  display: inline-flex; align-items: center; justify-content: center; min-height: 36px; padding: 7px 14px;
+  border-radius: 999px; border: 1px solid rgba(28, 26, 23, 0.18); background: #fff; color: #1c1a17;
+  font: 500 13.5px/1.2 'DM Sans', sans-serif; cursor: pointer; text-decoration: none;
+}
+.bubbleBtn:hover { border-color: rgba(28, 26, 23, 0.4); }
+.bubbleBtn:focus-visible { outline: 2px solid #c06b3e; outline-offset: 2px; }
+.bubbleBtn:disabled { opacity: 0.6; cursor: default; }
+.bubbleBtnPrimary { background: #1c1a17; border-color: #1c1a17; color: #fffcf8; }
+.bubbleBtnPrimary:hover { background: #3a342d; }
+
+/* quote chat */
+.chat {
+  width: min(370px, calc(100vw - 24px));
+  max-height: min(580px, calc(100dvh - var(--config-sheet-h, 0px) - var(--fox-h) - 110px));
+  display: flex; flex-direction: column;
+  background: #fffcf8; border: 1px solid rgba(28, 26, 23, 0.1); border-radius: 18px;
+  box-shadow: 0 22px 50px rgba(40, 28, 16, 0.22); overflow: hidden; animation: pop 0.22s ease-out;
+}
+.chatHead { display: flex; align-items: flex-start; justify-content: space-between; gap: 10px; padding: 14px 14px 10px 16px; border-bottom: 1px solid rgba(28, 26, 23, 0.08); }
+.chatTitle { margin: 0; font-weight: 600; font-size: 15px; }
+.chatSub { margin: 2px 0 0; font-size: 12px; color: #7a7168; }
+.chatClose { border: 0; background: none; font-size: 22px; line-height: 1; color: #7a7168; cursor: pointer; padding: 2px 4px; }
+.chatLog { flex: 1 1 auto; min-height: 90px; overflow-y: auto; padding: 12px 14px; display: flex; flex-direction: column; gap: 8px; overscroll-behavior: contain; }
+.msg { margin: 0; max-width: 86%; padding: 9px 12px; font-size: 14px; line-height: 1.42; border-radius: 14px; animation: pop 0.2s ease-out; }
+.msgFox { align-self: flex-start; background: #f2ebe3; border-bottom-left-radius: 4px; }
+.msgMe { align-self: flex-end; background: #1c1a17; color: #fffcf8; border-bottom-right-radius: 4px; }
+.review { margin: 2px 0 0; display: grid; grid-template-columns: auto 1fr; gap: 4px 12px; padding: 10px 12px; font-size: 13px; border: 1px solid rgba(28, 26, 23, 0.12); border-radius: 12px; background: #fff; }
+.review dt { color: #7a7168; }
+.review dd { margin: 0; overflow-wrap: anywhere; }
+.ref { color: #7a7168; }
+.chatForm { padding: 10px 14px 12px; border-top: 1px solid rgba(28, 26, 23, 0.08); display: flex; flex-direction: column; gap: 8px; }
+.chatField { display: block; }
+.chatInput {
+  width: 100%; box-sizing: border-box; min-height: 42px; padding: 9px 12px; border-radius: 12px;
+  border: 1px solid rgba(28, 26, 23, 0.22); background: #fff; font: 15px/1.3 'DM Sans', sans-serif; color: #1c1a17;
+}
+.chatInput:focus { outline: 2px solid #c06b3e; outline-offset: 0; border-color: transparent; }
+.consent { display: flex; gap: 8px; align-items: flex-start; font-size: 11px; line-height: 1.35; color: #6a6259; }
+.consent input { margin-top: 2px; flex: 0 0 auto; }
+.hint { margin: 0; font-size: 12.5px; color: #a3401d; }
+.chatActions { display: flex; justify-content: flex-end; gap: 8px; flex-wrap: wrap; }
+.chatFoot { margin: 0; padding: 0 14px 12px; font-size: 12px; color: #7a7168; }
+.chatFoot a { color: inherit; text-decoration: underline; }
+.photos { display: flex; flex-wrap: wrap; gap: 8px; }
+.thumb { position: relative; width: 56px; height: 56px; border-radius: 10px; overflow: hidden; background: #eee; }
+.thumb img { width: 100%; height: 100%; object-fit: cover; display: block; }
+.thumb button { position: absolute; top: 2px; right: 2px; width: 20px; height: 20px; border-radius: 50%; border: 0; background: rgba(0, 0, 0, 0.6); color: #fff; font-size: 13px; line-height: 1; cursor: pointer; padding: 0; }
+.addPhoto { width: 56px; height: 56px; border-radius: 10px; border: 1.5px dashed rgba(28, 26, 23, 0.35); display: grid; place-items: center; font-size: 24px; color: #6a6259; cursor: pointer; }
+.addPhoto:focus-within { outline: 2px solid #c06b3e; outline-offset: 2px; }
+.srOnly { position: absolute; width: 1px; height: 1px; padding: 0; margin: -1px; overflow: hidden; clip: rect(0, 0, 0, 0); white-space: nowrap; border: 0; }
+
+.chatting .bubble { display: none; }
+
+@media (max-width: 700px) {
+  .root { --fox-w: 84px; --fox-h: 108px; right: 8px; bottom: calc(var(--config-sheet-h, 0px) + 6px); }
+  /* phones: the bubble sits UNDER the fox (just above the bottom sheet), compact, tail pointing up at him */
+  .root { gap: 4px; }
+  .bubble {
+    order: 2; margin-right: 0; width: min(270px, calc(100vw - 20px)); padding: 9px 28px 9px 12px;
+    border-radius: 14px 4px 14px 14px; box-shadow: 0 8px 22px rgba(40, 28, 16, 0.16);
+  }
+  .bubble::after {
+    top: -7px; bottom: auto; right: 30px; width: 12px; height: 12px;
+    border-right: 0; border-bottom: 0; border-left: 1px solid rgba(28, 26, 23, 0.1); border-top: 1px solid rgba(28, 26, 23, 0.1);
+    border-bottom-right-radius: 0; border-top-left-radius: 3px;
+  }
+  .bubbleText { font-size: 13px; line-height: 1.38; }
+  .bubbleActions { margin-top: 8px; gap: 6px; }
+  .bubbleBtn { min-height: 32px; padding: 5px 11px; font-size: 12.5px; }
+  .bubbleClose { top: 3px; right: 5px; }
+  .tools { top: -4px; right: -2px; opacity: 0.8; }
+  .chat { width: calc(100vw - 16px); max-height: calc(100dvh - var(--config-sheet-h, 0px) - var(--fox-h) - 84px); }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .bubble, .chat, .msg { animation: none; }
+  .fox { transition: none; }
+  .fox:hover { transform: none; }
+}
+.reduced .bubble, .reduced .chat, .reduced .msg { animation: none; }
+
+@media print {
+  .root { display: none; }
+}

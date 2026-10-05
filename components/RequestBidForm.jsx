@@ -1,12 +1,28 @@
 'use client';
 
-import { useState } from 'react';
+import { useEffect, useRef, useState } from 'react';
 import { SMS_CONSENT_TEXT } from '../lib/sms-consent';
 
 export default function RequestBidForm() {
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [successMessage, setSuccessMessage] = useState('');
   const [errorMessage, setErrorMessage] = useState('');
+  const messageRef = useRef(null);
+  const typeRef = useRef(null);
+  const [fromConfigurator, setFromConfigurator] = useState(false);
+
+  // Prefill project details when arriving from the cabinet configurator (?configuration=...&config=...)
+  useEffect(() => {
+    const params = new URLSearchParams(window.location.search);
+    const configuration = params.get('configuration');
+    if (configuration && messageRef.current && !messageRef.current.value) {
+      messageRef.current.value = `${configuration.slice(0, 1000)}\n\n`;
+    }
+    if (configuration || params.get('config')) setFromConfigurator(true);
+  }, []);
+  useEffect(() => {
+    if (fromConfigurator && typeRef.current && !typeRef.current.value) typeRef.current.value = 'Cabinet visualizer';
+  }, [fromConfigurator]);
 
   async function handleSubmit(event) {
     event.preventDefault();
@@ -33,6 +49,8 @@ export default function RequestBidForm() {
       projectType: String(formData.get('project_type') || '').trim(),
       projectLocation: String(formData.get('project_location') || '').trim(),
       projectDetails: String(formData.get('message') || '').trim(),
+      // visualizer design (style=...&color=...) so the server can build the design summary PDF
+      config: params.get('config') || '',
       utm_source: params.get('utm_source') || '',
       utm_medium: params.get('utm_medium') || '',
       utm_campaign: params.get('utm_campaign') || '',
@@ -98,8 +116,9 @@ export default function RequestBidForm() {
         <label className="form-label" htmlFor="type">
           Project Type
         </label>
-        <select className="form-select" id="type" name="project_type" required>
+        <select className="form-select" id="type" name="project_type" required ref={typeRef}>
           <option value="">Select a project type</option>
+          {fromConfigurator ? <option value="Cabinet visualizer">Cabinet refacing (visualizer design)</option> : null}
           <option value="Multifamily / Unit Turn">Multifamily / Unit Turn</option>
           <option value="multifamily">Multifamily / Apartment</option>
           <option value="single-family">Single-Family Renovation</option>
@@ -129,6 +148,7 @@ export default function RequestBidForm() {
           className="form-textarea"
           id="message"
           name="message"
+          ref={messageRef}
           placeholder="Tell us about unit count, materials needed, location, and schedule."
           required
         ></textarea>

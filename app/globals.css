@@ -917,3 +917,8 @@ footer { background: var(--black); border-top: 1px solid rgba(255,255,255,0.08);
   .legal-section-number { padding-top: 0; }
   .legal-section p { font-size: 15px; line-height: 1.72; }
 }
+
+.mobile-visualizer { display: none; }
+@media (max-width: 900px) {
+  .mobile-visualizer { display: inline-block; color: var(--black); font-size: 13px; font-weight: 600; text-decoration: none; }
+}
