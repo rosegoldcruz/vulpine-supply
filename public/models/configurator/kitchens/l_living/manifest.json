@@ -7,9 +7,9 @@
     "shaker_slide": "/models/configurator/kitchens/l_living/fronts_shaker_slide.glb",
     "slab": "/models/configurator/kitchens/l_living/fronts_slab.glb"
   },
-  "hardware": "/models/configurator/kitchens/l_living/hardware.glb",
+  "hardware": "/models/configurator/hardware.glb",
   "mounts": "/models/configurator/kitchens/l_living/mounts.json",
   "finishesJson": null,
   "finishesDir": null,
-  "cameraPresets": null
+  "cameraPresets": "/models/configurator/kitchens/l_living/camera_presets.json"
 }

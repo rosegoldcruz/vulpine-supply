@@ -87,9 +87,6 @@ DevGod exports one folder per starting kitchen: `glb/kitchens/<id>/` (same schem
   copied: **the flat U v2 files stay the default**. `has_island` (or a node scan of `kitchen.glb`) hides the Island toggle
   for kitchens without one. The homeowner names in `layouts.ts` win over the export's names. Output:
   `public/models/configurator/kitchens/index.json` `{ default: 'u_v2', kitchens: [{ id, name, base, thumb, hasIsland }] }`.
-- **Stopgap:** until `kitchens/l_living/` lands (being rebuilt with the current doors and hardware), the sync builds
-  `l_living` from `glb/v1/` (`kitchen_v1.glb` → `kitchen.glb`). It has no camera presets of its own, so the computed views
-  apply, and its thumbnail is a 512×384 still from our 3D view. Once DevGod's folder exists it replaces the stopgap.
 - `fetchLayouts()` loads the index; the "Start with a kitchen" cards (thumbnail + name) show only when there are 2+
   kitchens. Picking one sets `?layout=`, switches to 3D and remounts the scene with that base
   (`new Engine(container, { base })`). Camera presets come only from the kitchen's own `camera_presets.json`.

@@ -106,7 +106,7 @@ if (missing.length) console.log(`  not found (procedural fallback used for these
 // mounts.json, camera_presets.json, a 512 px thumbnail) + <src>/kitchens/index.json. Each layout whose folder exists is
 // copied to public/models/configurator/kitchens/<id>/ with its own manifest.json; kitchens/index.json lists them for the
 // picker. Only existing folders are listed, so no placeholder cards. Until a kitchens/u_v2 folder lands, the U-shape
-// is the flat files above. Stopgap: without kitchens/l_living, DevGod's v1 export (<src>/v1/) is the L + living room.
+// is the flat files above.
 // Finishes (finishes.json + textures) stay shared unless a layout folder brings its own finishes/ directory.
 const LAYOUT_IDS = ['u_v2', 'l_living', 'one_wall_island', 'big_l_island', 'one_wall'];
 const LAYOUT_NAMES = {
@@ -136,7 +136,6 @@ function layoutSource(id) {
     const kitchen = ['kitchen.glb', `kitchen_${id}.glb`, ...fs.readdirSync(dir).filter((f) => /^kitchen.*\.glb$/.test(f))].find((f) => fs.existsSync(path.join(dir, f)));
     if (kitchen) return { dir, kitchen };
   }
-  if (id === 'l_living' && fs.existsSync(path.join(SRC, 'v1', 'kitchen_v1.glb'))) return { dir: path.join(SRC, 'v1'), kitchen: 'kitchen_v1.glb', stopgap: true };
   return null;
 }
 
@@ -228,7 +227,7 @@ for (const id of LAYOUT_IDS) {
   }
   fs.writeFileSync(path.join(out, 'manifest.json'), `${JSON.stringify(m, null, 2)}\n`);
   kitchens.push({ id, name, base, thumb: pickThumb(), hasIsland: hasIsland(path.join(out, 'kitchen.glb')) });
-  console.log(`  layout ${id}: ${path.relative(SRC, src.dir) || '.'}${src.stopgap ? ' (stopgap: v1 export)' : ''}, ${Object.keys(m.fronts).length} fronts${m.cameraPresets ? ', camera presets' : ''}`);
+  console.log(`  layout ${id}: ${path.relative(SRC, src.dir) || '.'}, ${Object.keys(m.fronts).length} fronts${m.cameraPresets ? ', camera presets' : ''}`);
 }
 fs.writeFileSync(path.join(KDEST, 'index.json'), `${JSON.stringify({ default: 'u_v2', kitchens }, null, 2)}\n`);
 console.log(`  kitchens/index.json: ${kitchens.map((k) => k.id).join(', ') || 'none'}`);

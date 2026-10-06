@@ -12,7 +12,7 @@
       "id": "l_living",
       "name": "L-shape with living room",
       "base": "/models/configurator/kitchens/l_living/",
-      "thumb": "/models/configurator/kitchens/l_living/thumb.jpg",
+      "thumb": "/models/configurator/kitchens/l_living/thumb.png",
       "hasIsland": true
     },
     {
