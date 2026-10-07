@@ -1,5 +1,6 @@
 import { NextResponse } from 'next/server';
 import { trackAnalyticsEvent, type AnalyticsEventType } from '../../../../lib/analytics';
+import { boundedRequest, enforceRateLimit, RequestError } from '../../../../lib/request-security';
 
 export const runtime = 'nodejs';
 
@@ -17,8 +18,13 @@ export async function POST(request: Request) {
   let body: Record<string, unknown>;
 
   try {
-    body = await request.json();
-  } catch {
+    body = await (await boundedRequest(request, 16 * 1024)).json();
+    if (!body || typeof body !== 'object' || Array.isArray(body)) throw new RequestError(400, 'Expected a JSON object');
+    for (const value of Object.values(body)) {
+      if (typeof value !== 'string' || value.length > 2048) throw new RequestError(400, 'Invalid analytics field');
+    }
+  } catch (error) {
+    if (error instanceof RequestError) return NextResponse.json({ ok: false, error: error.message }, { status: error.status });
     return NextResponse.json({ ok: false, error: 'Invalid JSON body' }, { status: 400 });
   }
 
@@ -26,6 +32,12 @@ export async function POST(request: Request) {
 
   if (!eventTypes.has(eventType)) {
     return NextResponse.json({ ok: false, error: 'Invalid event type' }, { status: 400 });
+  }
+
+  try { await enforceRateLimit(request, 'analytics', 120, 60); }
+  catch (error) {
+    if (error instanceof RequestError) return NextResponse.json({ ok: false, error: error.message }, { status: error.status });
+    throw error;
   }
 
   await trackAnalyticsEvent({

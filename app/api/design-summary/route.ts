@@ -1,4 +1,5 @@
 import { parseConfig } from '@/components/configurator/summary';
+import { enforceRateLimit, logFailure, RequestError } from '@/lib/request-security';
 
 export const runtime = 'nodejs';
 export const maxDuration = 30;
@@ -7,6 +8,7 @@ export const maxDuration = 30;
 export async function GET(request: Request) {
   const url = new URL(request.url);
   try {
+    await enforceRateLimit(request, 'design-summary', 20, 60);
     const { renderDesignSummaryPdf } = await import('@/lib/design-summary-pdf');
     const { pdf, details } = await renderDesignSummaryPdf(parseConfig(url.searchParams), {
       assets: { origin: url.origin, cookie: request.headers.get('cookie') || '' },
@@ -19,7 +21,8 @@ export async function GET(request: Request) {
       },
     });
   } catch (error) {
-    console.error('[design-summary] PDF render failed:', error);
+    if (error instanceof RequestError) return Response.json({ ok: false, error: error.message }, { status: error.status });
+    logFailure('[design-summary] PDF render failed:', error);
     return Response.json({ ok: false, error: 'Could not build the PDF right now.' }, { status: 500 });
   }
 }

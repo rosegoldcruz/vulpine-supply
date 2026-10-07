@@ -3,6 +3,7 @@ import { formatBidRequestTelegramMessage, sendTelegramMessage, sendTelegramPhoto
 import { SMS_CONSENT_TEXT } from '../../../lib/sms-consent';
 import { after } from 'next/server';
 import { extractConfigQuery, processConfiguratorLead } from '../../../lib/configurator-lead';
+import { boundedRequest, enforceRateLimit, logFailure, RequestError } from '../../../lib/request-security';
 
 export const runtime = 'nodejs';
 // the GoHighLevel hand-off (PDF render, uploads, emails) runs after the response via after()
@@ -87,11 +88,19 @@ async function readRequestBody(request) {
     contentType.includes('multipart/form-data')
   ) {
     const formData = await request.formData();
-    const raw = {};
+    const raw = Object.create(null);
     const photos = [];
     for (const [key, value] of formData.entries()) {
       if (typeof value === 'string') raw[key] = value;
-      else if (key === 'photos' && photos.length < MAX_PHOTOS && value.size > 0 && value.size <= MAX_PHOTO_BYTES && /^image\//.test(value.type)) {
+      else if (key === 'photos') {
+        if (photos.length >= MAX_PHOTOS || !value.size || value.size > MAX_PHOTO_BYTES || !['image/jpeg', 'image/png', 'image/webp'].includes(value.type)) {
+          throw new RequestError(400, 'Use up to five JPEG, PNG or WebP photos, at most 8 MB each.');
+        }
+        const bytes = new Uint8Array(await value.slice(0, 12).arrayBuffer());
+        const valid = value.type === 'image/jpeg' ? bytes[0] === 0xff && bytes[1] === 0xd8 && bytes[2] === 0xff
+          : value.type === 'image/png' ? [137,80,78,71,13,10,26,10].every((b, i) => bytes[i] === b)
+          : String.fromCharCode(...bytes.slice(0,4)) === 'RIFF' && String.fromCharCode(...bytes.slice(8,12)) === 'WEBP';
+        if (!valid) throw new RequestError(400, 'Photo content does not match its file type.');
         photos.push(value);
       }
     }
@@ -99,7 +108,7 @@ async function readRequestBody(request) {
     return raw;
   }
 
-  return request.json().catch(() => ({}));
+  throw new RequestError(415, 'Unsupported request content type.');
 }
 
 function normalizePayload(raw, request) {
@@ -134,9 +143,9 @@ function normalizePayload(raw, request) {
     crm_synced_at: null,
     raw_payload: {
       submitted_at: new Date().toISOString(),
-      user_agent: request.headers.get('user-agent') || '',
-      referer: request.headers.get('referer') || '',
-      payload: raw || {},
+      user_agent: cleanString(request.headers.get('user-agent'), 500),
+      referer: cleanString(request.headers.get('referer'), 2048),
+      payload: Object.fromEntries(TEXT_FIELDS.map((field) => [field, cleanString(raw?.[field])])),
     },
   };
 }
@@ -146,6 +155,9 @@ function validatePayload(payload) {
   if (!payload.email && !payload.phone) return 'Email or phone is required.';
   if (payload.email && !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(payload.email)) {
     return 'Enter a valid email address.';
+  }
+  if (payload.phone && (!/^[+\d\s().-]+$/.test(payload.phone) || !/^\d{10,15}$/.test(payload.phone.replace(/\D/g, '')))) {
+    return 'Enter a valid phone number.';
   }
   if (!payload.project_type) return 'Project type is required.';
   if (!payload.message) return 'Project details are required.';
@@ -245,13 +257,31 @@ export async function GET() {
 
 export async function POST(request) {
   try {
-    const raw = await readRequestBody(request);
+    const bodyLimit = (request.headers.get('content-type') || '').includes('multipart/form-data')
+      ? MAX_PHOTOS * MAX_PHOTO_BYTES + 64 * 1024 : 64 * 1024;
+    const bounded = await boundedRequest(request, bodyLimit);
+    let raw;
+    try { raw = await readRequestBody(bounded); }
+    catch (error) {
+      if (error instanceof RequestError) throw error;
+      throw new RequestError(400, 'Invalid request body.');
+    }
+    if (!raw || typeof raw !== 'object' || Array.isArray(raw)) throw new RequestError(400, 'Expected a form or JSON object.');
+    for (const [key, value] of Object.entries(raw)) {
+      if ((typeof value === 'string' && value.length > (key === 'page_url' || key === 'pageUrl' ? 2048 : MAX_STRING_LENGTH)) ||
+          !['string', 'boolean'].includes(typeof value)) throw new RequestError(400, 'Invalid form field.');
+    }
     const payload = normalizePayload(raw || {}, request);
     const validationError = validatePayload(payload);
 
     if (validationError) {
       return Response.json({ success: false, error: validationError }, { status: 400 });
     }
+
+    await enforceRateLimit(request, 'contact', 5, 600);
+    await enforceRateLimit(request, 'contact-budget', 100, 600, 'all');
+    if (payload.email) await enforceRateLimit(request, 'contact-email', 3, 3600, payload.email);
+    if (payload.phone) await enforceRateLimit(request, 'contact-phone', 3, 3600, payload.phone.replace(/\D/g, ''));
 
     const record = Object.fromEntries(TEXT_FIELDS.map((field) => [field, payload[field]]));
     record.source = payload.source;
@@ -265,15 +295,14 @@ export async function POST(request) {
     record.raw_payload = payload.raw_payload;
 
     const missingConfig = validateConfig();
-    let result = null;
 
     if (missingConfig.length > 0) {
       console.error('Contact intake is missing required server env vars:', missingConfig.join(', '));
     } else {
       try {
-        result = await createNocoDbRecord(record);
+        await createNocoDbRecord(record);
       } catch (error) {
-        console.error('NocoDB intake sync failed:', error);
+        logFailure('NocoDB intake sync failed:', error);
       }
     }
 
@@ -282,7 +311,7 @@ export async function POST(request) {
     try {
       await sendTelegramMessage(formatBidRequestTelegramMessage(bidRequestPayload));
     } catch (error) {
-      console.error('Bid Telegram notification failed:', error);
+      logFailure('Bid Telegram notification failed:', error);
     }
 
     const photos = raw?.[PHOTOS];
@@ -290,7 +319,7 @@ export async function POST(request) {
       try {
         await sendTelegramPhotos(photos, `Photos from ${payload.name} (${photos.length})`);
       } catch (error) {
-        console.error('Bid photo forwarding failed:', error);
+        logFailure('Bid photo forwarding failed:', error);
       }
     }
 
@@ -310,7 +339,7 @@ export async function POST(request) {
         try {
           photoData.push({ name: photo.name || 'photo.jpg', type: photo.type || 'image/jpeg', data: await photo.arrayBuffer() });
         } catch (error) {
-          console.error('Bid photo read failed:', error);
+          logFailure('Bid photo read failed:', error);
         }
       }
       const origin = new URL(request.url).origin;
@@ -340,7 +369,7 @@ export async function POST(request) {
         try {
           await processConfiguratorLead(leadInput, { origin, cookie });
         } catch (error) {
-          console.error('Configurator GHL hand-off crashed:', error);
+          logFailure('Configurator GHL hand-off crashed:', error);
         }
       });
     }
@@ -357,18 +386,21 @@ export async function POST(request) {
         deviceType: 'unknown',
       });
     } catch (error) {
-      console.error('Bid analytics tracking failed:', error);
+      logFailure('Bid analytics tracking failed:', error);
     }
 
     return Response.json({
       success: true,
       ok: true,
-      result,
       intakeConfigured: missingConfig.length === 0,
       ghl,
     });
   } catch (error) {
-    console.error('Contact intake submission failed:', error);
+    if (error instanceof RequestError) return Response.json(
+      { success: false, error: error.message },
+      { status: error.status, ...(error.status === 429 ? { headers: { 'Retry-After': '600' } } : {}) }
+    );
+    logFailure('Contact intake submission failed:', error);
     return Response.json(
       { success: false, error: 'Unable to process your request at this time.' },
       { status: 502 }

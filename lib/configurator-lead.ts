@@ -5,6 +5,7 @@
  */
 import { parseConfig, type ConfigSelection } from '@/components/configurator/summary';
 import type { AssetSource, DesignDetails } from './design-summary-pdf';
+import { logFailure } from './request-security';
 import {
   addContactNote,
   createOpportunity,
@@ -134,9 +135,9 @@ ${input.message ? `<p style="font-weight:700">Message</p><pre style="font-family
 export async function processConfiguratorLead(input: ConfiguratorLeadInput, assets: AssetSource = {}): Promise<ConfiguratorLeadResult> {
   const r: ConfiguratorLeadResult = { ok: false, photoUrls: [], errors: [] };
   const fail = (step: string, e: any) => {
-    const msg = `${step}: ${e?.message || e}${e?.body ? ` ${String(e.body).slice(0, 300)}` : ''}`;
+    const msg = `${step}: provider step failed`;
     r.errors.push(msg);
-    console.error('[configurator-lead]', msg);
+    logFailure(`[configurator-lead] ${step}`, e);
   };
   if (!ghlConfig()) {
     fail('config', 'GHL_API_KEY / GHL_LOCATION_ID not set; skipped GoHighLevel');
@@ -258,7 +259,7 @@ export async function processConfiguratorLead(input: ConfiguratorLeadInput, asse
         attachments: r.pdfUrl ? [r.pdfUrl] : undefined,
       });
       r.customerMessage = { channel: 'email', ...sent };
-    } else if (phone) {
+    } else if (phone && input.smsConsent === true) {
       const link = r.pdfUrl || d.summaryUrl;
       const sent = await sendSms({
         contactId,

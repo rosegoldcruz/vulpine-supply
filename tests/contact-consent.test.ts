@@ -13,7 +13,7 @@ test('inquiry intake accepts optional SMS consent and records only actual opt-in
     TELEGRAM_BOT_TOKEN: 'test-only',
     TELEGRAM_CHAT_ID: 'test-only',
     KV_REST_API_URL: '', KV_REST_API_TOKEN: '',
-    UPSTASH_REDIS_REST_URL: '', UPSTASH_REDIS_REST_TOKEN: '',
+    UPSTASH_REDIS_REST_URL: 'https://ratelimit.invalid', UPSTASH_REDIS_REST_TOKEN: 'test-only',
   };
   const originalEnv = Object.fromEntries(Object.keys(config).map((key) => [key, process.env[key]]));
   Object.assign(process.env, config);
@@ -22,7 +22,9 @@ test('inquiry intake accepts optional SMS consent and records only actual opt-in
   globalThis.fetch = (async (url, options) => {
     const target = String(url);
     const body = JSON.parse(String(options?.body));
-    if (target.startsWith(config.NOCODB_BASE_URL)) {
+    if (target.startsWith(config.UPSTASH_REDIS_REST_URL)) {
+      return Response.json({ result: 1 });
+    } else if (target.startsWith(config.NOCODB_BASE_URL)) {
       stored.push(body[0]);
     } else if (target.startsWith('https://api.telegram.org/')) {
       messages.push(body.text);

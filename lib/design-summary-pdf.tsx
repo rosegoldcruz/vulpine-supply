@@ -7,6 +7,7 @@ import { Document, Font, Image, Link, Page, StyleSheet, Text, View, renderToBuff
 import QRCode from 'qrcode';
 import { CONFIG_DATA, FINISH_COLORS, FINISH_NAMES } from '@/components/configurator/data';
 import { configQuery, designRef, doorHardwareLabel, type ConfigSelection } from '@/components/configurator/summary';
+import { trustedAssetOrigin } from './request-security';
 
 export const SITE = 'https://vulpinehomes.com';
 const ORANGE = '#ee7200';
@@ -82,17 +83,20 @@ async function loadAsset(rel: string, src: AssetSource): Promise<PdfImage | null
   const tries: (() => Promise<Buffer>)[] = [];
   const urlPath = '/' + rel.split('/').map(encodeURIComponent).join('/');
   const fetchBuf = async (url: string, headers: Record<string, string>) => {
-    const res = await fetch(url, { headers, signal: AbortSignal.timeout(10000), cache: 'no-store' });
+    const res = await fetch(url, { headers, redirect: 'error', signal: AbortSignal.timeout(10000), cache: 'no-store' });
     if (!res.ok) throw new Error(`${res.status}`);
     return Buffer.from(await res.arrayBuffer());
   };
-  if (src.origin) {
+  const origin = trustedAssetOrigin(src.origin);
+  if (origin) {
     const headers: Record<string, string> = {};
     if (src.cookie) headers.cookie = src.cookie;
     if (process.env.VERCEL_AUTOMATION_BYPASS_SECRET) headers['x-vercel-protection-bypass'] = process.env.VERCEL_AUTOMATION_BYPASS_SECRET;
-    tries.push(() => fetchBuf(src.origin + urlPath, headers));
+    tries.push(() => fetchBuf(origin + urlPath, headers));
   }
-  if (src.origin !== SITE) tries.push(() => fetchBuf(SITE + urlPath, {}));
+  // The apex redirects to www; credential-bearing requests never follow redirects.
+  const publicOrigin = 'https://www.vulpinehomes.com';
+  if (origin !== publicOrigin) tries.push(() => fetchBuf(publicOrigin + urlPath, {}));
   for (const t of tries) {
     try {
       const buf = await t();
