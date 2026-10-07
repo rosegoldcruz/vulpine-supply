@@ -1,0 +1,53 @@
+{
+ "overview iso": {
+  "blender_view": "overview",
+  "position": [
+   -0.059,
+   9.497,
+   13.739
+  ],
+  "target": [
+   -0.059,
+   1.103,
+   -0.23
+  ],
+  "fov_vertical_deg_16x9": 16.46,
+  "fov_horizontal_deg": 28.84,
+  "lens_mm_36mm_sensor": 70.0,
+  "distance_m": 16.297
+ },
+ "uppers": {
+  "blender_view": "uppers",
+  "position": [
+   2.285,
+   2.793,
+   4.152
+  ],
+  "target": [
+   -1.098,
+   1.473,
+   -1.057
+  ],
+  "fov_vertical_deg_16x9": 35.12,
+  "fov_horizontal_deg": 58.72,
+  "lens_mm_36mm_sensor": 32.0,
+  "distance_m": 6.35
+ },
+ "close-up door": {
+  "blender_view": "door_closeup",
+  "position": [
+   0.234,
+   1.965,
+   2.085
+  ],
+  "target": [
+   -1.596,
+   1.753,
+   -0.343
+  ],
+  "fov_vertical_deg_16x9": 22.9,
+  "fov_horizontal_deg": 39.6,
+  "lens_mm_36mm_sensor": 50.0,
+  "distance_m": 3.048
+ }
+}

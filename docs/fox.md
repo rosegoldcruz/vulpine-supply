@@ -1,6 +1,6 @@
 # Vulpi, the configurator guide
 
-Vulpi is the fox in the bottom-right corner of `/configurator`. He idles, waves now and then, wakes on the visitor's first
+Vulpi is the fox in the bottom-right corner of `/visualizer` (formerly `/configurator`, which redirects). He idles, waves now and then, wakes on the visitor's first
 click/tap/key, walks them through **style → finish → hardware**, reacts to their picks, and turns **Request a quote** into a
 short conversation that submits through the existing `/api/request-bid` intake. He never mentions prices. He promises a
 **custom quote** instead.
@@ -47,7 +47,8 @@ run with `clampWhenFinished = false` and the mixer `finished` event fades back t
   browsing*. Returning visitors (`vulpine-fox-seen`) get a shorter welcome back.
 - **Narration and reactions:** a pick is debounced (650 ms) and never interrupts the hello. Each line is said once per
   visit. Picking a style gets a style line plus a nudge to the finish (point). Picking a finish gets a finish reaction plus a
-  nudge to hardware. Hardware style, hardware finish, knobs/pulls and the first switch to 3D each get one line. Once all three
+  nudge to hardware. Hardware style, hardware finish and the first switch to 3D each get one line (the visualizer shows pulls only, so the old
+  knobs/pulls lines are gone). Once all three
   steps have been touched, he celebrates and offers *Get my custom quote* / *Keep exploring*.
 - **Finish reactions** use `finishBucket`: light (Flour, Oat, Cloudstone, Mist), gloss (Snow Gloss), dark (Graphite,
   Slate, Espresso Walnut), wood (oaks, walnuts, teaks), mid (Storm). Sage and Paint Ready have no fitting line, so he skips
@@ -89,20 +90,24 @@ lead.
 
 ## Voice (ElevenLabs)
 
-All 42 lines have clips in `public/audio/fox/<line id>.mp3` (3.4 MB total), generated with ElevenLabs **Eleven v3**
-(`eleven_v3`, voice "construction fox" `wjmqZXrn8gXehtR3rCeK`, `mp3_44100_128`, stability 0.5 "Natural" (v3 only takes
-0 / 0.5 / 1), similarity 0.8). `public/audio/fox/manifest.json` lists them with their durations:
+**Tone:** hip, sly, confident and professional. Every line is one spoken sentence of 3–10 words (rewritten Oct 4 2026).
+
+All 40 lines have clips in `public/audio/fox/<line id>.mp3` (about 2 MB, 121 s total), generated with ElevenLabs
+**Eleven v3** (`eleven_v3`, voice "construction fox" `wjmqZXrn8gXehtR3rCeK`, `mp3_44100_128`, stability 0.5 "Natural"
+(v3 only takes 0 / 0.5 / 1), similarity 0.8). `public/audio/fox/manifest.json` lists them with their durations:
 
 ```json
-{ "lines": { "hello": "hello.mp3" }, "durations": { "hello": 6.69 } }
+{ "lines": { "hello": "hello.mp3" }, "durations": { "hello": 2.9 } }
 ```
 
 To regenerate: `ELEVENLABS_API_KEY=... npx tsx scripts/generate-fox-voice.ts` (existing clips are skipped, so a rerun only
 retries failures; `--force` redoes everything, `--only id1,id2` picks lines, `--model eleven_multilingual_v2` drops the tags).
-The script's `TAKES` are the spoken versions: the subtitle's exact words plus 1–2 v3 audio tags each (`[warmly]`,
-`[chuckles]`, `[excited]`, `[whispers]`, `[sighs]`...). The script refuses to run if a take's words drift from `script.ts`.
-Tags are never shown: the bubble and chat always use `LINES` text. `q_phone` and `q_done` greet the visitor by name on
-screen; their clips are name-free takes ("Nice to meet you. What is the best phone number…", "Done. Our team…").
+The script's `TAKES` are the spoken versions: the subtitle's exact words plus **at most one** v3 audio tag (`[warmly]`,
+`[chuckles]`, `[excited]`, `[impressed]`...). It refuses to run if a take's words drift from `script.ts` or a take has more
+than one tag, and it deletes clips of lines that no longer exist. Tags are never shown: the bubble and chat always use
+`LINES` text. `q_phone` and `q_done` greet the visitor by name on screen; their clips are name-free takes.
+The full set of 40 lines costs about 870 TTS characters per regeneration (Oct 4 2026 run: 872).
+Subtitles were checked against the audio with ElevenLabs speech-to-text (`scribe_v1`).
 
 Voice is **off by default**. A speaker toggle appears next to the fox when the manifest has clips; the preference is stored
 in `localStorage['vulpine-fox-muted']`. Playback is autoplay-safe: nothing plays before the visitor has interacted with the
@@ -113,50 +118,48 @@ uses a reading-time estimate. To make the voice opt-out instead of opt-in, flip 
 
 ### Line ids
 
-| id | move | text |
-|---|---|---|
-| `hello` | wave | Hi, I'm Vulpi. I'll walk you through it in three easy picks: door style, then finish, then hardware. |
-| `hello_back` | wave | Welcome back. Your last design is still here. Pick up wherever you like. |
-| `start_style` | point | Start with a door style. Tap one and the kitchen updates right away. |
-| `quiet` | idle | Got it. I'll stay out of the way. Tap me if you want a hand. |
-| `style_shaker_classic` | talk | Shaker Classic. Recessed panel, clean frame. It has outlasted every trend for a reason. |
-| `style_shaker_slide` | talk | Shaker Slide. A slimmer frame, so it reads lighter. Classic, just a little more modern. |
-| `style_slab` | talk | Slab. Flat and quiet. It lets the finish and the hardware do the talking. |
-| `style_fusion_shaker` | talk | Fusion Classic. Shaker bones with a modern edge. Plays well with both worlds. |
-| `style_fusion_slide` | talk | Fusion Slide. Slim profile with a fresh detail. Nice choice for a contemporary space. |
-| `next_finish` | point | Next, the finish. Every swatch is a photo of a real door. |
-| `finish_light` | talk | Bright and timeless. Light doors make a kitchen feel bigger and they forgive almost any countertop. |
-| `finish_gloss` | talk | Snow Gloss. That shine bounces light around the room. Very sharp with slim hardware. |
-| `finish_mid` | talk | A soft gray. Calm, versatile, and it hides the everyday smudges better than white. |
-| `finish_dark` | talk | Deep and dramatic. Dark doors look great with light counters and warm metals. |
-| `finish_wood` | talk | Wood grain brings warmth you can feel. Pairs nicely with black or satin nickel hardware. |
-| `next_hardware` | point | Last step: hardware. Pick a style and a finish below. It changes the whole personality. |
-| `hw_arch` | talk | Arch. A gentle curve that softens all those straight lines. |
-| `hw_artisan` | talk | Artisan. Handcrafted feel, a little character. Lovely with wood and warm finishes. |
-| `hw_bar` | talk | Bar pulls. Simple, sturdy, works with everything. The safe pick that still looks sharp. |
-| `hw_cottage` | talk | Cottage. Soft curves, very welcoming. Great in a farmhouse or classic kitchen. |
-| `hw_loft` | talk | Loft. Industrial and lean. Very good with slab doors and darker finishes. |
-| `hw_square` | talk | Square. Crisp geometry. A small detail that makes a modern kitchen look intentional. |
-| `hwf_matte_black` | talk | Matte black. Strong contrast on light doors, quietly sleek on dark ones. |
-| `hwf_satin_nickel` | talk | Satin nickel. Soft sheen, hides fingerprints, goes with stainless appliances. |
-| `hwf_chrome` | talk | Chrome. Bright and polished. It catches the light every time you open a drawer. |
-| `hwf_rose_gold` | talk | Rose gold. Warm and a little unexpected. Beautiful against white and gray. |
-| `knobs` | talk | Knobs on the doors, pulls on the drawers. A classic combination. |
-| `pulls` | talk | Pulls everywhere. Easy to grab and very consistent. |
-| `view_3d` | talk | Drag to look around. Try Close-up door to see the profile and the hardware up close. |
-| `all_set` | celebrate | That's a good-looking kitchen. When you're ready, I can send it to our team for a custom quote. No pressure. |
-| `q_intro` | talk | Happy to. I'll ask a few quick questions so our team can put together a custom quote for this exact design. |
-| `q_name` | talk | First, what's your name? |
-| `q_phone` | talk | Nice to meet you, {name}. What is the best phone number to reach you? |
-| `q_email` | talk | And your email? We will send your design summary there too. |
-| `q_need_contact` | talk | I need at least a phone number or an email so the team can reach you. |
-| `q_bad_email` | talk | Hmm, that email doesn't look quite right. Mind checking it? |
-| `q_address` | talk | What is the property address? City and ZIP are fine if you prefer. |
-| `q_photos` | talk | Optional: add a few photos of the current kitchen. It helps us measure and plan. You can skip this. |
-| `q_review` | talk | Here is what I will send. Look right? |
-| `q_sending` | talk | Sending it over… |
-| `q_done` | celebrate | Done, {name}. Our team will review your design and reach out with a custom quote. Thanks for designing with us. |
-| `q_error` | talk | Something went wrong on my end. Try again, or use the full request form. |
+| id | move | text | v3 tag |
+|---|---|---|---|
+| `hello` | wave | Hey, I'm Vulpi, let's make this kitchen look sharp. | `[warmly]` |
+| `hello_back` | wave | Welcome back, your design kept your seat warm. |  |
+| `start_style` | point | Pick a door style and watch the room change. |  |
+| `quiet` | idle | Got it, I'll lie low until you need me. | `[chuckles]` |
+| `style_shaker_classic` | talk | Shaker Classic, the one that never goes out of style. |  |
+| `style_shaker_slide` | talk | Shaker Slide, classic lines on a slimmer frame. |  |
+| `style_slab` | talk | Slab, flat and quiet, letting the finish do the talking. |  |
+| `style_fusion_shaker` | talk | Fusion Classic, old-school bones with a modern edge. |  |
+| `style_fusion_slide` | talk | Fusion Slide, sleek, slim, and a little bit bold. |  |
+| `next_finish` | point | Now the fun part, pick your finish. | `[excited]` |
+| `finish_light` | talk | Light and bright, this kitchen just grew a size. |  |
+| `finish_gloss` | talk | Snow Gloss, now that's a kitchen that shines. | `[impressed]` |
+| `finish_mid` | talk | A cool gray that plays it smooth. |  |
+| `finish_dark` | talk | Dark and dramatic, now we're talking. | `[intrigued]` |
+| `finish_wood` | talk | Wood grain brings the warmth, nicely done. |  |
+| `next_hardware` | point | Last step: hardware, the kitchen's jewelry. |  |
+| `hw_arch` | talk | Arch, a soft curve with serious style. |  |
+| `hw_artisan` | talk | Artisan, handcrafted character in every pull. |  |
+| `hw_bar` | talk | Bar pulls, simple, sturdy, and always sharp. |  |
+| `hw_cottage` | talk | Cottage, soft curves with a warm welcome. |  |
+| `hw_loft` | talk | Loft, lean and industrial with a little attitude. |  |
+| `hw_square` | talk | Square, crisp edges for a clean, modern look. |  |
+| `hwf_matte_black` | talk | Matte black, never not cool. | `[confidently]` |
+| `hwf_satin_nickel` | talk | Satin nickel, a soft sheen that's easy to live with. |  |
+| `hwf_chrome` | talk | Chrome, polished and catching every bit of light. |  |
+| `hwf_rose_gold` | talk | Rose gold, warm, unexpected, and totally worth it. | `[playfully]` |
+| `view_3d` | talk | Drag to look around, then zoom in close. |  |
+| `all_set` | celebrate | Good taste, let's lock it in. | `[pleased]` |
+| `q_intro` | talk | Happy to, just a few quick questions. |  |
+| `q_name` | talk | First, what's your name? |  |
+| `q_phone` | talk | Nice to meet you, {name}, what's your best phone number? |  |
+| `q_email` | talk | And your email, so I can send your design? |  |
+| `q_need_contact` | talk | I'll need a phone or an email to reach you. |  |
+| `q_bad_email` | talk | Hmm, that email looks a little off. | `[curious]` |
+| `q_address` | talk | What's the property address, or just city and ZIP? |  |
+| `q_photos` | talk | Add a few photos of your current kitchen, or skip it. |  |
+| `q_review` | talk | Here's what I'll send, look right? |  |
+| `q_sending` | talk | Sending it over now. |  |
+| `q_done` | celebrate | Done, {name}, your custom quote is in the works. | `[excited]` |
+| `q_error` | talk | Something went wrong, try again or use the full form. | `[gently]` |
 
 - **Quote from AR:** `openQuote({ photos, note })` (ref API) opens the quote chat with files pre-attached (merged into the
   photo step, max 5) and a note appended to the message; the chat shows "📷 Snapshot from View in your space attached".

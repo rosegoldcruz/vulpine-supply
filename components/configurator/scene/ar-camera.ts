@@ -200,7 +200,7 @@ export class CameraAr {
     const prev = this.look;
     this.look = look;
     if (!this.kit) return;
-    if (prev && prev.styleId === look.styleId && prev.hwStyle === look.hwStyle && prev.doorHardware === look.doorHardware && prev.knobShape === look.knobShape) return;
+    if (prev && prev.styleId === look.styleId && prev.hwStyle === look.hwStyle) return;
     for (const it of this.items) {
       const fresh = buildCabinet(it.spec, look, this.kit);
       fresh.position.copy(it.obj.position);

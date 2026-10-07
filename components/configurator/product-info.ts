@@ -19,7 +19,6 @@ export interface ColorInfo {
 
 export interface HardwareInfo {
   pulls: { length: string; spread?: string }[];
-  knobs: string[];
   /** projection off the door face */
   projection?: string;
   note?: string;
@@ -89,39 +88,33 @@ export const COLOR_GROUP_LABEL: Record<ColorInfo['group'], string> = {
 export const HARDWARE_INFO: Record<string, HardwareInfo> = {
   bar: {
     pulls: [{ length: '4-1/2"', spread: '64 mm' }, { length: '6"', spread: '96 mm' }],
-    knobs: ['2" T-knob', '1-1/4" round knob'],
     projection: '1-1/4"',
   },
   artisan: {
     pulls: [{ length: '4-3/4"', spread: '96 mm' }, { length: '6-1/16"', spread: '128 mm' }],
-    knobs: ['1-7/32" round knob'],
     projection: '1-1/16"',
   },
   cottage: {
     pulls: [{ length: '4-1/2"', spread: '96 mm' }, { length: '5-7/8"', spread: '128 mm' }],
-    knobs: ['1-7/32" round knob'],
     projection: '1-1/4"',
   },
   arch: {
     pulls: [{ length: '6"' }, { length: '7-1/8"' }],
-    knobs: ['1-7/16" T-knob'],
   },
   loft: {
     pulls: [{ length: '4-5/8"', spread: '96 mm' }, { length: '5-7/8"', spread: '128 mm' }],
-    knobs: ['15/16" square knob'],
     projection: '1-1/4"',
   },
   square: {
     pulls: [{ length: '4-1/4"', spread: '96 mm' }, { length: '5-7/16"', spread: '128 mm' }],
-    knobs: ['15/16" square knob'],
     projection: '1-3/8"',
   },
 };
 
 export const HARDWARE_NOTES = [
   'Pull lengths are overall; spread is center to center.',
-  'Drawer fronts come pre-drilled. For doors, the kit includes a door-pull locator so every hole lands in the same spot.',
-  'Pulls and knobs carry a lifetime warranty.',
+  'The kit includes a pull locator so every hole lands in the same spot.',
+  'Pulls carry a lifetime warranty.',
 ];
 
 export const DURABUILD = {
@@ -139,13 +132,13 @@ export const DURABUILD = {
     },
     { title: 'Ships in 5–8 business days', body: 'Complete kits are made to your measurements and ship in 5 to 8 business days.' },
     { title: 'No minimum order', body: 'One door, one apartment, or hundreds.' },
-    { title: 'Made in Houston, Texas', body: 'Every kit is manufactured in Houston, Texas, USA.' },
+    { title: 'Built in the USA', body: 'Every kit is manufactured in the USA.' },
   ],
   kit: [
     'Custom doors, made to your measurements',
     'Drawer fronts and false fronts',
     'Hinges: soft-close or self-close, 6-way adjustable',
-    'Pulls and knobs',
+    'Pulls in your chosen style and finish',
     'Color-matched paint for your existing cabinet boxes',
     'Color-matched panels and moldings, cut to size',
     'Screws and bumpers',

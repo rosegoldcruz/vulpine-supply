@@ -1,0 +1,40 @@
+{
+  "default": "u_v2",
+  "kitchens": [
+    {
+      "id": "u_v2",
+      "name": "U-shape with island",
+      "base": "/models/configurator/",
+      "thumb": "/models/configurator/kitchens/u_v2/thumb.png",
+      "hasIsland": true
+    },
+    {
+      "id": "l_living",
+      "name": "L-shape with living room",
+      "base": "/models/configurator/kitchens/l_living/",
+      "thumb": "/models/configurator/kitchens/l_living/thumb.png",
+      "hasIsland": true
+    },
+    {
+      "id": "one_wall_island",
+      "name": "One wall with island",
+      "base": "/models/configurator/kitchens/one_wall_island/",
+      "thumb": "/models/configurator/kitchens/one_wall_island/thumb.png",
+      "hasIsland": true
+    },
+    {
+      "id": "big_l_island",
+      "name": "Big L with island",
+      "base": "/models/configurator/kitchens/big_l_island/",
+      "thumb": "/models/configurator/kitchens/big_l_island/thumb.png",
+      "hasIsland": true
+    },
+    {
+      "id": "one_wall",
+      "name": "One wall",
+      "base": "/models/configurator/kitchens/one_wall/",
+      "thumb": "/models/configurator/kitchens/one_wall/thumb.png",
+      "hasIsland": false
+    }
+  ]
+}

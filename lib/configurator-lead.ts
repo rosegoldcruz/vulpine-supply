@@ -96,7 +96,7 @@ function designLines(d: DesignDetails) {
     `Color: ${d.colorName}`,
     `Hardware: ${d.hardwareName}`,
     `Hardware finish: ${d.finishName}`,
-    `Doors use: ${d.doorsLabel.toLowerCase()}`,
+    ...(d.layoutName ? [`Starting kitchen: ${d.layoutName}`] : []),
     `Design link: ${d.designUrl}`,
     `Design summary: ${d.summaryUrl}`,
   ];
@@ -109,7 +109,7 @@ function customerEmailHtml(first: string, d: DesignDetails, pdfUrl?: string) {
 <p style="font-size:22px;font-weight:800;letter-spacing:-0.5px;margin:0 0 18px">Vulpine<span style="color:#ee7200">.</span></p>
 <p>Hi ${esc(first || 'there')},</p>
 <p>Thanks for designing your kitchen with Vulpine! Your design summary is attached as a PDF. Here's what you picked:</p>
-<table style="border-collapse:collapse;margin:8px 0 16px">${row('Reference', d.ref)}${row('Door style', d.styleName)}${row('Color', d.colorName)}${row('Hardware', `${d.hardwareName}, ${d.finishName}`)}${row('Doors', d.doorsLabel)}</table>
+<table style="border-collapse:collapse;margin:8px 0 16px">${row('Reference', d.ref)}${row('Door style', d.styleName)}${row('Color', d.colorName)}${row('Hardware', `${d.hardwareName}, ${d.finishName}`)}${d.layoutName ? row('Starting kitchen', d.layoutName) : ''}</table>
 <p><a href="${esc(d.designUrl)}" style="display:inline-block;background:#ee7200;color:#ffffff;text-decoration:none;font-weight:700;padding:11px 20px;border-radius:999px">Open your design</a></p>
 ${pdfUrl ? `<p style="font-size:13px;color:#888480">Can't see the attachment? <a href="${esc(pdfUrl)}" style="color:#ee7200">Download your design summary</a>.</p>` : ''}
 <p>A member of our team will reach out shortly to confirm measurements, quantities and lead time for your custom quote. Just reply to this email if you have questions or want to tweak anything.</p>
@@ -124,7 +124,7 @@ function ownerEmailHtml(input: ConfiguratorLeadInput, d: DesignDetails, r: Confi
 <p style="font-size:18px;font-weight:800">New configurator quote request · ${esc(d.ref)}</p>
 <table style="border-collapse:collapse">${row('Name', input.name)}${row('Email', input.email)}${row('Phone', input.phone)}${row('Address', input.address)}${row('SMS consent', input.smsConsent ? 'Yes' : 'No')}${row('Source', input.source)}${row('Submitted', phoenixTime())}</table>
 <p style="font-weight:700;margin-top:14px">Design</p>
-<table style="border-collapse:collapse">${row('Door style', d.styleName)}${row('Color', d.colorName)}${row('Hardware', `${d.hardwareName}, ${d.finishName}`)}${row('Doors', d.doorsLabel)}</table>
+<table style="border-collapse:collapse">${row('Door style', d.styleName)}${row('Color', d.colorName)}${row('Hardware', `${d.hardwareName}, ${d.finishName}`)}${d.layoutName ? row('Starting kitchen', d.layoutName) : ''}</table>
 <p><a href="${esc(d.designUrl)}">Open the design</a> · <a href="${esc(d.summaryUrl)}">Design summary</a>${r.pdfUrl ? ` · <a href="${esc(r.pdfUrl)}">PDF</a>` : ''}${crm ? ` · <a href="${esc(crm)}">Contact in GHL</a>` : ''}</p>
 ${r.photoUrls.length ? `<p style="font-weight:700">Photos (${r.photoUrls.length})</p><p>${r.photoUrls.map((u, i) => `<a href="${esc(u)}">Photo ${i + 1}</a>`).join(' · ')}</p>` : ''}
 ${input.message ? `<p style="font-weight:700">Message</p><pre style="font-family:inherit;white-space:pre-wrap;margin:0">${esc(input.message)}</pre>` : ''}

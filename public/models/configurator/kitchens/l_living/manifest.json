@@ -1,0 +1,15 @@
+{
+  "kitchen": "/models/configurator/kitchens/l_living/kitchen.glb",
+  "fronts": {
+    "fusion_shaker": "/models/configurator/kitchens/l_living/fronts_fusion_shaker.glb",
+    "fusion_slide": "/models/configurator/kitchens/l_living/fronts_fusion_slide.glb",
+    "shaker_classic": "/models/configurator/kitchens/l_living/fronts_shaker_classic.glb",
+    "shaker_slide": "/models/configurator/kitchens/l_living/fronts_shaker_slide.glb",
+    "slab": "/models/configurator/kitchens/l_living/fronts_slab.glb"
+  },
+  "hardware": "/models/configurator/hardware.glb",
+  "mounts": "/models/configurator/kitchens/l_living/mounts.json",
+  "finishesJson": null,
+  "finishesDir": null,
+  "cameraPresets": "/models/configurator/kitchens/l_living/camera_presets.json"
+}

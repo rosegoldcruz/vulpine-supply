@@ -17,7 +17,7 @@ import { DRACOLoader } from 'three/examples/jsm/loaders/DRACOLoader.js';
 import { OrbitControls } from 'three/examples/jsm/controls/OrbitControls.js';
 import { RoomEnvironment } from 'three/examples/jsm/environments/RoomEnvironment.js';
 import { buildProceduralKitchen, placeHardware, type HardwareAnchor, type KitchenMaterials } from './procedural';
-import { HardwareLibrary, normalizeCatalog, normalizeMountSets, placeMountedHardware, type KnobShape, type Mount, type MountSets } from './hardware';
+import { HardwareLibrary, normalizeCatalog, normalizeMountSets, placeMountedHardware, type Mount, type MountSets } from './hardware';
 import type { DoorFinish, HardwareFinish } from '../data';
 
 const MODEL_BASE = '/models/configurator/';
@@ -201,12 +201,8 @@ export interface ArKit {
   mats: KitchenMaterials;
   /** DevGod's GLB assets are in use (finish textures expect metre UVs) */
   glb: boolean;
-  /** catalog pull / knob from hardware.glb in its shared frame (null = build a procedural one) */
-  hardware: (
-    style: string,
-    kind: 'pull' | 'knob',
-    opts?: { sizeClass?: 'small' | 'large'; targetIn?: number; knobShape?: KnobShape },
-  ) => THREE.Object3D | null;
+  /** the style's catalog pull from hardware.glb in its shared frame (null = build a procedural one) */
+  hardware: (style: string, opts?: { sizeClass?: 'small' | 'large'; targetIn?: number }) => THREE.Object3D | null;
 }
 
 export interface EngineState {
@@ -216,10 +212,7 @@ export interface EngineState {
   hwStyle: string;
   hwFinishId: string;
   hwFinish: HardwareFinish | undefined;
-  doorHardware: 'pull' | 'knob';
   showIsland: boolean;
-  /** door knob shape; 't' = Bar 2" T-knob (knob_bar_t), other styles ignore it */
-  knobShape?: KnobShape;
 }
 
 export class ConfiguratorEngine {
@@ -272,7 +265,14 @@ export class ConfiguratorEngine {
   onMode?: (mode: EngineMode, detail?: string) => void;
   onProgress?: (p: LoadProgress) => void;
 
-  constructor(private container: HTMLElement) {
+  /** folder of the starting kitchen's manifest.json + GLBs (layouts: /models/configurator/kitchens/<id>/) */
+  private base: string;
+
+  constructor(
+    private container: HTMLElement,
+    opts: { base?: string } = {},
+  ) {
+    this.base = opts.base || MODEL_BASE;
     this.renderer = new THREE.WebGLRenderer({ antialias: true, alpha: false, powerPreference: 'high-performance' });
     this.renderer.domElement.setAttribute('aria-hidden', 'true');
     this.renderer.setPixelRatio(Math.min(window.devicePixelRatio || 1, 2));
@@ -470,7 +470,9 @@ export class ConfiguratorEngine {
 
   /** Resolve (once) which DevGod assets exist. */
   async init(): Promise<void> {
-    const manifest = await fetchJson<Partial<Manifest>>(`${MODEL_BASE}manifest.json`);
+    // a layout folder brings its own kitchen / fronts / hardware / mounts / presets; finishes (+ textures) are shared
+    const flat = this.base === MODEL_BASE;
+    const manifest = await fetchJson<Partial<Manifest>>(`${this.base}manifest.json`);
     if (manifest) {
       this.manifest = {
         kitchen: manifest.kitchen ?? null,
@@ -480,10 +482,10 @@ export class ConfiguratorEngine {
         mounts: manifest.mounts ?? null,
         cameraPresets: manifest.cameraPresets ?? null,
       };
-    } else if (await exists(`${MODEL_BASE}kitchen.glb`)) {
-      this.manifest.kitchen = `${MODEL_BASE}kitchen.glb`;
-      this.manifest.hardware = `${MODEL_BASE}hardware.glb`;
-      this.manifest.mounts = `${MODEL_BASE}mounts.json`;
+    } else if (await exists(`${this.base}kitchen.glb`)) {
+      this.manifest.kitchen = `${this.base}kitchen.glb`;
+      this.manifest.hardware = `${this.base}hardware.glb`;
+      this.manifest.mounts = `${this.base}mounts.json`;
     }
     const finishesUrl = this.manifest.finishesJson || `${MODEL_BASE}finishes.json`;
     const fj = await fetchJson<unknown>(finishesUrl);
@@ -496,7 +498,8 @@ export class ConfiguratorEngine {
       this.loadGltf(this.manifest.kitchen, 'Loading kitchen'),
       this.manifest.hardware ? this.loadGltf(this.manifest.hardware, 'Loading kitchen') : Promise.resolve(null),
       this.manifest.mounts ? fetchJson<unknown>(this.manifest.mounts) : Promise.resolve(null),
-      fetchJson<unknown>(this.manifest.cameraPresets || `${MODEL_BASE}camera_presets.json`),
+      // presets are in that kitchen's frame: a layout without its own file uses the computed views
+      (this.manifest.cameraPresets || flat) ? fetchJson<unknown>(this.manifest.cameraPresets || `${MODEL_BASE}camera_presets.json`) : Promise.resolve(null),
     ]);
     this.glbKitchen = kitchen?.scene ?? null;
     // presets are in kitchen.glb's frame, so they only apply to the GLB kitchen
@@ -519,7 +522,7 @@ export class ConfiguratorEngine {
   private async frontsFor(styleId: string): Promise<THREE.Object3D | null> {
     if (!this.glbKitchen) return null;
     if (!this.frontsCache.has(styleId)) {
-      const url = this.manifest.fronts[styleId] || `${MODEL_BASE}fronts_${styleId}.glb`;
+      const url = this.manifest.fronts[styleId] || `${this.base}fronts_${styleId}.glb`;
       this.frontsCache.set(
         styleId,
         (this.manifest.fronts[styleId] || (await exists(url)) ? this.loadGltf(url, 'Loading door style').then((g) => g?.scene ?? null) : Promise.resolve(null)).catch(() => null),
@@ -580,8 +583,6 @@ export class ConfiguratorEngine {
     if (
       !prev ||
       prev.hwStyle !== next.hwStyle ||
-      prev.doorHardware !== next.doorHardware ||
-      prev.knobShape !== next.knobShape ||
       prev.styleId !== next.styleId
     ) {
       this.rebuildHardware(next);
@@ -963,11 +964,8 @@ export class ConfiguratorEngine {
     return {
       mats: this.mats,
       glb: Boolean(this.glbKitchen),
-      hardware: (style, kind, opts = {}) => {
-        const cand =
-          kind === 'knob'
-            ? (opts.knobShape === 't' ? lib.tKnob(style) : null) || lib.pick(style, 'knob', 1.25)
-            : (opts.sizeClass ? lib.bySizeClass(style, opts.sizeClass) : null) || lib.pick(style, 'pull', opts.targetIn ?? 5);
+      hardware: (style, opts = {}) => {
+        const cand = (opts.sizeClass ? lib.bySizeClass(style, opts.sizeClass) : null) || lib.pick(style, 'pull', opts.targetIn ?? 5);
         if (!cand) return null;
         const obj = cand.node.clone(true);
         // hardware.glb shared frame: origin on the front face, +X along the bar, +Z out of the front
@@ -1074,15 +1072,14 @@ export class ConfiguratorEngine {
         mounts: this.mounts.filter((m) => present.has(m.front)),
         lib: this.hwLib,
         style: s.hwStyle,
-        doorKind: s.doorHardware,
-        knobShape: s.knobShape,
+        doorKind: 'pull', // the chosen pull goes on every door and drawer front
         material: this.mats.hardware,
         parentFor: (front) => (front.startsWith('island_') && island ? island : content),
       });
       return;
     }
     disposeAll(this.hardwareObjs);
-    this.hardwareObjs = placeHardware(this.anchors, s.hwStyle, s.doorHardware, this.mats.hardware);
+    this.hardwareObjs = placeHardware(this.anchors, s.hwStyle, 'pull', this.mats.hardware);
   }
 
   private async applyFinish(finishId: string, finish: DoorFinish | undefined) {
