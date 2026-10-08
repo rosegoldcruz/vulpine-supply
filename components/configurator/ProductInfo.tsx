@@ -232,7 +232,7 @@ export function WhyDuraBuild() {
         </div>
       </div>
 
-      <div className={styles.faq}>
+      <div id="cabinet-faq" className={styles.faq}>
         <p className={styles.kicker}>Frequently asked questions</p>
         {DURABUILD.faq.map((f) => (
           <details key={f.q} className={styles.faqItem}>

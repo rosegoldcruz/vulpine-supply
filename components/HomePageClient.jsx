@@ -6,38 +6,8 @@ import SiteNav from './SiteNav';
 import { gsap } from 'gsap';
 import { ScrollTrigger } from 'gsap/ScrollTrigger';
 import MaterialSupplyGrid from './MaterialSupplyGrid';
+import MaterialMarquee from './MaterialMarquee';
 import { SMS_CONSENT_TEXT } from '../lib/sms-consent';
-
-const PAGE_HTML_BEFORE_SUPPLY = `
-<div id="scroll-hero-root"></div>
-
-<!-- ─── TICKER ─── -->
-<div class="ticker-wrap">
-  <div class="ticker-track">
-    <span class="ticker-item">Cabinet Boxes <span class="dot">◆</span></span>
-    <span class="ticker-item">Cabinet Doors <span class="dot">◆</span></span>
-    <span class="ticker-item">Drawer Fronts <span class="dot">◆</span></span>
-    <span class="ticker-item">Refacing Fronts <span class="dot">◆</span></span>
-    <span class="ticker-item">Countertops <span class="dot">◆</span></span>
-    <span class="ticker-item">Sinks &amp; Vanities <span class="dot">◆</span></span>
-    <span class="ticker-item">Flooring <span class="dot">◆</span></span>
-    <span class="ticker-item">Interior Doors <span class="dot">◆</span></span>
-    <span class="ticker-item">Hardware <span class="dot">◆</span></span>
-    <span class="ticker-item">Trim &amp; Finish <span class="dot">◆</span></span>
-    <span class="ticker-item">Cabinet Boxes <span class="dot">◆</span></span>
-    <span class="ticker-item">Cabinet Doors <span class="dot">◆</span></span>
-    <span class="ticker-item">Drawer Fronts <span class="dot">◆</span></span>
-    <span class="ticker-item">Refacing Fronts <span class="dot">◆</span></span>
-    <span class="ticker-item">Countertops <span class="dot">◆</span></span>
-    <span class="ticker-item">Sinks &amp; Vanities <span class="dot">◆</span></span>
-    <span class="ticker-item">Flooring <span class="dot">◆</span></span>
-    <span class="ticker-item">Interior Doors <span class="dot">◆</span></span>
-    <span class="ticker-item">Hardware <span class="dot">◆</span></span>
-    <span class="ticker-item">Trim &amp; Finish <span class="dot">◆</span></span>
-  </div>
-</div>
-
-  `;
 
   const PAGE_HTML_AFTER_SUPPLY = `
 <!-- ─── BUILT FOR TURNS ─── -->
@@ -299,7 +269,7 @@ export default function HomePageClient() {
     <>
       <SiteNav />
       <VulpineHomesHero />
-      <div dangerouslySetInnerHTML={{ __html: PAGE_HTML_BEFORE_SUPPLY.split('<div id="scroll-hero-root"></div>')[1] }} />
+      <MaterialMarquee />
       <section id="supply">
         <span className="section-label reveal">What We Supply</span>
         <h2 className="section-heading reveal">Every material category. One supply partner.</h2>

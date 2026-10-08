@@ -107,6 +107,21 @@ export function CabinetConfigurator() {
     };
   }, []);
   const currentLayout = layouts.find((l) => l.id === layout) ?? null;
+  // Align resource links after the layout picker and initial page layout are ready.
+  useEffect(() => {
+    if (!layouts.length) return;
+    const anchor = window.location.hash.slice(1);
+    if (anchor !== 'hardware' && anchor !== 'cabinet-faq') return;
+    let live = true;
+    const align = () => {
+      void document.fonts.ready.then(() => requestAnimationFrame(() => {
+        if (live) document.getElementById(anchor)?.scrollIntoView({ behavior: 'instant', block: 'start' });
+      }));
+    };
+    if (document.readyState === 'complete') align();
+    else window.addEventListener('load', align, { once: true });
+    return () => { live = false; window.removeEventListener('load', align); };
+  }, [layouts]);
   const pickLayout = (id: string) => {
     setLayout(id);
     setView('3d');
@@ -146,7 +161,7 @@ export function CabinetConfigurator() {
     const q = configQuery(selection);
     if (view === '3d') q.set('view', '3d');
     if (new URLSearchParams(window.location.search).get('debug') === '1') q.set('debug', '1'); // dev hooks, see KitchenScene3D
-    window.history.replaceState(null, '', `${window.location.pathname}?${q.toString()}`);
+    window.history.replaceState(null, '', `${window.location.pathname}?${q.toString()}${window.location.hash}`);
   }, [selection, view]);
 
   const shareUrl = () => {
