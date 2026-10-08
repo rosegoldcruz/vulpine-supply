@@ -1,7 +1,7 @@
 'use client'
 
-import { Canvas, useFrame, useThree } from '@react-three/fiber'
-import { Environment, Lightformer, Sparkles, useGLTF } from '@react-three/drei'
+import { Canvas, useFrame } from '@react-three/fiber'
+import { Environment, Lightformer, useGLTF } from '@react-three/drei'
 import { Suspense, useMemo, useRef, type MutableRefObject } from 'react'
 import * as THREE from 'three'
 import { MATERIAL_MODELS, materialPositionX } from '@/lib/material-marquee'
@@ -35,12 +35,13 @@ function FloatingMaterial({ src, index, time }: { src: string; index: number; ti
     object.rotation.set(.18 + Math.sin(seconds * .7 + index) * .14, -.5 + seconds * .3 + (index % 4) * .14, Math.sin(seconds * .8 + index * .6) * .1)
     object.scale.setScalar(1 + Math.sin(seconds * .9 + index * .7) * .035)
   })
-  return <group ref={group} name={`floating-material-${MATERIAL_MODELS[index].id}`} dispose={null}><primitive object={root} /></group>
-}
-
-function StarField({ animate }: { animate: boolean }) {
-  const { viewport } = useThree()
-  return <Sparkles count={70} scale={[viewport.width, 3, 2]} size={1.5} speed={animate ? .25 : 0} opacity={.4} color="#f9bc80" />
+  return <group ref={group} name={`floating-material-${MATERIAL_MODELS[index].id}`}>
+    <primitive object={root} dispose={null} />
+    <mesh position={[0, 0, -.5]} rotation={[0, 0, .25]}>
+      <torusGeometry args={[1.02, .006, 6, 64]} />
+      <meshBasicMaterial color="#ee7200" transparent opacity={.1} depthWrite={false} />
+    </mesh>
+  </group>
 }
 
 export default function MaterialMarqueeScene({ animate }: { animate: boolean }) {
@@ -58,6 +59,5 @@ export default function MaterialMarqueeScene({ animate }: { animate: boolean }) 
         <Lightformer intensity={2} position={[0, 6, 0]} rotation={[Math.PI / 2, 0, 0]} scale={[10, 10, 1]} />
       </Environment>
     </Suspense>
-    <StarField animate={animate} />
   </Canvas>
 }
