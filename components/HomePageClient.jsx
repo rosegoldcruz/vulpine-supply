@@ -2,29 +2,13 @@
 
 import { useEffect } from 'react';
 import VulpineHomesHero from './scroll-hero/VulpineHomesHero';
+import SiteNav from './SiteNav';
 import { gsap } from 'gsap';
 import { ScrollTrigger } from 'gsap/ScrollTrigger';
 import MaterialSupplyGrid from './MaterialSupplyGrid';
 import { SMS_CONSENT_TEXT } from '../lib/sms-consent';
 
 const PAGE_HTML_BEFORE_SUPPLY = `
-<!-- ─── NAV ─── -->
-<nav>
-  <a href="#" class="nav-logo">Vulpine<span>.</span></a>
-  <ul class="nav-links">
-    <li><a href="#supply">What We Supply</a></li>
-    <li><a href="#turns">Property Turns</a></li>
-    <li><a href="#mf-split">Multifamily</a></li>
-    <li><a href="#contractors">Contractors</a></li>
-  </ul>
-  <div class="nav-actions">
-    <a href="/visualizer" class="nav-reface">Reface Your Cabinets</a>
-    <a href="#contact" class="nav-cta">Request a Bid</a>
-  </div>
-</nav>
-
-<main>
-
 <div id="scroll-hero-root"></div>
 
 <!-- ─── TICKER ─── -->
@@ -313,7 +297,7 @@ export default function HomePageClient() {
 
   return (
     <>
-      <div dangerouslySetInnerHTML={{ __html: PAGE_HTML_BEFORE_SUPPLY.split('<div id="scroll-hero-root"></div>')[0].replace('<main>', '') }} />
+      <SiteNav />
       <VulpineHomesHero />
       <div dangerouslySetInnerHTML={{ __html: PAGE_HTML_BEFORE_SUPPLY.split('<div id="scroll-hero-root"></div>')[1] }} />
       <section id="supply">

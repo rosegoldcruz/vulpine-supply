@@ -5,6 +5,7 @@ import { useId, useState } from 'react';
 
 export default function MaterialFlipCard({
   index,
+  slug,
   title,
   frontImage,
   imageWidth,
@@ -31,7 +32,7 @@ export default function MaterialFlipCard({
   };
 
   return (
-    <article className={`material-flip-card${isFlipped ? ' is-flipped' : ''}`}>
+    <article id={`material-${slug}`} className={`material-flip-card${isFlipped ? ' is-flipped' : ''}`}>
       <div className="material-flip-scene">
         <div className="material-flip-inner">
           <div className="material-flip-face material-flip-front" aria-hidden={isFlipped} aria-labelledby={titleId}>

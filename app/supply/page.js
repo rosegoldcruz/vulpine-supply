@@ -1,3 +1,4 @@
+import SiteNav from '../../components/SiteNav';
 import JsonLd from '../../components/JsonLd';
 
 export const metadata = {
@@ -48,28 +49,7 @@ export default function SupplyPage() {
   return (
     <>
       <JsonLd schema={itemListSchema} />
-      <nav>
-        <a href="/" className="nav-logo">
-          Vulpine<span>.</span>
-        </a>
-        <ul className="nav-links">
-          <li>
-            <a href="/supply">Supply Categories</a>
-          </li>
-          <li>
-            <a href="/request-bid">Request a Bid</a>
-          </li>
-          <li>
-            <a href="/terms">Terms</a>
-          </li>
-          <li>
-            <a href="/privacy">Privacy</a>
-          </li>
-        </ul>
-        <a href="/request-bid" className="nav-cta">
-          Request a Bid
-        </a>
-      </nav>
+      <SiteNav />
       <main>
         <section id="supply-page">
           <span className="section-label">Supply Categories</span>

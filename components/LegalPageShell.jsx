@@ -1,3 +1,4 @@
+import SiteNav from './SiteNav';
 const legalLinks = [
   { href: '/terms', label: 'Terms' },
   { href: '/privacy', label: 'Privacy Policy' },
@@ -6,17 +7,7 @@ const legalLinks = [
 export default function LegalPageShell({ title, description, lastUpdated, sections }) {
   return (
     <>
-      <nav aria-label="Primary navigation">
-        <a href="/" className="nav-logo" aria-label="Vulpine Homes home">
-          Vulpine<span>.</span>
-        </a>
-        <ul className="nav-links">
-          <li><a href="/supply">Supply Categories</a></li>
-          <li><a href="/terms">Terms</a></li>
-          <li><a href="/privacy">Privacy</a></li>
-        </ul>
-        <a href="/request-bid" className="nav-cta">Request a Bid</a>
-      </nav>
+      <SiteNav />
 
       <main className="legal-page">
         <header className="legal-hero">

@@ -1,3 +1,4 @@
+import SiteNav from '@/components/SiteNav';
 import { CabinetConfigurator } from '@/components/configurator/CabinetConfigurator';
 
 export const metadata = {
@@ -12,23 +13,7 @@ export const metadata = {
 export default function VisualizerPage() {
   return (
     <>
-      <nav>
-        <a href="/" className="nav-logo">
-          Vulpine<span>.</span>
-        </a>
-        <ul className="nav-links">
-          <li><a href="/#supply">What We Supply</a></li>
-          <li><a href="/#turns">Property Turns</a></li>
-          <li><a href="/#mf-split">Multifamily</a></li>
-          <li><a href="/#contractors">Contractors</a></li>
-        </ul>
-        <div className="nav-actions">
-          <a href="/visualizer" className="nav-reface" aria-current="page">Reface Your Cabinets</a>
-          <a href="/request-bid" className="nav-cta">
-            Request a Bid
-          </a>
-        </div>
-      </nav>
+      <SiteNav />
       <main>
         <CabinetConfigurator />
       </main>
