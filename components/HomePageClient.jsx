@@ -16,10 +16,11 @@ const PAGE_HTML_BEFORE_SUPPLY = `
     <li><a href="#turns">Property Turns</a></li>
     <li><a href="#mf-split">Multifamily</a></li>
     <li><a href="#contractors">Contractors</a></li>
-    <li><a href="/visualizer">Visualizer</a></li>
   </ul>
-  <a href="/visualizer" class="mobile-visualizer">Visualizer</a>
-  <a href="#contact" class="nav-cta">Request a Bid</a>
+  <div class="nav-actions">
+    <a href="/visualizer" class="nav-reface">Reface Your Cabinets</a>
+    <a href="#contact" class="nav-cta">Request a Bid</a>
+  </div>
 </nav>
 
 <main>

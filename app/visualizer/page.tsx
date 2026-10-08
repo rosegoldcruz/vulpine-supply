@@ -21,12 +21,13 @@ export default function VisualizerPage() {
           <li><a href="/#turns">Property Turns</a></li>
           <li><a href="/#mf-split">Multifamily</a></li>
           <li><a href="/#contractors">Contractors</a></li>
-          <li><a href="/visualizer" aria-current="page">Visualizer</a></li>
         </ul>
-        <a href="/visualizer" className="mobile-visualizer" aria-current="page">Visualizer</a>
-        <a href="/request-bid" className="nav-cta">
-          Request a Bid
-        </a>
+        <div className="nav-actions">
+          <a href="/visualizer" className="nav-reface" aria-current="page">Reface Your Cabinets</a>
+          <a href="/request-bid" className="nav-cta">
+            Request a Bid
+          </a>
+        </div>
       </nav>
       <main>
         <CabinetConfigurator />
