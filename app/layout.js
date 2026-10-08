@@ -1,4 +1,3 @@
-import 'lenis/dist/lenis.css';
 import '../components/scroll-hero/hero.css';
 import './globals.css';
 import Script from 'next/script';
