@@ -25,6 +25,11 @@ export class FoxStage {
   private disposed = false;
   reducedMotion = false;
   move: FoxMove = 'idle';
+  private fox: THREE.Object3D | null = null;
+  private yaw = FOX_FACE_PLUS_Z - 0.5;
+  private yawTarget = FOX_FACE_PLUS_Z - 0.5;
+  /** Resting yaw: facing the viewer, turned a little toward the page (screen left). */
+  static REST_YAW = FOX_FACE_PLUS_Z - 0.5;
 
   constructor(private host: HTMLElement) {
     this.renderer = new THREE.WebGLRenderer({ antialias: true, alpha: true, powerPreference: 'low-power' });
@@ -60,7 +65,8 @@ export class FoxStage {
     const gltf = await loader.loadAsync(FOX_MODEL_URL);
     if (this.disposed) return;
     const fox = gltf.scene;
-    fox.rotation.y = FOX_FACE_PLUS_Z - 0.5; // face the viewer, turned a little toward the page (screen left)
+    fox.rotation.y = this.yaw; // face the viewer, turned a little toward the page (screen left)
+    this.fox = fox;
     this.scene.add(fox);
     const clips = buildFoxClips(gltf.animations);
     this.mixer = new THREE.AnimationMixer(fox);
@@ -108,6 +114,19 @@ export class FoxStage {
     this.syncLoop();
   }
 
+  /**
+   * Turn to a yaw (radians about Y; 0 faces the viewer, -PI/2 faces screen left, +PI/2 screen right).
+   * Eased in the render loop; instant with reduced motion.
+   */
+  face(yaw: number) {
+    this.yawTarget = yaw;
+    if (this.reducedMotion || !this.fox) {
+      this.yaw = yaw;
+      if (this.fox) this.fox.rotation.y = yaw;
+      this.renderStill();
+    }
+  }
+
   setReducedMotion(on: boolean) {
     this.reducedMotion = on;
     this.play(this.move === 'talk' ? 'talk' : 'idle');
@@ -131,6 +150,11 @@ export class FoxStage {
       this.acc += dt;
       if (this.acc < 1 / 30) return;
       this.mixer!.update(this.acc);
+      if (this.fox && this.yaw !== this.yawTarget) {
+        const d = this.yawTarget - this.yaw;
+        this.yaw = Math.abs(d) < 0.01 ? this.yawTarget : this.yaw + d * Math.min(1, this.acc * 8);
+        this.fox.rotation.y = this.yaw;
+      }
       this.acc = 0;
       this.renderer.render(this.scene, this.camera);
     });

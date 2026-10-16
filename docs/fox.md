@@ -43,6 +43,11 @@ run with `clampWhenFinished = false` and the mixer `finished` event fades back t
 - **Corner presence:** lazy-loaded after the page is idle (`requestIdleCallback`). The stage is a small transparent WebGL
   canvas that renders at ≤30 fps, and only while it is on screen and the tab is visible. Before waking he waves about 1.8 s
   after loading, then up to 3 more times, 16 s apart.
+- **Page walk** (`walker.ts`): once he is awake, and while no bubble, chat or voice line is active, he walks along the
+  bottom of the viewport (CSS `translate3d` on the guide, ~70 px/s, 45 px/s on phones) playing `walk`, turned to face the
+  direction of travel (yaw ±π/2, eased in the stage loop), then turns back to the viewer and idles 5–12 s. About 40% of walks
+  go to key UI (`[data-fox-stop]` or a visible *Request a quote* link), where he usually `point`s. When a bubble or the chat
+  opens he stops and the guide is clamped so it stays on screen. Off with `prefers-reduced-motion`.
 - **Wake:** on the first `pointerdown`/`keydown` anywhere he waves and says hello, with *Show me around* / *I'm just
   browsing*. Returning visitors (`vulpine-fox-seen`) get a shorter welcome back.
 - **Narration and reactions:** a pick is debounced (650 ms) and never interrupts the hello. Each line is said once per
