@@ -70,6 +70,9 @@ export const FoxGuide = forwardRef<FoxGuideHandle, FoxGuideProps>(function FoxGu
   const voice = useFoxVoice();
 
   const hostRef = useRef<HTMLDivElement>(null);
+  const rootRef = useRef<HTMLDivElement>(null);
+  const busyRef = useRef(false);
+  busyRef.current = Boolean(bubble) || chatOpen || talking;
   const stage = useRef<FoxStage | null>(null);
   const timers = useRef<number[]>([]);
   const awakeRef = useRef(false);
@@ -132,6 +135,21 @@ export const FoxGuide = forwardRef<FoxGuideHandle, FoxGuideProps>(function FoxGu
       setLoaded(false);
     };
   }, [ready, dismissed]);
+
+  // page walk: once awake he wanders along the bottom of the page and stops near key UI (never with reduced motion)
+  useEffect(() => {
+    if (!loaded || !awake || reduced || !rootRef.current || !stage.current) return;
+    let walker: { dispose(): void } | null = null;
+    let cancelled = false;
+    import('./walker').then(({ FoxWalker }) => {
+      if (cancelled || !rootRef.current || !stage.current) return;
+      walker = new FoxWalker(rootRef.current, stage.current, () => busyRef.current);
+    });
+    return () => {
+      cancelled = true;
+      walker?.dispose();
+    };
+  }, [loaded, awake, reduced]);
 
   // corner presence: an occasional wave until someone says hi (never with reduced motion)
   useEffect(() => {
@@ -341,7 +359,7 @@ export const FoxGuide = forwardRef<FoxGuideHandle, FoxGuideProps>(function FoxGu
   if (!ready || dismissed) return null;
 
   return (
-    <div className={cn(s.root, chatOpen && s.chatting, reduced && s.reduced)} data-fox-guide="">
+    <div ref={rootRef} className={cn(s.root, chatOpen && s.chatting, reduced && s.reduced)} data-fox-guide="">
       {bubble && !chatOpen && (
         <div className={s.bubble} role="status" aria-live="polite">
           <p className={s.bubbleText}>{bubble.line.text}</p>
