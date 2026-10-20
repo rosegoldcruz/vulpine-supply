@@ -52,7 +52,11 @@ test('global security headers preserve website protections and AR permissions', 
       new RegExp(`^${name}\\s*=`).test(policy),
     );
     assert.equal(matches.length, 1, `${name} must occur exactly once`);
-    assert.match(matches[0], new RegExp(`^${name}\\s*=\\(\\s*${allowed}\\s*\\)$`));
+    assert.match(
+      matches[0],
+      new RegExp(`^${name}\\s*=\\(\\s*${allowed}\\s*\\)$`),
+      `${name} must retain its expected allowlist`,
+    );
   }
 });
 
