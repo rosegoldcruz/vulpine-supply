@@ -40,6 +40,7 @@ def event(job, kind, detail):
 def reconcile_recoveries():
     with db() as c:
         c.execute("UPDATE incidents i SET outcome='recovered_and_verified' WHERE outcome IN ('repair_queued','recovery_queued') AND (EXISTS(SELECT 1 FROM jobs j WHERE j.parent_job=i.job AND j.state='awaiting_review') OR EXISTS(SELECT 1 FROM jobs j WHERE j.id=i.job AND j.state='awaiting_review'))")
+        c.execute("UPDATE incidents i SET outcome='blocked_after_bounded_recovery' WHERE (outcome='repair_queued' AND EXISTS(SELECT 1 FROM jobs j WHERE j.parent_job=i.job AND j.state='blocked')) OR (outcome='recovery_queued' AND EXISTS(SELECT 1 FROM jobs j WHERE j.id=i.job AND j.state='blocked'))")
 
 
 def digest(path):
