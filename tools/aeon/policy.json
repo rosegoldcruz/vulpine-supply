@@ -1,0 +1,13 @@
+{
+  "autonomous": ["research", "code", "test", "review", "development_worktree", "pull_request"],
+  "bounded": {},
+  "executive": ["production_deployment", "financial_transaction", "destruction", "external_communication", "authority_change"],
+  "deployment_adapter": null,
+  "max_recovery_attempts": 1,
+  "worker_memory_max": "6G",
+  "worker_cpu_quota": "200%",
+  "max_model_calls_per_job": 4,
+  "scope": ["tests/security-headers.test.ts"],
+  "semantic_model": "BAAI/bge-small-en-v1.5",
+  "knowledge_precedence": ["verified_runtime_fact", "project_instruction", "historical_decision", "unverified_assumption"]
+}
