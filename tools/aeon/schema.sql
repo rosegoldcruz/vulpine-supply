@@ -30,3 +30,6 @@ CREATE TABLE IF NOT EXISTS approvals (
  job text REFERENCES jobs(id), candidate_sha text, evidence_sha text,
  action text, actor text, created timestamptz DEFAULT now(), PRIMARY KEY(job,action)
 );
+ALTER TABLE jobs ADD COLUMN IF NOT EXISTS parent_job text;
+ALTER TABLE jobs ADD COLUMN IF NOT EXISTS repair_count int NOT NULL DEFAULT 0;
+ALTER TABLE jobs ADD COLUMN IF NOT EXISTS resume_count int NOT NULL DEFAULT 0;

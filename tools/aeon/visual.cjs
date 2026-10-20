@@ -10,11 +10,13 @@ const [work, out] = process.argv.slice(2);
   try {
     let ready = false;
     for (let i = 0; i < 100; i++) {
-      try { const r = await fetch('http://127.0.0.1:4317/'); if (r.status === 200) { ready = true; break; } } catch {}
+      try { const r = await fetch('http://127.0.0.1:4317/', { signal: AbortSignal.timeout(1500) }); await r.body?.cancel(); if (r.status === 200) { ready = true; break; } } catch {}
       await new Promise(r => setTimeout(r, 300));
     }
     if (!ready) throw new Error('isolated website preview unavailable');
-    browser = await chromium.launch({ headless: true, args: ['--disable-dev-shm-usage'] });
+    console.log('isolated preview ready');
+    browser = await chromium.launch({ headless: true, timeout: 30000, args: ['--disable-dev-shm-usage', '--in-process-gpu', '--use-gl=angle', '--use-angle=swiftshader'] });
+    console.log('Chromium launched');
     const results = [];
     for (const [name, width, height] of [['desktop',1440,1000],['mobile',390,844]]) {
       const context = await browser.newContext({ viewport: { width, height }, reducedMotion: 'reduce' });
@@ -23,11 +25,13 @@ const [work, out] = process.argv.slice(2);
       const page = await context.newPage();
       const errors = [];
       page.on('pageerror', e => errors.push(e.message));
-      const response = await page.goto('http://127.0.0.1:4317/', { waitUntil: 'networkidle' });
+      const response = await page.goto('http://127.0.0.1:4317/', { waitUntil: 'domcontentloaded', timeout: 30000 });
+      await page.waitForTimeout(1500);
       if (response.status() !== 200) throw new Error('homepage failed');
       if (await page.locator('body').innerText().then(s => s.length) < 100) throw new Error('empty homepage');
       if (await page.evaluate(() => document.documentElement.scrollWidth > innerWidth + 2)) throw new Error('horizontal overflow');
       await page.screenshot({ path: out + '/' + name + '.png' });
+      console.log(name + ' screenshot captured');
       results.push({ name, width, height, http: response.status(), pageErrors: errors });
       await context.close();
       if (errors.length) throw new Error('browser runtime errors: ' + errors.join(';'));

@@ -1,0 +1,50 @@
+import test from 'node:test';
+import assert from 'node:assert/strict';
+import { mkdtempSync, mkdirSync, writeFileSync, readFileSync, rmSync } from 'node:fs';
+import { tmpdir } from 'node:os';
+import { join } from 'node:path';
+import { spawnSync } from 'node:child_process';
+import { createHash } from 'node:crypto';
+
+test('vault bridge preserves source notes, detects drift, and rejects overwrite', () => {
+  const root = mkdtempSync(join(tmpdir(), 'aeon-vault-test-'));
+  const vault = join(root, 'vault');
+  try {
+    for (const dir of ['.aeon/transactions','projects','raw','attachments']) mkdirSync(join(vault,dir),{recursive:true});
+    writeFileSync(join(vault,'.aeon/continuity.lock'),'');
+    writeFileSync(join(vault,'index.md'),'# Original index\n');
+    writeFileSync(join(vault,'log.md'),'# Original log\n');
+    const original = '---\ntitle: Website\n---\nPreserve existing design. [[AEON]]\n';
+    writeFileSync(join(vault,'projects/Website.md'), original);
+    writeFileSync(join(vault,'raw/capture.md'),'private raw capture');
+    writeFileSync(join(vault,'attachments/sample.txt'),'attachment');
+    const script = join(root,'bridge.mjs');
+    writeFileSync(script,readFileSync(new URL('./vault-bridge.mjs',import.meta.url),'utf8').replace("const vault = '/opt/pai-obsidian/obsidian-vault';",`const vault = ${JSON.stringify(vault)};`));
+    const run = (...args) => spawnSync(process.execPath,[script,...args],{encoding:'utf8'});
+    const snapshot = run('snapshot');
+    assert.equal(snapshot.status,0,snapshot.stderr);
+    const rows = JSON.parse(snapshot.stdout);
+    const note = rows.find(r=>r.path==='projects/Website.md');
+    assert.ok(note.text.includes('Preserve existing design'));
+    assert.deepEqual(note.metadata.links,['AEON']);
+    assert.equal(rows.find(r=>r.path==='raw/capture.md').text,'');
+    assert.equal(rows.find(r=>r.path==='attachments/sample.txt').metadata.attachment,true);
+    const record = {job:'aabbccddeeff',facts:['test verified'],sources:[{path:note.path,sha256:note.sha256}],evidence:['test log hash'],decisions:['preserve original notes'],blockers:['none'],lessons:['verify source drift']};
+    const input = join(root,'result.json');
+    writeFileSync(input,JSON.stringify(record));
+    const saved=run('write-outcome',input);
+    assert.equal(saved.status,0,saved.stderr);
+    const target=join(vault,JSON.parse(saved.stdout).path);
+    const before=readFileSync(target,'utf8');
+    assert.equal(readFileSync(join(vault,'projects/Website.md'),'utf8'),original);
+    assert.ok(readFileSync(join(vault,'index.md'),'utf8').startsWith('# Original index\n'));
+    assert.match(before,/publish: false/);
+    writeFileSync(input,JSON.stringify({...record,facts:['altered fact']}));
+    assert.notEqual(run('write-outcome',input).status,0);
+    assert.equal(readFileSync(target,'utf8'),before);
+    writeFileSync(join(vault,'projects/Website.md'),original+'Concurrent edit\n');
+    writeFileSync(input,JSON.stringify({...record,job:'ffeeddccbbaa'}));
+    assert.notEqual(run('write-outcome',input).status,0);
+    assert.ok(readFileSync(join(vault,'projects/Website.md'),'utf8').includes('Concurrent edit'));
+  } finally { rmSync(root,{recursive:true,force:true}); }
+});

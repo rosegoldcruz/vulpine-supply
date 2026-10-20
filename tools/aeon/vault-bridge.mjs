@@ -40,13 +40,13 @@ if (action === 'snapshot') {
       const bytes = readFileSync(full);
       const md = extname(full).toLowerCase() === '.md';
       // Existing privacy boundary: immutable raw/personal captures get metadata only.
-      const selected = /^(projects|concepts|companies|entities|commands|skills)\//.test(path) || ['SCHEMA.md','CLAUDE.md'].includes(path);
+      const selected = /^(projects|concepts|companies|entities|commands|skills)\//.test(path) || path.startsWith('sources/aeon-sessions/vulpine-engineering/') || ['SCHEMA.md','CLAUDE.md'].includes(path);
       const text = md && selected && st.size < 180000 ? redact(bytes.toString('utf8')) : '';
       const metadata = { size: st.size, modified: st.mtime.toISOString(), attachment: !md,
         frontmatter: text.match(/^---\r?\n([\s\S]*?)\r?\n---/)?.[1] ?? null,
         links: [...text.matchAll(/\[\[([^\]]+)\]\]|\]\(([^)]+)\)/g)].map(m => m[1] ?? m[2]),
         source_host: 'vulpine', vault_root: vault, content_indexed: !!text };
-      rows.push({ path, sha256: hash(bytes), category: /rules|CLAUDE|SCHEMA/.test(path) ? 'project_instruction' : /sessions|decisions/.test(path) ? 'historical_decision' : 'unverified_assumption', text, metadata });
+      rows.push({ path, sha256: hash(bytes), category: path.startsWith('sources/aeon-sessions/vulpine-engineering/') ? 'verified_runtime_fact' : /rules|CLAUDE|SCHEMA/.test(path) ? 'project_instruction' : /sessions|decisions/.test(path) ? 'historical_decision' : 'unverified_assumption', text, metadata });
     }
   }
   walk(vault);

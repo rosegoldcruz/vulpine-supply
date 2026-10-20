@@ -4,5 +4,10 @@
       "path": "/api/analytics/report",
       "schedule": "0 */6 * * *"
     }
-  ]
+  ],
+  "git": {
+    "deploymentEnabled": {
+      "aeon/engineering-foundation": false
+    }
+  }
 }
