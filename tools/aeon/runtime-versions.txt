@@ -1,0 +1,17 @@
+Verified on AEON during implementation on 2026-10-20.
+Python 3.12.3
+Node.js v22.11.0 (existing AEON tools runtime)
+Git 2.43.0
+codex-cli 0.160.1 (existing ChatGPT login)
+PostgreSQL 16.15 (Ubuntu 16.15-0ubuntu0.24.04.1; user-owned cluster)
+Playwright 1.64.1
+Chromium headless shell 156.0.8078.4 / Playwright browser revision 1248
+fastembed 0.9.0
+psycopg / psycopg-binary 3.3.6
+Pillow 12.3.0
+Embedding interface model: BAAI/bge-small-en-v1.5
+Embedding asset: Qdrant/bge-small-en-v1.5-onnx-Q
+Embedding snapshot: aa8f8b060edb00e03bfdd08813a2949946c8ba55
+model_optimized.onnx SHA256: 51f1bd0addd6e859e42c2c8021a5e5461385bb676a649f4b269aa445449f2431
+Linux kernel: 6.8.0-142-generic
+User-manager lingering: yes

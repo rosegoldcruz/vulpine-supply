@@ -63,6 +63,13 @@ class SafetyTests(unittest.TestCase):
             result = aeon.sandbox(['node', '-e', script], work, out, timeout=30)
             self.assertEqual(result['exit'], 0)
 
+    def test_launcher_preserves_literal_javascript_interpolation(self):
+        with tempfile.TemporaryDirectory(dir=aeon.ROOT) as d:
+            work, out = Path(d)/'work', Path(d)/'evidence'
+            work.mkdir();out.mkdir()
+            result=aeon.sandbox(['node','-e',"process.stdout.write('${AEON_LITERAL_MUST_SURVIVE}')"],work,out,timeout=20)
+            self.assertEqual(Path(result['log']).read_text(),'${AEON_LITERAL_MUST_SURVIVE}')
+
 
 if __name__ == '__main__':
     unittest.main()

@@ -37,6 +37,11 @@ def event(job, kind, detail):
         c.execute('INSERT INTO events(job,kind,detail) VALUES(%s,%s,%s)', (job, kind, Jsonb(detail)))
 
 
+def reconcile_recoveries():
+    with db() as c:
+        c.execute("UPDATE incidents i SET outcome='recovered_and_verified' WHERE outcome IN ('repair_queued','recovery_queued') AND (EXISTS(SELECT 1 FROM jobs j WHERE j.parent_job=i.job AND j.state='awaiting_review') OR EXISTS(SELECT 1 FROM jobs j WHERE j.id=i.job AND j.state='awaiting_review'))")
+
+
 def digest(path):
     return hashlib.sha256(Path(path).read_bytes()).hexdigest()
 
@@ -82,7 +87,7 @@ def command(argv, cwd=REPO, timeout=120):
 def sandbox(argv, work, output, timeout=600, network=False, auth=False):
     """Transient unit: filesystem isolation, cgroup limits, parent-independent timeout.
 
-    Worker cannot see queue socket, vault, SSH keys, other jobs, or approvals.
+    Worker cannot read vault/key/other-job contents or authenticate to the queue.
     """
     work, output = Path(work).resolve(), Path(output).resolve()
     unit = f'aeon-task-{work.parent.name}-{work.name}-{uuid.uuid4().hex[:6]}'
@@ -108,7 +113,7 @@ def sandbox(argv, work, output, timeout=600, network=False, auth=False):
         # Reuse current login without copying it into source, logs or artifacts.
         if not authfile.exists():
             authfile.symlink_to(RUNTIME / 'codex-auth' / 'auth.json')
-    args = ['systemd-run', '--user', '--quiet', '--wait', '--pipe', '--collect', f'--unit={unit}',
+    args = ['systemd-run', '--user', '--quiet', '--wait', '--pipe', '--collect', '--expand-environment=no', f'--unit={unit}',
             '-pProtectSystem=strict', '-pProtectHome=tmpfs', '-pPrivateTmp=yes',
             '-pNoNewPrivileges=yes', '-pUMask=0077', '-pMemoryMax=6G', '-pCPUQuota=200%',
             '-pInaccessiblePaths=/opt /mnt /media /srv /var/lib',
@@ -405,6 +410,7 @@ class Supervisor:
         with db() as c:
             c.execute('UPDATE jobs SET state=%s,result=%s,updated=now() WHERE id=%s', ('awaiting_review' if passed else 'blocked', Jsonb(manifest), jid))
         event(jid, 'supervisor_verified', {'passed': passed, 'manifest_sha256': digest(folder / 'manifest.json'), 'human_interventions': 0})
+        reconcile_recoveries()
         if not passed and job.get('repair_count', 0) < 1:
             self.repair({**job, 'candidate_sha': candidate})
 
@@ -429,6 +435,7 @@ def serve():
     with db() as lock:
         if not lock.execute('SELECT pg_try_advisory_lock(2601020) AS held').fetchone()['held']:
             raise RuntimeError('supervisor already running')
+        reconcile_recoveries()
         with db() as c:
             stale = c.execute("UPDATE jobs SET state='blocked',updated=now() WHERE state='running' RETURNING *").fetchall()
         for job in stale:
