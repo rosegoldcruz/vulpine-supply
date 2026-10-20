@@ -148,11 +148,17 @@ def retrieve(text, limit=4):
     model = TextEmbedding(POLICY['semantic_model'], cache_dir=str(RUNTIME / 'models'), threads=2)
     vector = np.asarray(next(iter(model.embed([text]))))
     with db() as c:
-        rows = c.execute("SELECT *, ts_rank_cd(search,plainto_tsquery('english',%s)) AS keyword FROM knowledge WHERE vector IS NOT NULL", (text,)).fetchall()
+        rows = c.execute("SELECT *, ts_rank_cd(search,plainto_tsquery('english',%s)) AS keyword FROM knowledge", (text,)).fetchall()
+    scored = []
     for row in rows:
-        v = np.asarray(row.pop('vector'))
-        semantic = float(np.dot(vector, v) / max(1e-12, np.linalg.norm(vector) * np.linalg.norm(v)))
-        row['score'] = semantic + min(1.0, float(row['keyword']))
+        raw_vector = row.pop('vector')
+        semantic = 0.0
+        if raw_vector is not None:
+            v = np.asarray(raw_vector)
+            semantic = float(np.dot(vector, v) / max(1e-12, np.linalg.norm(vector) * np.linalg.norm(v)))
+        elif not row['keyword']:
+            continue
+        row['score'] = semantic + min(1.0, 10 * float(row['keyword']))
         row['source_uri'] = 'obsidian://open?vault=obsidian-vault&file=' + __import__('urllib.parse', fromlist=['quote']).quote(row['path'], safe='')
         row['historical_context_only'] = True
         row['stale_after_days'] = 30
@@ -160,7 +166,8 @@ def retrieve(text, limit=4):
         row['stale'] = row['index_age_seconds'] > 30 * 86400
         row['indexed'] = row['indexed'].isoformat()
         row['text_content'] = row['text_content'][:6000]
-    return sorted(rows, key=lambda r: r['score'], reverse=True)[:limit]
+        scored.append(row)
+    return sorted(scored, key=lambda r: r['score'], reverse=True)[:limit]
 
 
 def index_snapshot(path):
