@@ -1,0 +1,22 @@
+[Unit]
+Description=AEON engineering supervisor and three capability workers
+Requires=aeon-postgres.service
+After=aeon-postgres.service
+StartLimitIntervalSec=120
+StartLimitBurst=3
+
+[Service]
+Type=simple
+WorkingDirectory=/home/aeon/factory/engineering/vulpine-supply
+ExecStart=/home/aeon/factory/engineering/runtime/venv/bin/python /home/aeon/factory/engineering/vulpine-supply/tools/aeon/aeon.py serve
+Restart=on-failure
+RestartSec=10
+KillMode=control-group
+TimeoutStopSec=20
+UMask=0077
+NoNewPrivileges=yes
+MemoryMax=2G
+CPUQuota=100%
+
+[Install]
+WantedBy=default.target

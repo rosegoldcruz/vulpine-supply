@@ -1,0 +1,21 @@
+[Unit]
+Description=AEON private group chat and factory evidence console
+Requires=aeon-postgres.service
+After=aeon-postgres.service
+
+[Service]
+Type=simple
+WorkingDirectory=/home/aeon/factory/engineering/vulpine-supply
+ExecStart=/home/aeon/factory/engineering/runtime/venv/bin/python /home/aeon/factory/engineering/vulpine-supply/tools/aeon/console.py
+Restart=on-failure
+RestartSec=5
+KillMode=control-group
+TimeoutStopSec=20
+UMask=0077
+NoNewPrivileges=yes
+MemoryMax=2G
+CPUQuota=100%
+TasksMax=128
+
+[Install]
+WantedBy=default.target

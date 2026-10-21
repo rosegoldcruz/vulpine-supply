@@ -1,0 +1,21 @@
+[Unit]
+Description=AEON isolated execution PostgreSQL (private Unix socket only)
+After=network.target
+StartLimitIntervalSec=120
+StartLimitBurst=3
+
+[Service]
+Type=simple
+Environment=LD_LIBRARY_PATH=/home/aeon/factory/engineering/runtime/pg/usr/lib/x86_64-linux-gnu
+ExecStart=/home/aeon/factory/engineering/runtime/pg/usr/lib/postgresql/16/bin/postgres -D /home/aeon/factory/engineering/runtime/pgdata -h "" -k /home/aeon/factory/engineering/runtime/pgsocket -p 55432
+Restart=on-failure
+RestartSec=5
+NoNewPrivileges=yes
+ProtectSystem=strict
+ReadWritePaths=/home/aeon/factory/engineering/runtime/pgdata /home/aeon/factory/engineering/runtime/pgsocket
+UMask=0077
+MemoryMax=1G
+CPUQuota=100%
+
+[Install]
+WantedBy=default.target
