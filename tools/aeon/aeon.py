@@ -255,7 +255,11 @@ class Supervisor:
         self.workers[role] = p, parent
 
     def execute(self, job, role, spec, timeout):
+        deadline = time.monotonic() + timeout
         for attempt in range(2):
+            remaining = deadline - time.monotonic()
+            if remaining <= 0:
+                raise RuntimeError('job wall-time budget exhausted before worker retry')
             with db() as c:
                 c.execute("UPDATE tasks SET state='running', attempts=attempts+1 WHERE job=%s AND role=%s", (job['id'], role))
                 if role != 'tester' and not (spec.get('inject') and attempt == 0):
@@ -266,7 +270,7 @@ class Supervisor:
             p, conn = self.workers[role]
             try:
                 conn.send({**spec, 'inject': bool(spec.get('inject') and attempt == 0)})
-                reply = conn.recv() if conn.poll(timeout) else {'ok': False, 'error': 'worker heartbeat deadline exceeded'}
+                reply = conn.recv() if conn.poll(max(0, deadline - time.monotonic())) else {'ok': False, 'error': 'worker heartbeat deadline exceeded'}
             except (EOFError, BrokenPipeError, OSError):
                 reply = {'ok': False, 'error': 'worker unavailable: launcher process exited'}
             if reply['ok']:
@@ -276,7 +280,7 @@ class Supervisor:
                         c.execute("UPDATE incidents SET outcome='recovered_and_verified' WHERE job=%s AND role=%s AND outcome='open'", (job['id'], role))
                 return reply['result']
             cause = reply['error']
-            recoverable = any(s in cause for s in ('INJECTED_RECOVERABLE', 'worker unavailable', 'deadline', '429', 'temporarily unavailable', 'connection reset'))
+            recoverable = time.monotonic() < deadline and any(s in cause for s in ('INJECTED_RECOVERABLE', 'worker unavailable', 'deadline', '429', 'temporarily unavailable', 'connection reset'))
             # RuntimeMaxSec bounds each command. Stop the exact job/role's units
             # before replacing its launcher so late results cannot race a retry.
             sp.run(['systemctl', '--user', 'stop', f'aeon-task-{job["id"]}-{role}-*.service'], capture_output=True)
